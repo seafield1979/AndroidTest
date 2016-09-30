@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TestActivity</string>
+    <string name="hoge_text">HogeHoge!!</string>
+</resources>

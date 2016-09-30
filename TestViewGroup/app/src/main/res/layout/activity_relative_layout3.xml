@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.shutaro.testviewgroup.RelativeLayout3Activity">
+
+    <LinearLayout
+        android:id="@+id/group1"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <Button android:id="@+id/Button01"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="hoge1"/>
+        <Button android:id="@+id/Button02"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="hoge2"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/group2"
+        android:layout_below="@+id/group1"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <Button android:id="@+id/Button21"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="hoge3"/>
+        <Button android:id="@+id/Button22"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="hoge4"/>
+        <Button android:id="@+id/Button23"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="hoge5"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/group3"
+        android:layout_below="@+id/group2"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp">
+        <Button android:id="@+id/Button31"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:text="hoge6"/>
+        <Button android:id="@+id/Button32"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:text="hoge7"/>
+        <Button android:id="@+id/Button33"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:text="hoge8"/>
+    </LinearLayout>
+</RelativeLayout>
