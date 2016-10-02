@@ -9,7 +9,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.example.shutaro.testtextview.MainActivity">
+    tools:context="com.example.shutaro.testtextview.MainActivity"
+    android:weightSum="1">
 
     <Button
         android:layout_width="wrap_content"
@@ -40,5 +41,19 @@
         android:layout_height="wrap_content"
         android:text="test5"
         android:id="@+id/button5"/>
+
+    <ImageButton
+        android:layout_width="116dp"
+        android:layout_height="73dp"
+        android:id="@+id/imageButton"
+        android:background="@drawable/nine_patch_button"
+        android:src="@drawable/robot"/>
+
+    <ImageView
+        android:layout_width="139dp"
+        android:layout_height="117dp"
+        android:id="@+id/imageView"
+        android:background="@drawable/robot"
+        />
 
 </LinearLayout>

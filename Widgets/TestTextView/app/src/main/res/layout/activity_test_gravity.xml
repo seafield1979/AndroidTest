@@ -16,7 +16,7 @@
         android:layout_height="100dp"
         android:text="New Text"
         android:id="@+id/textView11"
-        android:background="#f3d1d1"
+        android:background="@drawable/nine_patch_button"
         android:gravity="center"/>
 
     <TextView
@@ -24,7 +24,7 @@
         android:layout_height="100dp"
         android:text="New Text"
         android:id="@+id/textView12"
-        android:background="#c3d7e2"
+        android:background="@drawable/nine_patch_button"
 
         android:gravity="right"/>
 
