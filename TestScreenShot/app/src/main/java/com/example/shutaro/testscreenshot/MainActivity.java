@@ -13,7 +13,6 @@ import android.widget.Button;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -48,10 +47,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * スクリーンショットしたBitmapを作成する
+     * @param view このviewの親Viewのスクリーンショットを撮る
+     * @return Bitmap
+     */
     public Bitmap getScreenBitmap(View view){
         return getViewBitmap(view.getRootView());
     }
 
+    /**
+     * 指定したViewのBitmapを作成する
+     * @param view
+     * @return Bitmap
+     */
     public Bitmap getViewBitmap(View view){
         view.setDrawingCacheEnabled(true);
         Bitmap cache = view.getDrawingCache();
@@ -63,6 +72,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return bitmap;
     }
 
+    /**
+     * 外部ストレージのtestフォルダにBitmapを保存する
+     * /storage/emulated/0/test
+     * @param mBitmap
+     */
     public void saveBitmapToSd(Bitmap mBitmap) {
         try {
             // sdcardフォルダを指定

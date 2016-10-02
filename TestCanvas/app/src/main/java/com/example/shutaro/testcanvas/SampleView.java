@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Typeface;
+import android.util.AttributeSet;
 import android.view.View;
 
 import java.util.Random;
@@ -18,17 +19,22 @@ import java.util.Random;
 public class SampleView extends View{
     private Paint paint = new Paint();
     private Path path = new Path();
+    private int drawMode;
 
-    public SampleView(Context context) {
-        super(context);
-        setBackgroundColor(Color.WHITE);
+    public SampleView(Context context, AttributeSet attrs) {
 
+        super(context, attrs);
+        paint = new Paint();
+    }
+
+    public void setDrawMode(int mode){
+        this.drawMode = mode;
+        invalidate();
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-        int mode = 5;
-        switch(mode){
+        switch(this.drawMode){
             case 1:
                 testDrawText(canvas);
                 break;
