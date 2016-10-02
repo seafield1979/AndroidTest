@@ -22,9 +22,7 @@ public class SampleView extends View{
     private int drawMode;
 
     public SampleView(Context context, AttributeSet attrs) {
-
         super(context, attrs);
-        paint = new Paint();
     }
 
     public void setDrawMode(int mode){
@@ -34,6 +32,10 @@ public class SampleView extends View{
 
     @Override
     public void onDraw(Canvas canvas) {
+        // 背景色を設定
+        canvas.drawColor(Color.WHITE);
+        paint = new Paint();
+
         switch(this.drawMode){
             case 1:
                 testDrawText(canvas);
@@ -61,24 +63,23 @@ public class SampleView extends View{
     private void testDrawText(Canvas canvas) {
         // テキストのサイズを設定
         paint.setTextSize(80);
-
+        // アンチエリアシング(境界のぼかし)
+        paint.setAntiAlias(true);
         // 色を設定
         paint.setColor(Color.rgb(255,0,0));
 
-        // 太字
-        paint.setTypeface(Typeface.DEFAULT_BOLD);
-        paint.setFakeBoldText(true);
+        canvas.drawText("Hello!", 50, 100, paint);
 
         // 斜体
         paint.setTextSkewX(-0.25f);
-
-        canvas.drawText("Hello!", 50, 100, paint);
-
-        // 色を設定
         paint.setColor(Color.rgb(0,255,0));
         canvas.drawText("Hello!", 50, 200, paint);
 
-        // 色を設定
+        // 太字
+        paint.setTextSkewX(0);
+        paint.setTypeface(Typeface.DEFAULT_BOLD);
+        paint.setFakeBoldText(true);
+
         paint.setColor(Color.rgb(0,0,255));
         canvas.drawText("Hello!", 50, 300, paint);
     }
@@ -86,7 +87,7 @@ public class SampleView extends View{
 
     public void drawLines(Canvas canvas) {
         // アンチエリアシング(境界のぼかし)
-        paint.setAntiAlias(false);
+        paint.setAntiAlias(true);
         // 線の種類
         paint.setStyle(Paint.Style.STROKE);
         // 線の太さ
@@ -111,7 +112,7 @@ public class SampleView extends View{
      */
     private void drawRects(Canvas canvas) {
         // アンチエリアシング(境界のぼかし)
-        paint.setAntiAlias(false);
+        paint.setAntiAlias(true);
         // 線の種類
         paint.setStyle(Paint.Style.STROKE);
         // 線の太さ
@@ -134,19 +135,21 @@ public class SampleView extends View{
         //Randomクラスのインスタンス化
         Random rnd = new Random();
 
+        // アンチエリアシング(境界のぼかし)
+        paint.setAntiAlias(true);
         // 線の種類
         paint.setStyle(Paint.Style.STROKE);
         // 線の太さ
         paint.setStrokeWidth(10);
         // 色
-        paint.setColor(Color.rgb(255,0,0));
+        paint.setColor(Color.argb(128,255,0,0));
 
         canvas.drawCircle(300, 300, 100, paint);
 
         // 塗りつぶし
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         for (int i=0; i<30; i++) {
-            paint.setColor(Color.rgb(rnd.nextInt(255),rnd.nextInt(255),rnd.nextInt(255)));
+            paint.setColor(Color.argb(128,rnd.nextInt(255),rnd.nextInt(255),rnd.nextInt(255)));
 
             canvas.drawCircle((float)(Math.random()*500.0f+150.f),
                     (float)(Math.random()*500.0f+150.f),
@@ -159,15 +162,16 @@ public class SampleView extends View{
      * @param canvas
      */
     private void drawImage(Canvas canvas) {
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.imoni_s);
+        //Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.imoni_s);
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 
         canvas.drawBitmap(bmp, 0, 0, paint);
 
-        canvas.scale(0.5f, 0.5f);
-        canvas.drawBitmap(bmp, 0, 0, paint);
+        canvas.scale(1.5f, 1.5f);
+        canvas.drawBitmap(bmp, 50, 50, paint);
 
-        canvas.scale(0.5f, 0.5f);
-        canvas.drawBitmap(bmp, 0, 0, paint);
+        canvas.scale(1.5f, 1.5f);
+        canvas.drawBitmap(bmp, 100, 100, paint);
 
     }
 }

@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private Button button4;
     private Button button5;
     private Button button_capture;
+    private Button button_screen;
     private SampleView sampleView;
 
     @Override
@@ -44,8 +45,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         button4.setOnClickListener(this);
         this.button5 = (Button)findViewById(R.id.button5);
         button5.setOnClickListener(this);
+
         this.button_capture = (Button)findViewById(R.id.button_capture);
         button_capture.setOnClickListener(this);
+
+        this.button_screen= (Button)findViewById(R.id.button_screen);
+        button_screen.setOnClickListener(this);
 
         this.sampleView = (SampleView)findViewById(R.id.custom_view);
     }
@@ -64,6 +69,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         } else if (v == button_capture) {
             // 指定のViewをスクリーンショット
             Bitmap bmp = getViewBitmap(sampleView);
+            String imgPath = saveBitmapToSd(bmp);
+            toastMake("Save at " + imgPath, 0, 0);
+        } else if (v == button_screen) {
+            Bitmap bmp = getScreenBitmap(sampleView);
             String imgPath = saveBitmapToSd(bmp);
             toastMake("Save at " + imgPath, 0, 0);
         }
