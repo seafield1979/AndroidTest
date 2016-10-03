@@ -1,6 +1,8 @@
 package com.example.shutaro.testlistview;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +36,7 @@ public class CustomAdapter extends ArrayAdapter<CustomData> {
         if (null == convertView) {
             convertView = mLayoutInflater.inflate(
                     R.layout.custom_list_item, null);
+            Log.v("myData", String.valueOf(position));
         }
 
         ImageView imageView;
@@ -43,6 +46,12 @@ public class CustomAdapter extends ArrayAdapter<CustomData> {
         TextView textView;
         textView = (TextView) convertView.findViewById(R.id.text);
         textView.setText(item.getTextData());
+
+        if (position % 2 == 1) {
+            convertView.setBackgroundColor(Color.rgb(200, 100, 0));
+        } else {
+            convertView.setBackgroundColor(Color.rgb(255,255,255));
+        }
 
         return convertView;
     }

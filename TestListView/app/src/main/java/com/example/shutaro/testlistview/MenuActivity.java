@@ -13,7 +13,13 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class MenuActivity extends AppCompatActivity implements OnItemSelectedListener{
 
     public static final String[] menuItems = new String[]{
-            "---", "List", "Grid", "Header&Footer","Custom"};
+            "---",
+            "List",
+            "Grid",
+            "Header&Footer",
+            "Custom",
+            "Expand"
+    };
 
     private Spinner spinner1;
 
@@ -57,6 +63,12 @@ public class MenuActivity extends AppCompatActivity implements OnItemSelectedLis
                 startActivity(i);
             }
                 break;
+            case 5: {
+                Intent i = new Intent(getApplicationContext(), ExpandListActivity.class);
+                startActivity(i);
+            }
+            break;
+
         }
     }
 

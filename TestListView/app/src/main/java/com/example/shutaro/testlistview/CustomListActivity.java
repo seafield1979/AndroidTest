@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomListActivity extends AppCompatActivity {
+    public static final int ITEM_MAX = 20;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +23,7 @@ public class CustomListActivity extends AppCompatActivity {
 
         List<CustomData> objects = new ArrayList<CustomData>();
 
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<ITEM_MAX; i++) {
             CustomData item = new CustomData();
             item.setImagaData(image);
             item.setTextData(String.valueOf(i+1));
