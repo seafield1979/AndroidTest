@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button button3;
     private Button button4;
     private Button button5;
+    private Button buttonScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,24 +35,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         button5 = (Button)findViewById(R.id.button5);
         button5.setOnClickListener(this);
+
+        buttonScroll = (Button)findViewById(R.id.button_scroll);
+        buttonScroll.setOnClickListener(this);
     }
 
     public void onClick(View v) {
-        if (v == button1) {
-            Intent i = new Intent(MainActivity.this, LinearLayoutActivity.class);
-            startActivity(i);
-        } else if (v == button2) {
-            Intent i = new Intent(MainActivity.this, TableLayoutActivity.class);
-            startActivity(i);
-        } else if (v == button3) {
-            Intent i = new Intent(MainActivity.this, RelativeLayoutActivity.class);
-            startActivity(i);
-        } else if (v == button4) {
-            Intent i = new Intent(MainActivity.this, RelativeLayout2Activity.class);
-            startActivity(i);
-        } else if (v == button5) {
-            Intent i = new Intent(MainActivity.this, RelativeLayout3Activity.class);
-            startActivity(i);
+        switch(v.getId()) {
+            case R.id.button1:
+            {
+                Intent i = new Intent(MainActivity.this, LinearLayoutActivity.class);
+                startActivity(i);
+            }
+                break;
+            case R.id.button2:
+            {
+                Intent i = new Intent(MainActivity.this, TableLayoutActivity.class);
+                startActivity(i);
+            }
+                break;
+            case R.id.button3:
+            {
+                Intent i = new Intent(MainActivity.this, RelativeLayoutActivity.class);
+                startActivity(i);
+            }
+                break;
+            case R.id.button4:
+            {
+                Intent i = new Intent(MainActivity.this, RelativeLayout2Activity.class);
+                startActivity(i);
+            }
+                break;
+            case R.id.button5:
+            {
+                Intent i = new Intent(MainActivity.this, RelativeLayout3Activity.class);
+                startActivity(i);
+            }
+                break;
+            case R.id.button_scroll:
+            {
+                Intent i = new Intent(MainActivity.this, ScrollViewActivity.class);
+                startActivity(i);
+            }
+                break;
         }
     }
 }

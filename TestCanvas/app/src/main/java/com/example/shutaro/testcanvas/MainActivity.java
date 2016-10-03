@@ -56,25 +56,37 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     }
 
     public void onClick(View v){
-        if (v == button1) {
-            sampleView.setDrawMode(1);
-        } else if (v == button2) {
-            sampleView.setDrawMode(2);
-        } else if (v == button3) {
-            sampleView.setDrawMode(3);
-        } else if (v == button4) {
-            sampleView.setDrawMode(4);
-        } else if (v == button5) {
-            sampleView.setDrawMode(5);
-        } else if (v == button_capture) {
-            // 指定のViewをスクリーンショット
-            Bitmap bmp = getViewBitmap(sampleView);
-            String imgPath = saveBitmapToSd(bmp);
-            toastMake("Save at " + imgPath, 0, 0);
-        } else if (v == button_screen) {
-            Bitmap bmp = getScreenBitmap(sampleView);
-            String imgPath = saveBitmapToSd(bmp);
-            toastMake("Save at " + imgPath, 0, 0);
+        switch(v.getId()) {
+            case R.id.button1:
+                sampleView.setDrawMode(1);
+                break;
+            case R.id.button2:
+                sampleView.setDrawMode(2);
+                break;
+            case R.id.button3:
+                sampleView.setDrawMode(3);
+                break;
+            case R.id.button4:
+                sampleView.setDrawMode(4);
+                break;
+            case R.id.button5:
+                sampleView.setDrawMode(5);
+                break;
+            case R.id.button_capture:
+                // 指定のViewをスクリーンショット
+            {
+                Bitmap bmp = getViewBitmap(sampleView);
+                String imgPath = saveBitmapToSd(bmp);
+                toastMake("Save at " + imgPath, 0, 0);
+            }
+                break;
+            case R.id.button_screen:
+            {
+                Bitmap bmp = getScreenBitmap(sampleView);
+                String imgPath = saveBitmapToSd(bmp);
+                toastMake("Save at " + imgPath, 0, 0);
+            }
+                break;
         }
     }
 

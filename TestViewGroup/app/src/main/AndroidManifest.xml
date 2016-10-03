@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".RelativeLayout3Activity">
         </activity>
+        <activity android:name=".ScrollViewActivity">
+        </activity>
     </application>
 
 </manifest>

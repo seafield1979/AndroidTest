@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TestSpinner</string>
+
+    <string name="spnPrompt">プロンプトのテキスト</string>
+</resources>
