@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String)parent.getSelectedItem();
-                Toast.makeText(MainActivity.this, item + "が選択されました", Toast.LENGTH_SHORT).show();
+                String str = String.format("%s (%d)が選択されました", item, parent.getSelectedItemId());
+                Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
