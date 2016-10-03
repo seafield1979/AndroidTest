@@ -14,12 +14,17 @@ public class ExpandListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expand_list);
 
+//        ArrayList<HashMap<String, String>> hash1 =
+//                new ArrayList<HashMap<String, String>>{{"1","2"},{"3","4"}};
+
+        String[][] list1 = new String[][]{{"1","2"},{"3","4"}};
+
         // groupData グループのリスト
         ArrayList<HashMap<String, String>> groupData = new ArrayList<HashMap<String, String>>();
         // childData 全グループの子要素を追加するリスト
         ArrayList<ArrayList<HashMap<String, String>>> childData = new ArrayList<ArrayList<HashMap<String, String>>>();
 
-        //
+        // グループ(トップレベルの項目）を作成
         HashMap<String, String> groupA = new HashMap<String, String>();
         groupA.put("group", "果物");
         HashMap<String, String> groupB = new HashMap<String, String>();
@@ -30,6 +35,8 @@ public class ExpandListActivity extends AppCompatActivity {
 
         // HashMap childListA
         ArrayList<HashMap<String, String>> childListA = new ArrayList<HashMap<String, String>>();
+
+
         HashMap<String, String> childAA = new HashMap<String, String>();
         childAA.put("group", "果物");
         childAA.put("name", "りんご");
@@ -61,12 +68,15 @@ public class ExpandListActivity extends AppCompatActivity {
 
         //
         SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
-                getApplicationContext(), groupData,
+                getApplicationContext(),
+                groupData,
                 android.R.layout.simple_expandable_list_item_1,
-                new String[] { "group" }, new int[] { android.R.id.text1 },
-                childData, android.R.layout.simple_expandable_list_item_2,
-                new String[] { "name", "group" }, new int[] {
-                android.R.id.text1, android.R.id.text2 });
+                new String[] { "group" },
+                new int[] { android.R.id.text1 },
+                childData,
+                android.R.layout.simple_expandable_list_item_2,
+                new String[] { "name", "group" },
+                new int[] {android.R.id.text1, android.R.id.text2 });
 
         //
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.expandableListView);

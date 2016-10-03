@@ -18,7 +18,8 @@ public class MenuActivity extends AppCompatActivity implements OnItemSelectedLis
             "Grid",
             "Header&Footer",
             "Custom",
-            "Expand"
+            "Expand",
+            "Auto Add"
     };
 
     private Spinner spinner1;
@@ -65,6 +66,11 @@ public class MenuActivity extends AppCompatActivity implements OnItemSelectedLis
                 break;
             case 5: {
                 Intent i = new Intent(getApplicationContext(), ExpandListActivity.class);
+                startActivity(i);
+            }
+                break;
+            case 6: {
+                Intent i = new Intent(getApplicationContext(), AutoAddListActivity.class);
                 startActivity(i);
             }
             break;

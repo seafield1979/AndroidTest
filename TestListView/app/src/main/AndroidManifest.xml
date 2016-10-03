@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".ExpandListActivity">
         </activity>
+        <activity android:name=".AutoAddListActivity">
+        </activity>
     </application>
 
 </manifest>
