@@ -19,6 +19,7 @@ public class Dialog1Fragment extends DialogFragment {
         Bundle bundle = getArguments();
         String title = bundle.getString("title");
         String message = bundle.getString("message");
+        String button1 = bundle.getString("button1");
         boolean isCancel = bundle.getBoolean("isCancel");
 
         // Add action buttons
@@ -47,12 +48,15 @@ public class Dialog1Fragment extends DialogFragment {
                 }
             });
         }
-        builder.setNeutralButton("Later", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Later button pressed
-            }
-        });
+        // Later
+        if (button1 != null) {
+            builder.setNeutralButton(button1, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // Later button pressed
+                }
+            });
+        }
 
         return builder.create();
     }

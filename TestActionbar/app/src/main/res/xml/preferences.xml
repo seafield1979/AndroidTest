@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="設定画面" >
+        <ListPreference
+            android:key="background"
+            android:title="Background Color"
+            android:entries="@array/entries_background"
+            android:entryValues="@array/entryvalues_background"
+            android:dialogTitle="Background Color" />
+
+        <EditTextPreference
+            android:dialogTitle="エディットダイアログタイトル"
+            android:key="edittext_key"
+            android:summary="エディットサマリー"
+            android:title="タイトル：エディット" />
+    </PreferenceCategory>
+</PreferenceScreen>
