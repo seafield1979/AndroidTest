@@ -15,6 +15,16 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".TabPageActivity">
+        </activity>
+        <activity android:name=".TestIncludeActivity">
+        </activity>
+        <activity android:name=".Tab1Activity">
+        </activity>
+        <activity android:name=".Tab2Activity">
+        </activity>
+        <activity android:name=".Tab3Activity">
+        </activity>
     </application>
 
 </manifest>

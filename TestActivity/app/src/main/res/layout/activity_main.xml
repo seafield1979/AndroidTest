@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,6 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+              android:orientation="vertical"
     tools:context="com.example.shutaro.testactivity.MainActivity">
 
     <TextView
@@ -18,19 +19,41 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MainActivity"
         android:id="@+id/textView"
-        android:textSize="20dp"
-        android:layout_below="@+id/textView2"
-        android:layout_toEndOf="@+id/textView2"
-        android:layout_marginTop="31dp" />
+        />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hoge_text"
+        android:text="activity1"
         android:id="@+id/button1"
-        android:layout_marginTop="45dp"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"/>
-</RelativeLayout>
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="activity2"
+        android:id="@+id/button2"/>
+
+
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Result"
+            android:id="@+id/textView4"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text=""
+            android:id="@+id/textViewResult"/>
+
+    </LinearLayout>
+</LinearLayout>
