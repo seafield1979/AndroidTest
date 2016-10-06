@@ -12,6 +12,23 @@ public class NewAppWidgetService extends Service {
     private final String BUTTON1_CLICK_ACTION = "BUTTON1_CLICK_ACTION";
     private final String BUTTON2_CLICK_ACTION = "BUTTON2_CLICK_ACTION";
 
+    /*
+    サービスが最初に作成された時のコールバックです。
+    このメソッドはonStartCommandやonBindよりも前に呼び出され、サービスが起動中の場合
+    は呼ばれません。
+     */
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
+
+    /*
+    startServiceでサービスが開始要求を受けたときのコールバックです。
+    このメソッドはサービスの開始ポイントとなります。
+    このメソッドの戻り値は、サービスがシステムから不意にkillされた場合の動作を決定し
+    ます。
+    bindServiceを呼び出してサービスをバインドした場合、このメソッドは呼ばれません。
+     */
     @Override
     public int onStartCommand(Intent intent, int startFlags, int startId) {
         super.onStartCommand(intent, startFlags, startId);
@@ -49,6 +66,10 @@ public class NewAppWidgetService extends Service {
         return START_REDELIVER_INTENT;        // サービスが強制終了した際、サービスを再起動しない
     }
 
+    /*
+    bindServiceサービスがバインドされた時のコールバックです。
+    サービスがバインドを拒否したい場合はnullを返すようにします。
+     */
     @Override
     public IBinder onBind(Intent intent) {
         return null;
