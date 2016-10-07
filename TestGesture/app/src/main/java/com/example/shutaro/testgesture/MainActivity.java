@@ -6,16 +6,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
+import com.example.mylibrary.LogListView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener {
+public class MainActivity extends AppCompatActivity {
 
-    GestureDetector mGestureDetector;
+    private GestureDetector mGestureDetector;
+    private LogListView mListView;
 
     private static final int SWIPE_MIN_DISTANCE = 120;
     private static final int SWIPE_MAX_OFF_PATH = 250;
@@ -35,68 +37,13 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         // GestureDetectorインスタンス作成
         mGestureDetector = new GestureDetector(this, mOnGestureListener);
 
+        mListView = (LogListView)findViewById(R.id.listView2);
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
+        mListView.setAdapter(mAdapter);
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-    }
-
-    public boolean onTouchEvent(MotionEvent ev) {
-        mGestureDetector.onTouchEvent(ev);
-
-        return false;
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        Log.d("myLog", "Single Tap");
-        return false;
-    }
-
-    public boolean onDoubleTap(MotionEvent e) {
-        Log.d("myLog", "Double Tap");
-        return false;
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        Log.d("myLog", "onDown");
-        return false;
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                           float velocityY) {
-        Log.d("myLog", "onFling");
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-        Log.d("myLog", "onLongPress");
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-                            float distanceY) {
-        Log.d("myLog", "onScroll");
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-        Log.d("myLog", "onShowPress");
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent e) {
-        Log.d("myLog", "onDoubleTapEvent");
-        return false;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        Log.d("myLog", "onSingleTapConfirmed");
-        return false;
     }
 
     @Override
@@ -118,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         super.onStop();
 
         Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
+                Action.TYPE_VIEW,
+                "Main Page",
                 Uri.parse("http://host/path"),
                 Uri.parse("android-app://com.example.shutaro.testgesture/http/host/path")
         );
@@ -127,11 +74,20 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         client.disconnect();
     }
 
+    public boolean onTouchEvent(MotionEvent ev) {
+        mGestureDetector.onTouchEvent(ev);
+
+        return false;
+    }
+
+    /**
+     * ジェスチャーのリスナー
+     */
     private final GestureDetector.SimpleOnGestureListener mOnGestureListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onFling(MotionEvent event1, MotionEvent event2,
-                               float velocityX, float velocityY) {
-
+                               float velocityX, float velocityY)
+        {
             try {
                 if (Math.abs(event1.getY() - event2.getY()) > SWIPE_MAX_OFF_PATH) {
                     return false;
@@ -153,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            Log.d("myLog", "Single Tap");
+            Log.d("myLog", "Single Tap " + e.getX() + " " + e.getY());
             return false;
         }
 
@@ -167,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             Log.d("myLog", "onDown");
             return false;
         }
-        
+
         @Override
         public void onLongPress(MotionEvent e) {
             Log.d("myLog", "onLongPress");
@@ -176,7 +132,9 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
                                 float distanceY) {
-            Log.d("myLog", "onScroll");
+            String message = "onScroll " + (int)e1.getX() + " " + (int)e1.getY() + " " + (int)e2.getX() + " " + (int)e2.getY();
+            Log.d("myLog", message);
+            mListView.addLog(message);
             return false;
         }
 
@@ -197,4 +155,34 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             return false;
         }
     };
+
+    /**
+     * ListViewに表示するログを追加する。古いログは自動的に削除される
+     * @param message
+     */
+//    private void addLog(String message) {
+//        String addMsg = String.format("%d %s", mLogCount, message);
+//
+//        if (mLogReverse) {
+//            if (mLinkedList.size() < LOG_MAX) {
+//                mLinkedList.push(addMsg);
+//            } else {
+//                mLinkedList.removeLast();
+//                mLinkedList.push(addMsg);
+//            }
+//        } else {
+//            if (mLinkedList.size() < LOG_MAX) {
+//                mLinkedList.add(addMsg);
+//            } else {
+//                mLinkedList.poll();
+//                mLinkedList.add(addMsg);
+//            }
+//        }
+//
+//        mAdapter.clear();
+//        for (String str : mLinkedList) {
+//            mAdapter.add(str);
+//        }
+//        mLogCount++;
+//    }
 }

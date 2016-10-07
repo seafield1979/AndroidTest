@@ -5,19 +5,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
+import com.example.mylibrary.LogListView;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     private Button button5;
+    private LogListView llv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,14 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         Log.v("myLog", str);
         Toast.makeText(this, str, Toast.LENGTH_LONG).show();
+
+        // LogListView
+        llv = (LogListView)findViewById(R.id.listView);
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
+        llv.setAdapter(mAdapter);
+        llv.addLog("hoge1");
+        llv.addLog("hoge2");
+        llv.addLog("hoge3");
 
         // ボタンを押した時の処理を追加
         Button button1 = (Button)findViewById(R.id.button1);
@@ -81,17 +91,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         button5.setText("ぼたん５");
         button5.setOnClickListener(this);
 
-        // レイアウトを追加(ボタン３の下に配置)
-        RelativeLayout.LayoutParams layout = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        layout.addRule(RelativeLayout.BELOW, R.id.button3);
-        layout.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        button5.setLayoutParams(layout);
+        LinearLayout linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
 
         // ViewGroupに追加
-        RelativeLayout relativeLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
-        relativeLayout.addView(button5);
+        linearLayout.addView(button5);
     }
 
     public void onClick(View v) {
