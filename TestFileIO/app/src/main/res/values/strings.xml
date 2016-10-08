@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TestFileIO</string>
+    <string name="check1_title">りんご</string>
+    <string name="check2_title">みかん</string>
+</resources>

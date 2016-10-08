@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="animals">
+        <item>アヒル</item>
+        <item>スズメ</item>
+        <item>ニワトリ</item>
+        <item>ハト</item>
+    </string-array>
+</resources>
