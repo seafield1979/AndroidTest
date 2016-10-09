@@ -68,6 +68,8 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
     }
 
     public void onClick(View v) {
+        mTextView.setText("");
+
         switch(v.getId()) {
             case R.id.button:
                 test1();
@@ -123,10 +125,11 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
     private void httpConnectMain(int mode) {
         switch (mode) {
             case 0:
+                // hello world
             {
                 URL url = null;
                 try {
-                    url = new URL("http://sunsunsoft.com/test/ios/hello.php");
+                    url = new URL("http://sunsunsoft.com/test/android/hello.php");
                 } catch (Exception e) {
                     return;
                 }
@@ -135,10 +138,25 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
             }
                 break;
             case 1:
+                // getパラメータ
             {
                 URL url = null;
                 try {
-                    url = new URL("http://sunsunsoft.com/test/ios/test_post.php");
+                    url = new URL("http://sunsunsoft.com/test/android/test_get" +
+                            ".php?param1=value1&param2=value2");
+                } catch (Exception e) {
+                    return;
+                }
+
+                httpConnectGet(url);
+            }
+                break;
+            case 2:
+                // post パラメータ
+            {
+                URL url = null;
+                try {
+                    url = new URL("http://sunsunsoft.com/test/android/test_post.php");
                 } catch (MalformedURLException e) {
                     return;
                 }
@@ -146,15 +164,9 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
                 httpConnectPost(url, "param1=value1&param2=value2");
             }
                 break;
-            case 2:
+            case 3:
             {
-                URL url = null;
-                try {
-                    url = new URL("http://sunsunsoft.com/test/ios/test_json.php");
-                } catch (MalformedURLException e) {
-                    return;
-                }
-                // POSTデータ送信処理
+                // POSTでjson送信
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put("param1", "value1");
@@ -163,12 +175,10 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
                     Log.e("myLog", e.toString());
                 }
 
-                httpConnectPostJson(url, jsonObject);
+                httpConnectPostJson( jsonObject);
             }
                 break;
-            case 3:
-                httpConnectPostJson2();
-                break;
+
         }
     }
 
@@ -176,7 +186,7 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
      * DefaultHttpClient を使ってhttp通信
      */
     private void test1() {
-        requestGetMethod("http://sunsunsoft.com/test/ios/hello.php");
+        requestGetMethod("http://sunsunsoft.com/test/android/hello.php");
     }
 
     /**
@@ -195,7 +205,7 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
     }
 
     /**
-     * POSTメッセージ送信
+     * POSTメッセージ(JSON)送信
      */
     private void test4() {
         testHttpConnect(2);
@@ -373,12 +383,17 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
 
             // 本文の取得
             sendText("-- body --\n");
-            InputStream in = con.getInputStream();
-            byte bodyByte[] = new byte[1024];
-            in.read(bodyByte);
-            in.close();
+            InputStreamReader ir = new InputStreamReader(
+                    con.getInputStream(),"utf-8");
+            BufferedReader br = new BufferedReader(ir);
+            String line = null;
+            StringBuilder sb = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            br.close();
 
-            sendText(new String(bodyByte));
+            sendText(sb.toString());
         } catch (Exception e) {
             sendText(e.toString());
         }
@@ -408,13 +423,9 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
             con.connect();
 
             // データを送信する
-            OutputStream os = con.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
-            writer.write(postStr);
-            writer.flush();
-            writer.close();
-            os.close();
+            OutputStreamWriter out = new   OutputStreamWriter(con.getOutputStream());
+            out.write(postStr);
+            out.close();
 
             // ヘッダの取得
             Map headers = con.getHeaderFields();
@@ -430,22 +441,34 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
 
             // 本文の取得
             sendText("-- body --\n");
-            InputStream in = con.getInputStream();
-            byte bodyByte[] = new byte[1024];
-            in.read(bodyByte);
-            in.close();
+            InputStreamReader ir = new InputStreamReader(
+                    con.getInputStream(),"utf-8");
+            BufferedReader br = new BufferedReader(ir);
+            String line = null;
+            StringBuilder sb = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            br.close();
 
-            sendText(new String(bodyByte));
+            sendText(sb.toString());
         } catch (Exception e) {
             sendText(e.toString());
         }
     }
 
-    private void httpConnectPostJson(URL url, JSONObject json) {
+    /**
+     * PostでJsonデータを送信
+     * @param json
+     */
+    private void httpConnectPostJson(JSONObject json) {
         HttpURLConnection con = null;
+
 
         // URLの作成
         try {
+            URL url = new URL("http://sunsunsoft.com/test/android/test_json.php");
+
             sendText(json.toString());
 
             // 接続用HttpURLConnectionオブジェクト作成
@@ -464,12 +487,9 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
             con.connect();
 
             // データを送信する
-            OutputStream os = con.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write(String.valueOf(json));
-            writer.flush();
-            writer.close();
-            os.close();
+            OutputStreamWriter out = new   OutputStreamWriter(con.getOutputStream());
+            out.write(json.toString());
+            out.close();
 
             // ヘッダの取得
             Map headers = con.getHeaderFields();
@@ -485,72 +505,19 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
 
             // 本文の取得
             sendText("-- body --\n");
-            InputStream in = con.getInputStream();
-            byte bodyByte[] = new byte[1024];
-            in.read(bodyByte);
-            in.close();
+            InputStreamReader ir = new InputStreamReader(
+                    con.getInputStream(),"utf-8");
+            BufferedReader br = new BufferedReader(ir);
+            String line = null;
+            StringBuilder sb = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            br.close();
 
-            sendText(new String(bodyByte));
+            sendText(sb.toString());
         } catch (Exception e) {
             sendText(e.toString());
-        }
-    }
-
-    private void httpConnectPostJson2(){
-        StringBuilder sb = new StringBuilder();
-
-        String http = "http://sunsunsoft.com/test/android/test_json.php";
-        HttpURLConnection urlConnection=null;
-        try {
-            URL url = new URL(http);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setDoOutput(true);
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setUseCaches(false);
-            urlConnection.setConnectTimeout(10000);
-            urlConnection.setReadTimeout(10000);
-            urlConnection.setRequestProperty("Content-Type","application/json");
-
-            urlConnection.setRequestProperty("Host", "android.schoolportal.gr");
-            urlConnection.connect();
-
-            //Create JSONObject here
-            JSONObject jsonParam = new JSONObject();
-            jsonParam.put("ID", "25");
-            jsonParam.put("description", "Real");
-            jsonParam.put("enable", "true");
-            OutputStreamWriter out = new   OutputStreamWriter(urlConnection.getOutputStream());
-            out.write(jsonParam.toString());
-            out.close();
-
-            int HttpResult =urlConnection.getResponseCode();
-            if(HttpResult ==HttpURLConnection.HTTP_OK){
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream(),"utf-8"));
-                String line = null;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                br.close();
-
-                sendText(""+sb.toString());
-
-            }else{
-                sendText(urlConnection.getResponseMessage());
-            }
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }finally{
-            if(urlConnection!=null)
-                urlConnection.disconnect();
         }
     }
 }

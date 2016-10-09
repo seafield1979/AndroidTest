@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import android.view.View.OnClickListener;
 
@@ -41,6 +42,7 @@ public class TempFileActivity extends AppCompatActivity implements OnClickListen
 
         mTextView = (TextView)findViewById(R.id.textView);
 
+        printTempfile();
     }
 
     public void onClick(View v) {
@@ -66,14 +68,10 @@ public class TempFileActivity extends AppCompatActivity implements OnClickListen
         }
     }
 
-    private void test1() {
-        printTempfile();
-    }
-
     /**
      * キャッシュファイル書き込みテスト
      */
-    private void test2() {
+    private void test1() {
         File internalCachedir = getCacheDir();
         File file = new File(internalCachedir.getPath(), "text1.txt");
 
@@ -84,7 +82,7 @@ public class TempFileActivity extends AppCompatActivity implements OnClickListen
     /**
      * キャッシュファイル読み込みテスト
      */
-    private void test3() {
+    private void test2() {
         File internalCachedir = getCacheDir();
         File file = new File(internalCachedir.getPath(), "text1.txt");
 
@@ -92,21 +90,43 @@ public class TempFileActivity extends AppCompatActivity implements OnClickListen
         mTextView.setText(ret);
     }
 
-    private void test4() {
+    private void test3() {
         File externalCachedir = getExternalCacheDir();
         File file = new File(externalCachedir.getPath(), "text1.txt");
 
         String ret = writeContents(file, "hoge");
         mTextView.setText(ret);
     }
-    private void test5() {
+    private void test4() {
         File externalCachedir = getExternalCacheDir();
         File file = new File(externalCachedir.getPath(), "text1.txt");
 
         String ret = readFile(file);
         mTextView.setText(ret);
     }
+    private void test5() {
+        File externalCachedir = getExternalCacheDir();
+        File file = new File(externalCachedir.getPath(), "text1.dat");
+
+        writeBinary(file.getPath());
+    }
     private void test6() {
+        File externalCachedir = getExternalCacheDir();
+        File file = new File(externalCachedir.getPath(), "text1.dat");
+
+        byte[] data = readBinary(file.getPath());
+
+        // 文字列に変換して出力する
+        int cnt = 0;
+        StringBuffer buf = new StringBuffer();
+        for (byte b : data) {
+            buf.append(String.format("%02x ", b));
+            cnt++;
+            if (cnt % 8 == 0) {
+                buf.append("\n");
+            }
+        }
+        mTextView.setText(buf.toString());
     }
 
     private void printTempfile() {
@@ -177,5 +197,51 @@ public class TempFileActivity extends AppCompatActivity implements OnClickListen
             strBuf.append(e.toString());
         }
         return strBuf.toString();
+    }
+
+    // バイナリファイルを読み込み
+    // RandomAccessFile
+    public byte[] readBinary(String filePath) {
+        try {
+            // 入力ストリームの生成
+            RandomAccessFile raf = new RandomAccessFile(filePath, "r");
+
+            // 読み込み位置を指定する
+            raf.seek(0);
+
+            // データを読み込む
+            // (読み込んだサイズ分読み込み位置がすすむ)
+            byte[] readData = new byte[(int)raf.length()];
+            int len = raf.read(readData);
+
+            // 後始末
+            raf.close();
+
+            return readData;
+        } catch(FileNotFoundException e) {
+            System.out.println(e);
+        } catch(IOException e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    // ファイルにバイナリを書き込む
+    public void writeBinary(String fileName) {
+        try {
+            System.out.println("writeBinary2");
+            RandomAccessFile raf = new RandomAccessFile(fileName, "rw");
+
+            // 書き込み
+            for (int i=0; i<16; i++) {
+                raf.writeInt(i);
+            }
+
+            raf.close();
+        } catch(FileNotFoundException e) {
+            System.out.println(e);
+        } catch(IOException e) {
+            System.out.println(e);
+        }
     }
 }

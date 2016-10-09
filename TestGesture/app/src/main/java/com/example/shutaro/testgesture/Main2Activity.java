@@ -19,6 +19,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+/**
+ * 画像の指定領域のタップを検出する。仕組みはタッチ位置の座標が指定領域内にあるかを判定しているだけ。
+ */
 public class Main2Activity extends Activity {
 
     @Override
