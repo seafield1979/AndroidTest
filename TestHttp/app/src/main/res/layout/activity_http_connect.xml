@@ -14,21 +14,21 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="hello"
             android:id="@+id/button"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="get"
             android:id="@+id/button2"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="post"
             android:id="@+id/button3"/>
     </LinearLayout>
 
@@ -40,22 +40,28 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="post(json)"
             android:id="@+id/button4"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="5"
             android:id="@+id/button5"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="clear"
             android:id="@+id/button6"/>
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="New Text"
+        android:id="@+id/textView"/>
 
 </LinearLayout>
