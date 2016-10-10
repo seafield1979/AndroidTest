@@ -1,20 +1,7 @@
 package com.example.shutaro.testhttp;
 
-import android.content.Intent;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,17 +12,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
@@ -51,9 +31,6 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
             R.id.button6 };
 
     private TextView mTextView;
-    private AsyncTask<Uri, Void, String> mTask;
-    private AsyncTask<URL, Void, String> mTask2;
-    private static final String TAG = "myLog";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +143,8 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
                 break;
             case 3:
             {
+                mTextView.append("--json--\n");
+
                 // POSTでjson送信
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -183,36 +162,34 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
     }
 
     /**
-     * DefaultHttpClient を使ってhttp通信
-     */
-    private void test1() {
-        requestGetMethod("http://sunsunsoft.com/test/android/hello.php");
-    }
-
-    /**
      * HttpURLConnection を使ってhttp通信
      * GETメッセージ送信
      */
-    private void test2() {
+    private void test1() {
         testHttpConnect(0);
     }
 
     /**
      * POSTメッセージ送信
      */
-    private void test3() {
+    private void test2() {
         testHttpConnect(1);
     }
 
     /**
      * POSTメッセージ(JSON)送信
      */
-    private void test4() {
+    private void test3() {
         testHttpConnect(2);
     }
-    private void test5() {
+    private void test4() {
         testHttpConnect(3);
     }
+
+    private void test5() {
+        mTextView.setText("");
+    }
+
     private void test6() {
         mTextView.setText("");
     }
@@ -224,128 +201,6 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
                 mTextView.append(text);
             }
         });
-    }
-
-    private void requestGetMethod(String url) {
-        mTextView.setText("");
-        sendText("通信準備");
-
-        // URLを、扱いやすいUri型で組む
-        Uri baseUri = Uri.parse(url);
-
-        // パラメータの付与
-        Uri uri = baseUri.buildUpon().appendQueryParameter("param1", "hoge")
-                .build();
-
-        if (mTask == null) {
-            mTask = new AsyncTask<Uri, Void, String>() {
-                /** 通信において発生したエラー */
-                private Throwable mError = null;
-
-                @Override
-                protected String doInBackground(Uri... params) {
-                    String result = request(params[0]);
-
-                    if (isCancelled()) {
-                        sendText("\n通信はキャンセル済みでした。");
-                        return result;
-                    }
-
-                    return result;
-                }
-
-                private String request(Uri uri) {
-                    DefaultHttpClient httpClient = new DefaultHttpClient();
-
-//                    RequestConfig reques
-                    // タイムアウトの設定
-                    HttpParams httpParams = httpClient.getParams();
-                    // 接続確立までのタイムアウト設定 (ミリ秒)
-                    HttpConnectionParams.setConnectionTimeout(httpParams,
-                            5 * 1000);
-                    // 接続後までのタイムアウト設定 (ミリ秒)
-                    HttpConnectionParams.setSoTimeout(httpParams, 5 * 1000);
-
-                    String result = null;
-                    HttpGet request = new HttpGet(uri.toString());
-                    try {
-                        sendText("\n通信開始");
-                        result = httpClient.execute(request,
-                                new ResponseHandler<String>() {
-                                    @Override
-                                    public String handleResponse(
-                                            HttpResponse response)
-                                            throws ClientProtocolException,
-                                            IOException {
-                                        int statusCode = response
-                                                .getStatusLine()
-                                                .getStatusCode();
-                                        sendText("\nステータスコード : " + statusCode);
-                                        if (statusCode == HttpStatus.SC_OK) {
-                                            String result = EntityUtils
-                                                    .toString(response
-                                                            .getEntity());
-                                            return result;
-                                        } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
-                                            throw new RuntimeException(
-                                                    "404 NOT FOUND");
-                                        } else {
-                                            throw new RuntimeException(
-                                                    "そのほかの通信エラー");
-                                        }
-                                    }
-                                });
-                        sendText("\n通信完了");
-                    } catch (RuntimeException e) {
-                        mError = e;
-                        sendText("\n通信失敗" + e.getClass().getSimpleName());
-                        Log.e(TAG, "通信失敗", e);
-                    } catch (ClientProtocolException e) {
-                        mError = e;
-                        sendText("\n通信失敗" + e.getClass().getSimpleName());
-                        Log.e(TAG, "通信失敗", e);
-                    } catch (IOException e) {
-                        mError = e;
-                        sendText("\n通信失敗" + e.getClass().getSimpleName());
-                        Log.e(TAG, "通信失敗", e);
-                    } finally {
-                        // リソースを開放する
-                        httpClient.getConnectionManager().shutdown();
-                    }
-
-                    return result;
-                }
-
-                @Override
-                protected void onPostExecute(String result) {
-                    sendText("\nonPostExecute(String result)");
-
-                    if (mError == null) {
-                        sendText("\n通信成功：");
-                        sendText("\n  受信したデータ : " + result);
-                    } else {
-                        sendText("\n通信失敗：");
-                        sendText("\n  エラー : " + mError.getMessage());
-                    }
-
-                    mTask = null;
-                }
-
-                @Override
-                protected void onCancelled() {
-                    onCancelled(null);
-                }
-
-                @Override
-                protected void onCancelled(String result) {
-                    sendText("\nonCancelled(String result), result=" + result);
-
-                    mTask = null;
-                }
-            }.execute(uri);
-        } else {
-            // 現在通信のタスクが実行中。重複して実行されないように制御。
-        }
     }
 
     /**
