@@ -208,10 +208,10 @@ public class HttpConnectActivity extends AppCompatActivity implements OnClickLis
      * @param url
      */
     private void httpConnectGet(URL url) {
-        HttpURLConnection con = null;
-
-        // URLの作成
         try {
+            // URLの作成
+            HttpURLConnection con = null;
+
             // 接続用HttpURLConnectionオブジェクト作成
             con = (HttpURLConnection)url.openConnection();
             // リクエストメソッドの設定
@@ -225,6 +225,8 @@ public class HttpConnectActivity extends AppCompatActivity implements OnClickLis
             con.connect();
 
             // ヘッダの取得
+            sendText("Response Code:" + con.getResponseCode() + "\n");
+
             Map headers = con.getHeaderFields();
             Iterator headerIt = headers.keySet().iterator();
             String header = null;
@@ -318,7 +320,6 @@ public class HttpConnectActivity extends AppCompatActivity implements OnClickLis
      */
     private void httpConnectPostJson(JSONObject json) {
         HttpURLConnection con = null;
-
 
         // URLの作成
         try {
