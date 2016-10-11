@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TestSound</string>
+    <string name="text_stop">停止</string>
+    <string name="text_stop2">停止・解放</string>
+    <string name="text_pause">一時停止</string>
+    <string name="text_play">再生</string>
+    <string name="text_sound1">楽曲１</string>
+    <string name="text_sound2">楽曲２</string>
+</resources>
