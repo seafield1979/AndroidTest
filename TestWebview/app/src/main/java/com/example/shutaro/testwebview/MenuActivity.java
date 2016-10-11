@@ -58,6 +58,8 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
         startActivity(i);
     }
     private void test2() {
+        Intent i = new Intent(getApplicationContext(), TestCookieActivity.class);
+        startActivity(i);
     }
     private void test3() {
     }
