@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.shutaro.testsound">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORDER_TASKS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,6 +22,7 @@
         </activity>
         <activity android:name=".MediaPlayerActivity">
         </activity>
+        <activity android:name=".RecorderActivity">
+            </activity>
     </application>
-
 </manifest>

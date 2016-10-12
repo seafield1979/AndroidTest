@@ -6,4 +6,7 @@
     <string name="text_play">再生</string>
     <string name="text_sound1">楽曲１</string>
     <string name="text_sound2">楽曲２</string>
+    <string name="text_record">録音</string>
+    <string name="text_record_stop">録音停止</string>
+    <string name="text_complete_recordplay">再生完了</string>
 </resources>

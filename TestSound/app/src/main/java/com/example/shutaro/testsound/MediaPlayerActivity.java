@@ -199,7 +199,7 @@ public class MediaPlayerActivity extends AppCompatActivity implements OnCompleti
     }
 
     /**
-     * 完全に停止。読み込んだサウンドデータも解放する
+     * 完全に停止。読み込んだサウンドデータもk
      */
     private void test5() {
         mMediaPlayer.stop();

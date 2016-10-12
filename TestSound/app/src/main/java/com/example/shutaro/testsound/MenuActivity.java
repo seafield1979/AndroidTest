@@ -47,6 +47,7 @@ public class MenuActivity extends AppCompatActivity  {
                 test2();
                 break;
             case R.id.button3:
+                test3();
                 break;
             case R.id.button4:
                 break;
@@ -70,6 +71,14 @@ public class MenuActivity extends AppCompatActivity  {
      */
     private void test2() {
         Intent i = new Intent(getApplicationContext(),MediaPlayerActivity.class);
+        startActivity(i);
+    }
+
+    /**
+     * MediaRecorderを使用した録音
+     */
+    private void test3() {
+        Intent i = new Intent(getApplicationContext(),RecorderActivity.class);
         startActivity(i);
     }
 }
