@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "33598710353",
+    "firebase_url": "https://testhoge-cf973.firebaseio.com",
+    "project_id": "testhoge-cf973",
+    "storage_bucket": "testhoge-cf973.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33598710353:android:7a7f81d5fcb2d5bb",
+        "android_client_info": {
+          "package_name": "com.sunsunsoft.shutaro.testfcm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33598710353-l8d8jaoa6teuv2n63ecf7u4rm5bmu7l7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8YoNLWy1hHn92FAf5e8SuoQD7MdgSrtI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
