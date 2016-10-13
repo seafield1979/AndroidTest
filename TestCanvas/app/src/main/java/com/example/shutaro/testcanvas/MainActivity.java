@@ -3,6 +3,7 @@ package com.example.shutaro.testcanvas;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         button_screen.setOnClickListener(this);
 
         this.sampleView = (SampleView)findViewById(R.id.custom_view);
+
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.imoni_s);
+
     }
 
     public void onClick(View v){

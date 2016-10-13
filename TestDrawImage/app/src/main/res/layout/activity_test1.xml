@@ -10,25 +10,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         android:orientation="horizontal"
+
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="surface1"
             android:id="@+id/button"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="surface2"
             android:id="@+id/button2"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="surface3"
             android:id="@+id/button3"/>
     </LinearLayout>
 
@@ -40,21 +41,21 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="---"
             android:id="@+id/button4"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="---"
             android:id="@+id/button5"/>
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="New Button"
+            android:text="---"
             android:id="@+id/button6"/>
     </LinearLayout>
 

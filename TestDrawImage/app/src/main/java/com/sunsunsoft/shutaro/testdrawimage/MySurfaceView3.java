@@ -1,29 +1,34 @@
 package com.sunsunsoft.shutaro.testdrawimage;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.view.SurfaceView;
+import android.util.Log;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 /**
  * Created by shutaro on 2016/10/13.
  */
-public class MySurfaceView1 extends SurfaceView implements Runnable,SurfaceHolder.Callback {
+
+public class MySurfaceView3  extends SurfaceView implements Runnable,SurfaceHolder.Callback {
     static final long FPS = 30;
     static final long FRAME_TIME = 1000 / FPS;
-    static final int BALL_R = 30;
+    static final int RECT_R = 100;
     static final int SPEED = 5;
 
     SurfaceHolder surfaceHolder;
     Thread thread;
-    int cx = BALL_R, cy = BALL_R;
+    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hogeman);
+    int cx = RECT_R, cy = RECT_R;
     int speed_x = SPEED, speed_y = SPEED;
     int screen_width, screen_height;
 
 
-    public MySurfaceView1(Context context) {
+    public MySurfaceView3(Context context) {
         super(context);
 
         surfaceHolder = getHolder();
@@ -35,6 +40,7 @@ public class MySurfaceView1 extends SurfaceView implements Runnable,SurfaceHolde
     public void surfaceCreated(SurfaceHolder holder) {
         thread = new Thread(this);
         thread.start();
+        Log.i("myLog", "surfaceCreated");
     }
 
     // Surfaceが変更された時の処理
@@ -46,24 +52,25 @@ public class MySurfaceView1 extends SurfaceView implements Runnable,SurfaceHolde
             int height) {
         screen_width = width;
         screen_height = height;
+        Log.i("myLog", "surfaceChanged");
     }
 
     // Surfaceが破棄された時の処理
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         thread = null;
+        Log.i("myLog", "surfaceDestroyed");
     }
 
     @Override
     public void run() {
-
         Canvas canvas = null;
         Paint paint = new Paint();
         Paint bgPaint = new Paint();
 
         // Background
         bgPaint.setStyle(Paint.Style.FILL);
-        bgPaint.setColor(Color.WHITE);
+        bgPaint.setColor(Color.MAGENTA);
         // Ball
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.BLUE);
@@ -101,9 +108,7 @@ public class MySurfaceView1 extends SurfaceView implements Runnable,SurfaceHolde
                         screen_width, screen_height,
                         bgPaint);
 
-                canvas.drawCircle(
-                        cx, cy, BALL_R,
-                        paint);
+                canvas.drawBitmap(bmp, cx, cy, paint);
 
                 surfaceHolder.unlockCanvasAndPost(canvas);
 

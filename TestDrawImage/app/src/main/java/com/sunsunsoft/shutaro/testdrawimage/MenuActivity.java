@@ -28,7 +28,6 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
         }
     }
 
-
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.button:

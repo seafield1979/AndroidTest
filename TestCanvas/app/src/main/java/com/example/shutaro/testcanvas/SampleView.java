@@ -20,9 +20,11 @@ public class SampleView extends View{
     private Paint paint = new Paint();
     private Path path = new Path();
     private int drawMode;
+    private Bitmap mBmp;
 
     public SampleView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mBmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
     }
 
     public void setDrawMode(int mode){
@@ -34,7 +36,7 @@ public class SampleView extends View{
     public void onDraw(Canvas canvas) {
         // 背景色を設定
         canvas.drawColor(Color.WHITE);
-        paint = new Paint();
+        //paint = new Paint();
 
         switch(this.drawMode){
             case 1:
@@ -162,16 +164,14 @@ public class SampleView extends View{
      * @param canvas
      */
     private void drawImage(Canvas canvas) {
-        //Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.imoni_s);
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 
-        canvas.drawBitmap(bmp, 0, 0, paint);
+        canvas.drawBitmap(mBmp, 0, 0, paint);
 
         canvas.scale(1.5f, 1.5f);
-        canvas.drawBitmap(bmp, 50, 50, paint);
+        canvas.drawBitmap(mBmp, 50, 50, paint);
 
         canvas.scale(1.5f, 1.5f);
-        canvas.drawBitmap(bmp, 100, 100, paint);
+        canvas.drawBitmap(mBmp, 100, 100, paint);
 
     }
 }
