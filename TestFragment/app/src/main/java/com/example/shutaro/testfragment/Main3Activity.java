@@ -6,7 +6,7 @@
  表示しないものを FragmentTransaction.hide(fragmentオブジェクト)
  する
 */
-package com.example.shutaro.testfragment2;
+package com.example.shutaro.testfragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -15,7 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class Main2Activity extends AppCompatActivity {
+public class Main3Activity extends AppCompatActivity {
 
     public Fragment1 fragment1;
     public Fragment2 fragment2;

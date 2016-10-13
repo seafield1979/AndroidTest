@@ -1,4 +1,4 @@
-package com.example.shutaro.testfragment2;
+package com.example.shutaro.testfragment;
 
 import android.app.FragmentManager;
 import android.support.v4.app.Fragment;
@@ -9,13 +9,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class Main2Activity extends AppCompatActivity {
     // 新たにフラグメントを表示する時にスタックに積むかどうか
     public static final boolean stackMode = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
 
 
         // ボタンを押した時の処理を追加
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         // backstackに追加
         // これで戻るボタンで以前のフラグメントが表示されるようになる
-        if (MainActivity.stackMode) {
+        if (Main2Activity.stackMode) {
             transaction.addToBackStack(null);
         }
 
