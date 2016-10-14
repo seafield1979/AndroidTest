@@ -14,14 +14,11 @@ public class MySurfaceView1 extends SurfaceView implements Runnable,SurfaceHolde
     static final long FPS = 30;
     static final long FRAME_TIME = 1000 / FPS;
     static final int BALL_R = 30;
-    static final int SPEED = 5;
 
     SurfaceHolder surfaceHolder;
     Thread thread;
-    int cx = BALL_R, cy = BALL_R;
-    int speed_x = SPEED, speed_y = SPEED;
+    int cx = 100, cy = 100;
     int screen_width, screen_height;
-
 
     public MySurfaceView1(Context context) {
         super(context);
@@ -54,9 +51,9 @@ public class MySurfaceView1 extends SurfaceView implements Runnable,SurfaceHolde
         thread = null;
     }
 
+    // スレッド処理
     @Override
     public void run() {
-
         Canvas canvas = null;
         Paint paint = new Paint();
         Paint bgPaint = new Paint();
@@ -72,41 +69,22 @@ public class MySurfaceView1 extends SurfaceView implements Runnable,SurfaceHolde
         long waitTime = 0;
         long startTime = System.currentTimeMillis();
 
+        // 描画ループ
         while(thread != null){
-            // 移動処理。画面の端で跳ね返る
-            cx += speed_x;
-            if (cx >= screen_width) {
-                cx = screen_width - 1;
-                speed_x *= -1;
-            } else if ( cx < 0 ) {
-                cx = 0;
-                speed_x *= -1;
-            }
-
-            cy += speed_y;
-            if (cy >= screen_height) {
-                cy = screen_height - 1;
-                speed_y *= -1;
-            } else if ( cy < 0 ) {
-                cy = 0;
-                speed_y *= -1;
-            }
-
             try{
                 loopCount++;
+                // 描画処理開始
+
                 canvas = surfaceHolder.lockCanvas();
+                // 背景
+                canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
+                // オブジェクト
+                canvas.drawCircle(cx, cy, BALL_R, paint);
 
-                canvas.drawRect(
-                        0, 0,
-                        screen_width, screen_height,
-                        bgPaint);
-
-                canvas.drawCircle(
-                        cx, cy, BALL_R,
-                        paint);
-
+                // 描画処理終了
                 surfaceHolder.unlockCanvasAndPost(canvas);
 
+                // 次のフレーム開始まで
                 waitTime = (loopCount * FRAME_TIME)
                         - (System.currentTimeMillis() - startTime);
 
