@@ -8,8 +8,6 @@ public class MainActivity extends AppCompatActivity {
 
     GLSurfaceView glSurfaceView;
     GLRenderer mRenderer;
-    SimpleRenderer mSimpleRenderer;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,9 +15,8 @@ public class MainActivity extends AppCompatActivity {
         glSurfaceView = new GLSurfaceView(this);
         glSurfaceView.setEGLContextClientVersion(2);
         mRenderer = new GLRenderer(getApplicationContext());
-        mSimpleRenderer = new SimpleRenderer(getApplicationContext());
 
-        glSurfaceView.setRenderer(mSimpleRenderer);
+        glSurfaceView.setRenderer(mRenderer);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setContentView(glSurfaceView);
     }

@@ -27,11 +27,13 @@ public class TextureImage {
      * 頂点データです。
      */
     private static final float SCALE = 0.5f;
+    private static final float POS_X = 0.5f;
+    private static final float POS_Y = 0;
     private static final float VERTEXS[] = {
-            -SCALE,  SCALE, 0.0f,	// 左上
-            -SCALE, -SCALE, 0.0f,	// 左下
-            SCALE,  SCALE, 0.0f,	// 右上
-            SCALE, -SCALE, 0.0f	// 右下
+            -SCALE + POS_X,  SCALE + POS_Y, 0.0f,	// 左上
+            -SCALE + POS_X, -SCALE + POS_Y, 0.0f,	// 左下
+            SCALE + POS_X,  SCALE + POS_Y, 0.0f,	// 右上
+            SCALE + POS_X, -SCALE + POS_Y, 0.0f	// 右下
     };
 
     /**
