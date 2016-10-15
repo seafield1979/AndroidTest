@@ -15,5 +15,6 @@ public class MyGLView extends GLSurfaceView {
         super(context);
         myRenderer = new MyRenderer();
         setRenderer(myRenderer);
+        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 }

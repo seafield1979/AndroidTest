@@ -45,7 +45,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         // 三角形
-//        mTriangle.draw();
+        mTriangle.draw();
 
         // テクスチャ
         mTextureImage.draw();

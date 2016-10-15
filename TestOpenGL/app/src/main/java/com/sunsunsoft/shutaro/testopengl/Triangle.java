@@ -131,6 +131,7 @@ public class Triangle {
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
+
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
 
