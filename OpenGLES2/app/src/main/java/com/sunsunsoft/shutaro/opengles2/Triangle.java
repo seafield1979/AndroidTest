@@ -30,20 +30,20 @@ public class Triangle {
         return shader;
     }
 
-    private  int shaderProgram;
+    private  int mProgram;
 
     public Triangle(){
         int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
         int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-        shaderProgram = GLES20.glCreateProgram();
-        GLES20.glAttachShader(shaderProgram, vertexShader);
-        GLES20.glAttachShader(shaderProgram, fragmentShader);
-        GLES20.glLinkProgram(shaderProgram);
+        mProgram = GLES20.glCreateProgram();
+        GLES20.glAttachShader(mProgram, vertexShader);
+        GLES20.glAttachShader(mProgram, fragmentShader);
+        GLES20.glLinkProgram(mProgram);
     }
 
     public void draw(){
-        GLES20.glUseProgram(shaderProgram);
-        int positionAttrib = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
+        GLES20.glUseProgram(mProgram);
+        int positionAttrib = GLES20.glGetAttribLocation(mProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionAttrib);
 
         float vertices[] = {

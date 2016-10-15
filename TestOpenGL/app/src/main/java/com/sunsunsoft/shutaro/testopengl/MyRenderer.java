@@ -15,6 +15,18 @@ public class MyRenderer implements Renderer {
     MyCube cube = new MyCube();
     private float angleY = 30.f;
 
+    // 生成時
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        gl.glEnable(GL10.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL10.GL_LEQUAL);
+
+        // 光源
+        gl.glEnable(GL10.GL_LIGHTING);
+        gl.glEnable(GL10.GL_LIGHT0);
+
+    }
+
     // 描画処理
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -35,17 +47,6 @@ public class MyRenderer implements Renderer {
         cube.draw(gl);
     }
 
-    // 生成時
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        gl.glEnable(GL10.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL10.GL_LEQUAL);
-
-        // 光源
-        gl.glEnable(GL10.GL_LIGHTING);
-        gl.glEnable(GL10.GL_LIGHT0);
-
-    }
 
     // サイズ変更(端末の向きが変更された場合など)
     @Override

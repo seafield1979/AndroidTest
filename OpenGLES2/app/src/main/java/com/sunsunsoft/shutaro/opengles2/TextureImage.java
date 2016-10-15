@@ -8,7 +8,11 @@ import android.opengl.Matrix;
 
 import java.nio.FloatBuffer;
 
+import static android.opengl.GLES20.GL_DONT_CARE;
+import static android.opengl.GLES20.glEnable;
+import static android.opengl.GLES20.glHint;
 import static com.sunsunsoft.shutaro.opengles2.GLES20Utils.checkGlError;
+import static javax.microedition.khronos.opengles.GL10.GL_PERSPECTIVE_CORRECTION_HINT;
 
 /**
  * Created by shutaro on 2016/10/14.
@@ -86,8 +90,6 @@ public class TextureImage {
         if (mProgram == 0) {
             throw new IllegalStateException();
         }
-        GLES20.glUseProgram(mProgram);
-        GLES20Utils.checkGlError("glUseProgram");
 
         // テクスチャを作成します。(サーフェスが作成される度にこれを行う必要があります)
         final Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.hogeman);
@@ -95,31 +97,24 @@ public class TextureImage {
         bitmap.recycle();
 
         mTexture = GLES20.glGetUniformLocation(mProgram, "texture");
-        checkGlError("glGetUniformLocation texture");
-        if (mTexture == -1) {
-            throw new IllegalStateException("Could not get uniform location for texture");
-        }
-
         mTexcoord = GLES20.glGetAttribLocation(mProgram, "texcoord");
-        checkGlError("glGetAttribLocation texcoord");
-        if (mTexcoord == -1) {
-            throw new IllegalStateException("Could not get attrib location for texcoord");
-        }
-        GLES20.glEnableVertexAttribArray(mTexcoord);
-
         mPosition = GLES20.glGetAttribLocation(mProgram, "position");
-        checkGlError("glGetAttribLocation position");
-        if (mPosition == -1) {
-            throw new IllegalStateException("Could not get attrib location for position");
-        }
-        GLES20.glEnableVertexAttribArray(mPosition);
 
     }
 
     public void draw(){
-        GLES20.glEnable(GLES20.GL_TEXTURE_2D);
-        GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);	// 単純なアルファブレンド
+        GLES20.glUseProgram(mProgram);
+        GLES20Utils.checkGlError("glUseProgram");
+
+        GLES20.glEnableVertexAttribArray(mTexcoord);
+        GLES20.glEnableVertexAttribArray(mPosition);
+
+        // 以下のコードを実行するとGLES20.glGetError()が1280エラー(GL_INVALID_ENUM)を返すのでコメントアウト
+//        GLES20.glEnable(GLES20.GL_TEXTURE_2D);
+        glEnable(GLES20.GL_BLEND);
+
+        // 単純なアルファブレンド
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         // テクスチャの指定
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -128,9 +123,9 @@ public class TextureImage {
         GLES20.glVertexAttribPointer(mTexcoord, 2, GLES20.GL_FLOAT, false, 0, mTexcoordBuffer);
         GLES20.glVertexAttribPointer(mPosition, 3, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, VERTEXS.length / 3);
 
         GLES20.glDisable(GLES20.GL_BLEND);
-        GLES20.glDisable(GLES20.GL_TEXTURE_2D);
+//        GLES20.glDisable(GLES20.GL_TEXTURE_2D);
     }
 }
