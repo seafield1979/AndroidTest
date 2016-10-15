@@ -23,9 +23,7 @@ import android.widget.ImageView;
  */
 public class MyBitmapView extends ImageView
 {
-    // 領域の縦幅と横幅
-//    private static final int bitmap_width_px = 500;
-//    private static final int bitmap_height_px = 400;
+    private static final int RECT_W = 20;       // タッチ時に色を更新する矩形の幅
     private int bitmap_width_px;
     private int bitmap_height_px;
 
@@ -38,9 +36,6 @@ public class MyBitmapView extends ImageView
     private Paint paintForBitmap;
 
 
-    // ----------- 初回 ----------
-
-
     /**
      * Viewを初期化
      */
@@ -49,12 +44,13 @@ public class MyBitmapView extends ImageView
     }
 
 
+    /**
+     * invalidate()で更新される
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas)
     {
-        // 注：invalidate() などが呼ばれない限り，
-        // このメソッドによる再描画処理が呼ばれないことに注意。
-
         // 初回のみビットマップ情報を初期化
         if( ! isCanvasInitFinished )
         {
@@ -71,8 +67,6 @@ public class MyBitmapView extends ImageView
                     0, 0, // 描画座標のオフセット
                     paintForBitmap
             );
-            // NOTE: canvas⇔bitmap間では「変換」のような処理は行わない。
-            // かわりに，canvasにbitmapを渡す。コンストラクタで渡す手もある。
         }
     }
 
@@ -87,32 +81,26 @@ public class MyBitmapView extends ImageView
 
         bitmap_width_px = getWidth();
         bitmap_height_px = getHeight();
-//        bitmap_width_px = 500;
-//        bitmap_height_px = 400;
 
         // bitmapを画像リソースから読み込む場合
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.hogeman);
-        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true); // 編集可能なコピーを作成
-        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap_width_px, bitmap_height_px, false); // Viewのサイズまで拡大
-
-
-        // View全体の領域全体を塗りつぶす場合
-        //canvas = new Canvas(bitmap);
-        //canvas.drawColor( Color.GRAY );
+        // 編集可能なコピーを作成
+        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+        // BitmapをView全体にスケール
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap_width_px, bitmap_height_px, false);
 
         // bitmapにロードするためのピクセル配列を作成
         pixels = new int[bitmap_width_px * bitmap_height_px];
 
+        loadPixelsFromBitmap();
+
         // bitmapの描画を実行するためのPaintを準備
         paintForBitmap = new Paint();
-
 
         // 画面に反映
         invalidate();
     }
 
-
-    // ----------- ビットマップ操作関連 ----------
 
 
     @Override
@@ -126,7 +114,6 @@ public class MyBitmapView extends ImageView
 
         // 表示状態に反映させる
         invalidate();
-        Log.v("myLog ", "" + e.getX());
 
         return true;
     }
@@ -137,20 +124,15 @@ public class MyBitmapView extends ImageView
      */
     private void modifyBitmapOnTouch(int touch_x, int touch_y)
     {
-        // NOTE: 下記の流れでピクセル操作が実行される。
-        // 1. getPixels()で，bitmap（canvas）からピクセル情報を取得。
-        // 2. ピクセル情報を操作する。
-        // 3. setPixels()で，bitmap（canvas）にピクセル情報をセットする。
-        // 4. invalidate()で，onDraw()の再実行を要求する。
-        // 5. onDraw()内のdrawBitmap()で，bitmapの最新状態をcanvasの画面表示に反映する。
+        int sx = touch_x - RECT_W/2;
+        int sy = touch_y - RECT_W/2;
 
-        // 全ピクセルをロード
-        loadPixelsFromBitmap();
 
         // ピクセル操作
-        handlePixelsOfBitmap(touch_x, touch_y);
+        handlePixelsOfBitmap(sx, sy, RECT_W, RECT_W);
 
-        // 全ピクセルを反映
+        // 全ピクセルを反映(更新した領域のみ)
+//        updateRectPixels(sx, sy, RECT_W, RECT_W);
         updateBitmapPixels();
     }
 
@@ -158,19 +140,13 @@ public class MyBitmapView extends ImageView
     /**
      * ピクセルレベルでビットマップを操作する
      */
-    private void handlePixelsOfBitmap(int touch_x, int touch_y)
+    private void handlePixelsOfBitmap(int sx, int sy, int width, int height)
     {
-        // ランダムな座標を設定
-        int base_x = touch_x-10;
-        int base_y = touch_y-10;
-
         // 該当ピクセルの周辺を操作
         int targetIndex;
         Point targetPoint;
-        for( int x = base_x; x < base_x + 20; x ++)
-        {
-            for( int y = base_y; y < base_y + 20; y ++)
-            {
+        for( int y = sy; y < sy + width; y ++) {
+            for( int x = sx; x < sx + height; x ++) {
                 targetPoint = new Point( x, y );
                 targetIndex = point2bitmapIndex( targetPoint );
 
@@ -180,10 +156,6 @@ public class MyBitmapView extends ImageView
         }
     }
 
-
-    // ------- ピクセル操作関連 -------
-
-
     /**
      * ビットマップからピクセルをロード
      */
@@ -191,6 +163,13 @@ public class MyBitmapView extends ImageView
         bitmap.getPixels(pixels, 0, bitmap_width_px, 0, 0, bitmap_width_px, bitmap_height_px);
     }
 
+
+    /**
+     * Bitmap内の矩形領域を更新
+     */
+    private void updateRectPixels(int x, int y, int width, int height) {
+        bitmap.setPixels(pixels, 0, bitmap_width_px, x, y, width, height );
+    }
 
     /**
      * Bitmap内の全ピクセルを更新
@@ -205,8 +184,6 @@ public class MyBitmapView extends ImageView
      */
     private int point2bitmapIndex(Point p)
     {
-        // ピクセル配列中には，ビットマップのy行x列目の画素情報が
-        // 一次元に畳まれて格納されている
         return p.y * bitmap_width_px + p.x;
     }
 
@@ -222,30 +199,13 @@ public class MyBitmapView extends ImageView
         // 範囲内の正常なインデックスの場合
         int targetPixel = pixels[ targetIndex ];
 
-        // 対象ピクセルを更新。
-        // α値＋RGB値として，それぞれ0〜255までの値を渡す
+        // 対象ピクセルを更新（色を反転)
         pixels[ targetIndex ] = Color.argb(
-                255, // 半分に透過
-                255,255,255
-//                255-Color.red(targetPixel), // 該当ピクセルの元の値を保持
-//                255-Color.green(targetPixel),
-//                255-Color.blue(targetPixel)
+            128,
+            255-Color.red(targetPixel),
+            255-Color.green(targetPixel),
+            255-Color.blue(targetPixel)
         );
     }
-
-
-    /**
-     * 全削除
-     */
-/*
-    public void eraseAll() {
-        // 全ピクセルを初期化
-        pixels = new int[bitmap_width_px * bitmap_height_px];
-
-        // 表示に反映
-        updateBitmapPixels();
-        invalidate();
-    }
-*/
 
 }
