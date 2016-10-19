@@ -50,7 +50,10 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
             }
                 break;
             case R.id.button4:
-                Log.v("myLog", "button4 was pushed");
+            {
+                Intent i = new Intent(getApplicationContext(),ScrollHVActivity.class);
+                startActivity(i);
+            }
                 break;
             case R.id.button5:
                 Log.v("myLog", "button5 was pushed");

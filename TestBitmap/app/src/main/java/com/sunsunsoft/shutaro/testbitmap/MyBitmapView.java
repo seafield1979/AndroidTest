@@ -17,9 +17,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 /**
- * ビットマップ操作のサンプルのためのView。
- * @author id:language_and_engineering
- *
+ * ビットマップ操作のサンプルのためのView
  */
 public class MyBitmapView extends ImageView
 {
@@ -34,7 +32,6 @@ public class MyBitmapView extends ImageView
     private Bitmap bitmap;
     private int[] pixels;
     private Paint paintForBitmap;
-
 
     /**
      * Viewを初期化
@@ -101,8 +98,6 @@ public class MyBitmapView extends ImageView
         invalidate();
     }
 
-
-
     @Override
     public boolean onTouchEvent(MotionEvent e)
     {
@@ -118,7 +113,6 @@ public class MyBitmapView extends ImageView
         return true;
     }
 
-
     /**
      * ビットマップを更新する
      */
@@ -127,12 +121,10 @@ public class MyBitmapView extends ImageView
         int sx = touch_x - RECT_W/2;
         int sy = touch_y - RECT_W/2;
 
-
         // ピクセル操作
         handlePixelsOfBitmap(sx, sy, RECT_W, RECT_W);
 
-        // 全ピクセルを反映(更新した領域のみ)
-//        updateRectPixels(sx, sy, RECT_W, RECT_W);
+        // 全ピクセルを反映
         updateBitmapPixels();
     }
 
@@ -160,15 +152,8 @@ public class MyBitmapView extends ImageView
      * ビットマップからピクセルをロード
      */
     private void loadPixelsFromBitmap() {
+        // bitmap のピクセルを pixels に読み込む
         bitmap.getPixels(pixels, 0, bitmap_width_px, 0, 0, bitmap_width_px, bitmap_height_px);
-    }
-
-
-    /**
-     * Bitmap内の矩形領域を更新
-     */
-    private void updateRectPixels(int x, int y, int width, int height) {
-        bitmap.setPixels(pixels, 0, bitmap_width_px, x, y, width, height );
     }
 
     /**
@@ -207,5 +192,4 @@ public class MyBitmapView extends ImageView
             255-Color.blue(targetPixel)
         );
     }
-
 }
