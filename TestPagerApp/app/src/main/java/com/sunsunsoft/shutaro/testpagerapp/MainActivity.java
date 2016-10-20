@@ -12,8 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
+    private Toolbar mToolbar;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,34 +23,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setViews() {
-        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        setSupportActionBar(toolbar);
+        // toolbar
+        mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(mToolbar);
+
+        // view pager
         FragmentManager manager = getSupportFragmentManager();
         ViewPager viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(manager);
         viewPager.setAdapter(adapter);
-        setDrawer();
+
+        // tab に view pager のページのタイトルを表示
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tab);
         tabLayout.setupWithViewPager(viewPager);
+
+        // drawer
+        setDrawer();
+
     }
 
+    /**
+     * Drawerをセットアップ
+     */
     private void setDrawer() {
-        drawerLayout = (DrawerLayout) findViewById(R.id.main_drawer);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.main_drawer);
         NavigationView navigationView = (NavigationView) findViewById(R.id.main_drawer_navigation);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.app_name, R.string.app_name);
-        drawerLayout.setDrawerListener(toggle);
+                this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name);
+        mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(select);
     }
 
-    private NavigationView.OnNavigationItemSelectedListener select = new NavigationView.OnNavigationItemSelectedListener() {
+    private NavigationView.OnNavigationItemSelectedListener select =
+            new NavigationView.OnNavigationItemSelectedListener()
+    {
         @Override
         public boolean onNavigationItemSelected(MenuItem item) {
-            //本来ならここで分岐の処理を
-            drawerLayout.closeDrawers();
+            int id = item.getItemId();
+            switch (id) {
+                case R.id.menu_manage:
+                    break;
+                case R.id.menu_gallery:
+                    break;
+                case R.id.menu_alert:
+                    break;
+                case R.id.menu_save:
+                    break;
+                case R.id.menu_setting:
+                    break;
+                default:
+                    // ドロワーを閉じる
+                    mDrawerLayout.closeDrawers();
+            }
             return true;
         }
     };
