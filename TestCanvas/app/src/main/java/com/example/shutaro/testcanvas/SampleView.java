@@ -34,7 +34,7 @@ public class SampleView extends View{
 
     @Override
     public void onDraw(Canvas canvas) {
-        // 背景色を設定
+        // 背景塗りつぶし
         canvas.drawColor(Color.WHITE);
         //paint = new Paint();
 
