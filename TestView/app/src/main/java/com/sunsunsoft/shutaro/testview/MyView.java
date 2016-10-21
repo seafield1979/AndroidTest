@@ -19,19 +19,21 @@ import static android.content.ContentValues.TAG;
 
 public class MyView extends View implements OnClickListener, OnTouchListener{
     private Paint paint = new Paint();
-    public boolean touched = false;
+    private TouchEventCallbacks _callbacks;
+
+    public void setCallbacks(TouchEventCallbacks callbacks){
+        _callbacks = callbacks;
+    }
 
     public MyView(Context context) {
         super(context);
         this.setOnClickListener(this);
-//        this.setOnTouchListener(this);
+        this.setOnTouchListener(this);
     }
     public MyView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
     }
-
-
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -56,31 +58,19 @@ public class MyView extends View implements OnClickListener, OnTouchListener{
 
 
     public boolean onTouch(View v, MotionEvent e) {
-        boolean ret = false;
+        Log.v("mylog", "MyView onTouch");
         switch(e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                touched = true;
                 break;
             case MotionEvent.ACTION_UP:
-                touched = false;
                 break;
             case MotionEvent.ACTION_MOVE:
                 break;
             case MotionEvent.ACTION_CANCEL:
-                touched = false;
                 break;
             default:
-
         }
+        _callbacks.touchCallback(e.getAction());
         return false;
     }
-//    public boolean onInterceptTouchEvent(MotionEvent e) {
-//        return false;
-//    }
-
-//    public boolean onInterceptTouchEvent(MotionEvent ev){
-//        super.onInterceptTouchEvent(ev);
-//        gd.onTouchEvent(ev);
-//        return false;
-//    }
 }

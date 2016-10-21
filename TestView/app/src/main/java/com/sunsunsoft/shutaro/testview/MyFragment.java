@@ -14,7 +14,7 @@ import android.view.View.OnTouchListener;
 
 import static android.content.ContentValues.TAG;
 
-public class MyFragment extends Fragment implements OnTouchListener{
+public class MyFragment extends Fragment implements OnTouchListener, TouchEventCallbacks{
     private final static String BACKGROUND_COLOR = "background_color";
 
     private LinearLayout mContainer;
@@ -64,7 +64,7 @@ public class MyFragment extends Fragment implements OnTouchListener{
         // 自作のView
         myView = new MyView(getContext());
         myView.setLayoutParams(new LinearLayout.LayoutParams(200,200));
-        myView.setOnTouchListener(this);
+        myView.setCallbacks(this);
         mContainer.addView(myView);
     }
 
@@ -72,54 +72,54 @@ public class MyFragment extends Fragment implements OnTouchListener{
     public boolean onTouch(View v, MotionEvent e){
         String action = "";
 
-        if (v == myView) {
-            switch (e.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                {
-                    HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
-                    viewPager.setSwipeHold(true);
-                }
-                    break;
-                case MotionEvent.ACTION_UP:
-                {
-                    HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
-                    viewPager.setSwipeHold(false);
-                }
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    break;
-                case MotionEvent.ACTION_CANCEL:
-                    break;
-                default:
-            }
-        } else {
-            switch (e.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    action = "ACTION_DOWN";
-                    break;
-                case MotionEvent.ACTION_UP:
-                    action = "ACTION_UP";
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    action = "ACTION_MOVE";
-                    break;
-                case MotionEvent.ACTION_CANCEL:
-                    action = "ACTION_CANCEL";
-                    break;
-                default:
-                    action = "" + e.getAction();
-            }
-
-            int id = v.getId();
-            String idString = "";
-            if (id != -1) {
-                idString = getContext().getResources().getResourceEntryName(id);
-            }
-
-            Log.v(TAG, "action:" + action + " id:" + idString + " x:" + e.getX() + " y:" + e.getY());
+        switch (e.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                action = "ACTION_DOWN";
+                break;
+            case MotionEvent.ACTION_UP:
+                action = "ACTION_UP";
+                break;
+            case MotionEvent.ACTION_MOVE:
+                action = "ACTION_MOVE";
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                action = "ACTION_CANCEL";
+                break;
+            default:
+                action = "" + e.getAction();
         }
+
+        int id = v.getId();
+        String idString = "";
+        if (id != -1) {
+            idString = getContext().getResources().getResourceEntryName(id);
+        }
+
+        Log.v(TAG, "action:" + action + " id:" + idString + " x:" + e.getX() + " y:" + e.getY());
 
         return true;
     }
 
+    //TouchEventCallbacks
+    public void touchCallback(int action) {
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+            {
+                HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
+                viewPager.setSwipeHold(true);
+            }
+            break;
+            case MotionEvent.ACTION_UP:
+            {
+                HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
+                viewPager.setSwipeHold(false);
+            }
+            break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                break;
+            default:
+        }
+    }
 }
