@@ -15,14 +15,14 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 
 
-public class MyFragment4 extends Fragment implements OnClickListener, OnTouchListener, TouchEventCallbacks{
+public class MyFragment5 extends Fragment implements OnClickListener, OnTouchListener, TouchEventCallbacks{
     private final static String BACKGROUND_COLOR = "background_color";
     private Button updateButton;
     private Button showIdButton;
-    private MyView4 myView4;
+    private MyView5 myView;
 
-    public static MyFragment4 newInstance(@ColorRes int IdRes) {
-        MyFragment4 frag = new MyFragment4();
+    public static MyFragment5 newInstance(@ColorRes int IdRes) {
+        MyFragment5 frag = new MyFragment5();
         Bundle b = new Bundle();
         b.putInt(BACKGROUND_COLOR, IdRes);
         frag.setArguments(b);
@@ -37,7 +37,7 @@ public class MyFragment4 extends Fragment implements OnClickListener, OnTouchLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page4, null);
+        View view = inflater.inflate(R.layout.fragment_page5, null);
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_page_linearlayout);
         linearLayout.setBackgroundResource(getArguments().getInt(BACKGROUND_COLOR));
 
@@ -47,8 +47,8 @@ public class MyFragment4 extends Fragment implements OnClickListener, OnTouchLis
         showIdButton = (Button)view.findViewById(R.id.button2);
         showIdButton.setOnClickListener(this);
 
-        myView4 = (MyView4)view.findViewById(R.id.myView4);
-        myView4.setCallbacks(this);
+        myView = (MyView5)view.findViewById(R.id.myView5);
+        myView.setCallbacks(this);
 
         return view;
     }
@@ -56,12 +56,12 @@ public class MyFragment4 extends Fragment implements OnClickListener, OnTouchLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                myView4.sortRects(true);
-                myView4.invalidate();
+                myView.sortRects();
+                myView.invalidate();
                 break;
             case R.id.button2:
                 ViewSettings.drawIconId = !ViewSettings.drawIconId;
-                myView4.invalidate();
+                myView.invalidate();
                 break;
         }
     }
@@ -79,14 +79,14 @@ public class MyFragment4 extends Fragment implements OnClickListener, OnTouchLis
                 HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
                 viewPager.setSwipeHold(true);
             }
-                break;
+            break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
             {
                 HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
                 viewPager.setSwipeHold(false);
             }
-                break;
+            break;
             default:
         }
     }

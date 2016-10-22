@@ -24,13 +24,15 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
                 return MyFragment3.newInstance(android.R.color.holo_red_dark);
             case 3:
                 return MyFragment4.newInstance(android.R.color.holo_purple);
+            case 4:
+                return MyFragment5.newInstance(android.R.color.holo_orange_light);
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 
     @Override

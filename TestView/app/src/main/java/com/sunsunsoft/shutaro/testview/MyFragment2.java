@@ -35,7 +35,7 @@ public class MyFragment2 extends Fragment implements OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page2, null);
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_page2_linearlayout);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_page_linearlayout);
         linearLayout.setBackgroundResource(getArguments().getInt(BACKGROUND_COLOR));
 
         updateButton = (Button)view.findViewById(R.id.button);

@@ -37,7 +37,7 @@ public class MyFragment extends Fragment implements OnTouchListener, TouchEventC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page1, null);
-        mContainer = (LinearLayout) view.findViewById(R.id.fragment_page1_linearlayout);
+        mContainer = (LinearLayout) view.findViewById(R.id.fragment_page_linearlayout);
         mContainer.setBackgroundResource(getArguments().getInt(BACKGROUND_COLOR));
 
         init();

@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.util.Log;
 import android.util.Size;
 
 import static com.sunsunsoft.shutaro.testview.ViewSettings.drawIconId;
@@ -16,10 +17,15 @@ abstract public class MyIcon {
     private static int count;
 
     public int id;
-    protected int x;
-    protected int y;
-    protected int width;
-    protected int height;
+    protected int x,y;
+    protected int width,height;
+
+    // 移動用
+    protected boolean isMoving;
+    protected int movingFrame;
+    protected int movingFrameMax;
+    protected int srcX, srcY;
+    protected int dstX, dstY;
 
     protected IconShape shape;
 
@@ -106,6 +112,52 @@ abstract public class MyIcon {
     }
     public void setColor(int color) {
         this.color = color;
+    }
+
+    /**
+     * 自動移動開始
+     * @param dstX  目的位置x
+     * @param dstY  目的位置y
+     * @param frame  移動にかかるフレーム数
+     */
+    protected void startMove(int dstX, int dstY, int frame) {
+        if (x == dstX && y == dstY) {
+            return;
+        }
+        srcX = x;
+        srcY = y;
+        this.dstX = dstX;
+        this.dstY = dstY;
+        movingFrame = 0;
+        movingFrameMax = frame;
+        isMoving = true;
+
+        Log.v("mylog", "srcX:" + srcX + " srcY:" + srcY + " dstX:" + dstX + " dstY:" + dstY);
+
+    }
+
+    /**
+     * 移動
+     * 移動開始位置、終了位置、経過フレームから現在位置を計算する
+     * @return 移動完了したらtrue
+     */
+    protected boolean move() {
+        if (!isMoving) return true;
+
+        float ratio = (float)movingFrame / (float)movingFrameMax;
+        Log.v("mylog", "movingFrame:" + movingFrame + " movingFrameMax:" + movingFrameMax +" ratio:" + ratio);
+        x = srcX + (int)((dstX - srcX) * ratio);
+        y = srcY + (int)((dstY - srcY) * ratio);
+
+
+        movingFrame++;
+        if (movingFrame >= movingFrameMax) {
+            isMoving = false;
+            x = dstX;
+            y = dstY;
+            return true;
+        }
+        return false;
     }
 
     // for debug

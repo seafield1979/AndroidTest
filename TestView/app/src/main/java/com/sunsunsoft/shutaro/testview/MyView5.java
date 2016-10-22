@@ -15,31 +15,19 @@ import java.util.LinkedList;
 
 import static android.content.ContentValues.TAG;
 
-
-enum viewState {
-    none,
-    drag,               // アイコンのドラッグ中
-    icon_moving,        // アイコンの一変更後の移動中
-}
 /**
  * アイコンの表示と、ユーザーのタッチ操作でアイコンを移動
  */
-public class MyView4 extends View implements OnTouchListener {
+public class MyView5 extends View implements OnTouchListener {
     private static final int ICON_NUM = 15;
     private static final int ICON_W = 200;
     private static final int ICON_H = 150;
-    private static final int MOVING_TIME = 10;
     private boolean firstDraw = false;
 
     // アイコンを動かす仕組み
     private MyIcon dragIcon;
     private int dragX;
     private int dragY;
-
-    // アニメーション用
-    private viewState state = viewState.none;
-    private int movingFrame;
-
 
     private Paint paint = new Paint();
     private TouchEventCallbacks _callbacks;
@@ -49,11 +37,11 @@ public class MyView4 extends View implements OnTouchListener {
         _callbacks = callbacks;
     }
 
-    public MyView4(Context context) {
+    public MyView5(Context context) {
         this(context, null);
     }
 
-    public MyView4(Context context, AttributeSet attrs) {
+    public MyView5(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.setOnTouchListener(this);
 
@@ -80,7 +68,7 @@ public class MyView4 extends View implements OnTouchListener {
     public void onDraw(Canvas canvas) {
         if (firstDraw == false) {
             firstDraw = true;
-            sortRects(false);
+            sortRects();
         }
 
         // 背景塗りつぶし
@@ -89,35 +77,9 @@ public class MyView4 extends View implements OnTouchListener {
         // アンチエリアシング(境界のぼかし)
         paint.setAntiAlias(true);
 
-        switch (state) {
-            case none:
-                for (MyIcon icon : icons) {
-                    if (icon == null) continue;
-                    icon.draw(canvas, paint);
-                }
-                break;
-            case drag:
-                for (MyIcon icon : icons) {
-                    if (icon == null) continue;
-                    icon.draw(canvas, paint);
-                }
-                break;
-            case icon_moving:
-                Log.v("mylog", "moving");
-                boolean allFinish = true;
-                for (MyIcon icon : icons) {
-                    if (icon == null) continue;
-                    if (!icon.move()) {
-                        allFinish = false;
-                    }
-                    icon.draw(canvas, paint);
-                }
-                if (allFinish) {
-                    state = viewState.none;
-                } else {
-                    invalidate();
-                }
-                break;
+        for (MyIcon icon : icons) {
+            if (icon == null) continue;
+            icon.draw(canvas, paint);
         }
     }
 
@@ -125,30 +87,18 @@ public class MyView4 extends View implements OnTouchListener {
      * アイコンを整列する
      * Viewのサイズが確定した時点で呼び出す
      */
-    public void sortRects(boolean animate) {
+    public void sortRects() {
         int column = this.getWidth() / (ICON_W + 20);
         if (column <= 0) {
             return;
         }
 
-        if (animate) {
-            int i=0;
-            for (MyIcon icon : icons) {
-                int x = (i%column) * (ICON_W + 20);
-                int y = (i/column) * (ICON_H + 20);
-                icon.startMove(x,y,MOVING_TIME);
-                i++;
-            }
-            state = viewState.icon_moving;
-        }
-        else {
-            int i=0;
-            for (MyIcon icon : icons) {
-                int x = (i%column) * (ICON_W + 20);
-                int y = (i/column) * (ICON_H + 20);
-                icon.setPos(x, y);
-                i++;
-            }
+        int i=0;
+        for (MyIcon icon : icons) {
+            int x = (i%column) * (ICON_W + 20);
+            int y = (i/column) * (ICON_H + 20);
+            icon.setPos(x, y);
+            i++;
         }
     }
 

@@ -7,7 +7,6 @@
               android:background="@android:color/holo_blue_dark"
               android:orientation="vertical">
 
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -28,8 +27,8 @@
 
     </LinearLayout>
 
-    <com.sunsunsoft.shutaro.testview.MyView4
+    <com.sunsunsoft.shutaro.testview.MyView5
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/myView4"/>
+        android:id="@+id/myView5"/>
 </LinearLayout>
