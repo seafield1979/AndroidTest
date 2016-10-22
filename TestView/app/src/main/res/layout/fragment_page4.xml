@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:id="@+id/fragment_page3_linearlayout"
+              android:id="@+id/fragment_page4_linearlayout"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@android:color/holo_blue_dark"
@@ -13,8 +13,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/button"/>
 
-    <com.sunsunsoft.shutaro.testview.MyView3
+    <Button
+        android:text="show id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button2"/>
+
+    <com.sunsunsoft.shutaro.testview.MyView4
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/myView3"/>
+        android:id="@+id/myView4"/>
 </LinearLayout>

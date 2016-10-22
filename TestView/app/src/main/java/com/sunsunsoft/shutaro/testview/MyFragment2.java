@@ -7,14 +7,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.view.View.OnClickListener;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class MyFragment2 extends Fragment {
+public class MyFragment2 extends Fragment implements OnClickListener{
     private final static String BACKGROUND_COLOR = "background_color";
+
+    private MyView2 myView2;
+    private Button updateButton;
 
     public static MyFragment2 newInstance(@ColorRes int IdRes) {
         MyFragment2 frag = new MyFragment2();
@@ -36,6 +38,18 @@ public class MyFragment2 extends Fragment {
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_page2_linearlayout);
         linearLayout.setBackgroundResource(getArguments().getInt(BACKGROUND_COLOR));
 
+        updateButton = (Button)view.findViewById(R.id.button);
+        updateButton.setOnClickListener(this);
+        myView2 = (MyView2)view.findViewById(R.id.myView2);
+
         return view;
+    }
+
+    public void onClick(View v) {
+         switch(v.getId()) {
+             case R.id.button:
+                 myView2.invalidate();
+                 break;
+         }
     }
 }
