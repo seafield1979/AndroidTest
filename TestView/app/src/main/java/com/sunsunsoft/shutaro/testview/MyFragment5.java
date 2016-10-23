@@ -56,7 +56,7 @@ public class MyFragment5 extends Fragment implements OnClickListener, OnTouchLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                myView.sortRects();
+                myView.sortRects(true);
                 myView.invalidate();
                 break;
             case R.id.button2:

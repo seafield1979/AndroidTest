@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.Log;
 import android.util.Size;
+import android.view.MotionEvent;
 
 import static com.sunsunsoft.shutaro.testview.ViewSettings.drawIconId;
 
@@ -160,7 +161,27 @@ abstract public class MyIcon {
         return false;
     }
 
-    // for debug
+    public void click() {
+        Log.v("mylog", "click");
+    }
+    public void longClick() {
+        Log.v("mylog", "long click");
+    }
+    public void moving() {
+        Log.v("mylog", "moving");
+    }
+
+    /**
+     * ドロップをチェックする
+     */
+
+
+    // ドロップ処理
+    //protected abstract void dropFunc();
+
+    /**
+     *
+     */
     protected void drawId(Canvas canvas, Paint paint) {
         // idを表示
         if (drawIconId) {

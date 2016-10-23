@@ -16,15 +16,16 @@ import java.util.LinkedList;
 import static android.content.ContentValues.TAG;
 
 
-enum viewState {
-    none,
-    drag,               // アイコンのドラッグ中
-    icon_moving,        // アイコンの一変更後の移動中
-}
 /**
  * アイコンの表示と、ユーザーのタッチ操作でアイコンを移動
  */
 public class MyView4 extends View implements OnTouchListener {
+    enum viewState {
+        none,
+        drag,               // アイコンのドラッグ中
+        icon_moving,        // アイコンの一変更後の移動中
+    }
+
     private static final int ICON_NUM = 15;
     private static final int ICON_W = 200;
     private static final int ICON_H = 150;
@@ -103,7 +104,6 @@ public class MyView4 extends View implements OnTouchListener {
                 }
                 break;
             case icon_moving:
-                Log.v("mylog", "moving");
                 boolean allFinish = true;
                 for (MyIcon icon : icons) {
                     if (icon == null) continue;

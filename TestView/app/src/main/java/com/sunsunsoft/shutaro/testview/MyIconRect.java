@@ -34,4 +34,20 @@ public class MyIconRect extends MyIcon {
 
         drawId(canvas, paint);
     }
+
+    @Override
+    public void click() {
+        super.click();
+    }
+
+    @Override
+    public void longClick() {
+        super.longClick();
+    }
+
+    @Override
+    public void moving() {
+        super.moving();
+
+    }
 }
