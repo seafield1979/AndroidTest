@@ -230,14 +230,16 @@ public class MyView6 extends View implements OnTouchListener {
     /**
      * アイコンをクリックする処理
      * @param vt
+     * @return アイコンがクリックされたらtrue
      */
-    private void clickIcons(ViewTouch vt) {
+    private boolean clickIcons(ViewTouch vt) {
         // どのアイコンがクリックされたかを判定
         for (MyIcon icon : icons) {
             if (icon.checkClick(vt.touchX, vt.touchY)) {
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -252,9 +254,10 @@ public class MyView6 extends View implements OnTouchListener {
      * アイコンをドラッグ開始
      * @param vt
      */
-    private void dragStart(ViewTouch vt) {
+    private boolean dragStart(ViewTouch vt) {
         // タッチされたアイコンを選択する
         // 一番上のアイコンからタッチ判定したいのでリストを逆順（一番手前から）で参照する
+        boolean ret = false;
         Collections.reverse(icons);
         for (MyIcon icon : icons) {
             // 座標判定
@@ -262,20 +265,26 @@ public class MyView6 extends View implements OnTouchListener {
                     icon.y <= vt.touchY && vt.touchY < icon.getBottom())
             {
                 dragIcon = icon;
+                ret = true;
                 break;
             }
         }
         Collections.reverse(icons);
 
-        state = viewState.drag;
-
-        invalidate();
+        if (ret) {
+            state = viewState.drag;
+            invalidate();
+            return true;
+        }
+        return ret;
     }
 
-    private void dragMove(ViewTouch vt) {
+    private boolean dragMove(ViewTouch vt) {
         // ドラッグ中のアイコンを移動
+        boolean ret = false;
         if (dragIcon != null) {
             dragIcon.move((int)vt.moveX, (int)vt.moveY);
+            ret = true;
         }
 
         skipCount++;
@@ -283,12 +292,19 @@ public class MyView6 extends View implements OnTouchListener {
             invalidate();
             skipCount = 0;
         }
+        return ret;
     }
 
-    private void dragEnd(ViewTouch vt) {
+    /**
+     * ドラッグ終了時の処理
+     * @param vt
+     * @return
+     */
+    private boolean dragEnd(ViewTouch vt) {
         // ドロップ処理
         // 他のアイコンの上にドロップされたらドロップ処理を呼び出す
-        if (dragIcon == null) return;
+        if (dragIcon == null) return false;
+        boolean ret = false;
 
         boolean isDroped = false;
         for (MyIcon icon : icons) {
@@ -324,6 +340,7 @@ public class MyView6 extends View implements OnTouchListener {
                         break;
                 }
                 isDroped = true;
+                ret = true;
                 break;
             }
         }
@@ -346,6 +363,7 @@ public class MyView6 extends View implements OnTouchListener {
         }
 
         dragIcon = null;
+        return ret;
     }
 
     public boolean onTouch(View v, MotionEvent e) {
@@ -360,21 +378,32 @@ public class MyView6 extends View implements OnTouchListener {
             Log.v("view5", "Long Touch");
         }
 
+        boolean done = false;
+
         switch(touchType) {
             case Click:
-                clickIcons(viewTouch);
+                if (clickIcons(viewTouch)) {
+                    done = true;
+                }
                 break;
             case LongClick:
                 longClickIcons(viewTouch);
+                done = true;
                 break;
             case MoveStart:
-                dragStart(viewTouch);
+                if (dragStart(viewTouch)) {
+                    done = true;
+                }
                 break;
             case Moving:
-                dragMove(viewTouch);
+                if (dragMove(viewTouch)) {
+                    done = true;
+                }
                 break;
             case MoveEnd:
-                dragEnd(viewTouch);
+                if (dragEnd(viewTouch)) {
+                    done = true;
+                }
                 break;
             case MoveCancel:
                 sortRects(false);
@@ -382,23 +411,28 @@ public class MyView6 extends View implements OnTouchListener {
                 invalidate();
                 break;
         }
+        if (done) {
+            v.getParent().requestDisallowInterceptTouchEvent(true);
+        }
 
         switch(e.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // trueを返す。こうしないと以降のMoveイベントが発生しなくなる。
                 ret = true;
-                if (dragIcon != null) {
-                    _callbacks.touchCallback(e.getAction());
+
+                // ScrollViewのスクロールを停止
+                if (e.getX() < v.getWidth() / 2) {
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 ret = true;
-
-                _callbacks.touchCallback(e.getAction());
                 break;
             case MotionEvent.ACTION_MOVE:
                 ret = true;
-                _callbacks.touchCallback(e.getAction());
+                if (e.getX() < v.getWidth() / 2) {
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                }
                 break;
             default:
         }

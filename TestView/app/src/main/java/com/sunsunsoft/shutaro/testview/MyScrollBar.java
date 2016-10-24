@@ -20,7 +20,7 @@ public class MyScrollBar {
     private float x, y;
     private int contentLen;
     private int pageLen;
-    private float .;
+//    private float .;
 
     private int bgLength, bgWidth;
 
