@@ -15,28 +15,30 @@ import static com.sunsunsoft.shutaro.testview.ViewSettings.drawIconId;
  * ViewのonDrawで描画するアイコンの情報
  */
 abstract public class MyIcon {
+
+    private static final String TAG = "MyIcon";
     private static int count;
 
     public int id;
-    protected int x,y;
+    protected float x,y;
     protected int width,height;
 
     // 移動用
     protected boolean isMoving;
     protected int movingFrame;
     protected int movingFrameMax;
-    protected int srcX, srcY;
-    protected int dstX, dstY;
+    protected float srcX, srcY;
+    protected float dstX, dstY;
 
     protected IconShape shape;
 
     protected int color;
 
-    public MyIcon(IconShape shape, int x, int y, int width, int height) {
+    public MyIcon(IconShape shape, float x, float y, int width, int height) {
         this(shape, x,y,width,height, Color.rgb(0,0,0));
     }
 
-    public MyIcon(IconShape shape, int x, int y, int width, int height, int color) {
+    public MyIcon(IconShape shape, float x, float y, int width, int height, int color) {
         this.id = count;
         this.shape = shape;
         this.x = x;
@@ -49,34 +51,32 @@ abstract public class MyIcon {
 
     abstract public void draw(Canvas canvas, Paint paint);
 
+    public IconShape getShape() { return shape; }
     // 座標、サイズのGet/Set
-    public int getX() {
+    public float getX() {
         return x;
     }
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
-    public int getRight() {
+    public float getRight() {
         return x + width;
     }
-    public int getBottom() {
+    public float getBottom() {
         return y + height;
     }
 
-    public void setPos(int x, int y) {
+    public void setPos(float x, float y) {
         this.x = x;
         this.y = y;
-    }
-    public Point getPos() {
-        return new Point(x,y);
     }
 
     public int getWidth() {
@@ -102,7 +102,7 @@ abstract public class MyIcon {
     }
 
     // 移動
-    public void move(int moveX, int moveY) {
+    public void move(float moveX, float moveY) {
         x += moveX;
         y += moveY;
     }
@@ -121,7 +121,7 @@ abstract public class MyIcon {
      * @param dstY  目的位置y
      * @param frame  移動にかかるフレーム数
      */
-    protected void startMove(int dstX, int dstY, int frame) {
+    protected void startMove(float dstX, float dstY, int frame) {
         if (x == dstX && y == dstY) {
             return;
         }
@@ -146,9 +146,9 @@ abstract public class MyIcon {
         if (!isMoving) return true;
 
         float ratio = (float)movingFrame / (float)movingFrameMax;
-        Log.v("mylog", "movingFrame:" + movingFrame + " movingFrameMax:" + movingFrameMax +" ratio:" + ratio);
-        x = srcX + (int)((dstX - srcX) * ratio);
-        y = srcY + (int)((dstY - srcY) * ratio);
+        Log.v(TAG, "movingFrame:" + movingFrame + " movingFrameMax:" + movingFrameMax +" ratio:" + ratio);
+        x = srcX + ((dstX - srcX) * ratio);
+        y = srcY + ((dstY - srcY) * ratio);
 
 
         movingFrame++;
@@ -162,18 +162,45 @@ abstract public class MyIcon {
     }
 
     public void click() {
-        Log.v("mylog", "click");
+        Log.v(TAG, "click");
     }
     public void longClick() {
-        Log.v("mylog", "long click");
+        Log.v(TAG, "long click");
     }
     public void moving() {
-        Log.v("mylog", "moving");
+        Log.v(TAG, "moving");
+    }
+    public void drop() {
+        Log.v(TAG, "drop");
+    }
+
+    /**
+     * クリックのチェックとクリック処理。このメソッドはすでにクリック判定された後の座標が渡される
+     * @param clickX
+     * @param clickY
+     * @return
+     */
+    public boolean checkClick(float clickX, float clickY) {
+        if (x <= clickX && clickX <= getRight() &&
+                y <= clickY && clickY <= getBottom() )
+        {
+            click();
+            return true;
+        }
+        return false;
     }
 
     /**
      * ドロップをチェックする
      */
+    public boolean checkDrop(float dropX, float dropY) {
+        if (x <= dropX && dropX <= getRight() &&
+                y <= dropY && dropY <= getBottom() )
+        {
+            return true;
+        }
+        return false;
+    }
 
 
     // ドロップ処理

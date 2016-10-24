@@ -26,7 +26,7 @@ public class MyIconBmp extends MyIcon {
    //         canvas.drawBitmap(bmp, x, y, paint);
 
             // 領域の幅に合わせて伸縮
-            canvas.drawBitmap(bmp, new Rect(0,0,width, height),new Rect(x,y,x+width,y+height), paint);
+            canvas.drawBitmap(bmp, new Rect(0,0,width, height),new Rect((int)x,(int)y,(int)x+width,(int)y+height), paint);
         }
         drawId(canvas, paint);
     }

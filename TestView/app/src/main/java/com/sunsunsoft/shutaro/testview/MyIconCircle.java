@@ -11,11 +11,11 @@ import android.graphics.Paint;
 public class MyIconCircle extends MyIcon {
     protected int radius;
 
-    public MyIconCircle(int x, int y, int radius) {
-        super(IconShape.CIRCLE, x,y,0,0);
+    public MyIconCircle(int x, int y, int width) {
+        super(IconShape.CIRCLE, x,y,width,width);
 
         color = Color.rgb(0,255,255);
-        this.radius = radius;
+        this.radius = width / 2;
     }
 
     public void draw(Canvas canvas, Paint paint) {

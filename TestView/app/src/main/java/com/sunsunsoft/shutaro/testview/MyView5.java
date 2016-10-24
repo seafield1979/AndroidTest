@@ -26,7 +26,8 @@ public class MyView5 extends View implements OnTouchListener {
         icon_moving,        // アイコンの一変更後の移動中
     }
 
-    private static final int ICON_NUM = 15;
+    private static final int RECT_ICON_NUM = 10;
+    private static final int CIRCLE_ICON_NUM = 10;
     private static final int ICON_W = 200;
     private static final int ICON_H = 150;
     private static final int MOVING_TIME = 10;
@@ -36,8 +37,6 @@ public class MyView5 extends View implements OnTouchListener {
 
     // アイコンを動かす仕組み
     private MyIcon dragIcon;
-    private int dragX;
-    private int dragY;
 
     // クリック判定の仕組み
     private ViewTouch viewTouch = new ViewTouch();
@@ -65,7 +64,8 @@ public class MyView5 extends View implements OnTouchListener {
         super(context, attrs);
         this.setOnTouchListener(this);
 
-        for (int i=0; i<ICON_NUM; i++) {
+        // アイコンを追加
+        for (int i=0; i<RECT_ICON_NUM; i++) {
             MyIcon icon = new MyIconRect(0, 0, ICON_W, ICON_H);
             icons.add(icon);
             int color = 0;
@@ -82,6 +82,25 @@ public class MyView5 extends View implements OnTouchListener {
             }
             icon.setColor(color);
         }
+
+        for (int i=0; i<CIRCLE_ICON_NUM; i++) {
+            MyIcon icon = new MyIconCircle(0, 0, ICON_H);
+            icons.add(icon);
+            int color = 0;
+            switch (i%3) {
+                case 0:
+                    color = Color.rgb(255,0,0);
+                    break;
+                case 1:
+                    color = Color.rgb(0,255,0);
+                    break;
+                case 2:
+                    color = Color.rgb(0,0,255);
+                    break;
+            }
+            icon.setColor(color);
+        }
+
     }
 
     @Override
@@ -106,15 +125,18 @@ public class MyView5 extends View implements OnTouchListener {
                 break;
             case drag:
                 for (MyIcon icon : icons) {
-                    if (icon == null) continue;
+                    if (icon == null || icon == dragIcon) continue;
                     icon.draw(canvas, paint);
                     ins.draw(canvas, paint);
+                }
+                if (dragIcon != null) {
+                    dragIcon.draw(canvas, paint);
                 }
                 break;
             case icon_moving:
                 boolean allFinish = true;
                 for (MyIcon icon : icons) {
-                    if (icon == null) continue;
+                    if (icon == null || icon == dragIcon) continue;
                     if (!icon.move()) {
                         allFinish = false;
                     }
@@ -148,6 +170,7 @@ public class MyView5 extends View implements OnTouchListener {
                 i++;
             }
             state = viewState.icon_moving;
+            invalidate();
         }
         else {
             int i=0;
@@ -160,19 +183,41 @@ public class MyView5 extends View implements OnTouchListener {
         }
     }
 
-    private void touchDown(int x, int y) {
+    /**
+     * アイコンをクリックする処理
+     * @param vt
+     */
+    private void clickIcons(ViewTouch vt) {
+        // どのアイコンがクリックされたかを判定
+        for (MyIcon icon : icons) {
+            if (icon.checkClick(vt.touchX, vt.touchY)) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * アイコンをロングクリックする処理
+     * @param vt
+     */
+    private void longClickIcons(ViewTouch vt) {
+
+    }
+
+    /**
+     * アイコンをドラッグ開始
+     * @param vt
+     */
+    private void dragStart(ViewTouch vt) {
         // タッチされたアイコンを選択する
         // 一番上のアイコンからタッチ判定したいのでリストを逆順（一番手前から）で参照する
         Collections.reverse(icons);
         for (MyIcon icon : icons) {
             // 座標判定
-            if (icon.x <= x && x < icon.getRight() &&
-                    icon.y <= y && y < icon.getBottom())
+            if (icon.x <= vt.touchX && vt.touchX < icon.getRight() &&
+                    icon.y <= vt.touchY && vt.touchY < icon.getBottom())
             {
-                Log.v("mylog", "touchDown");
                 dragIcon = icon;
-                dragX = x;
-                dragY = y;
                 break;
             }
         }
@@ -183,12 +228,11 @@ public class MyView5 extends View implements OnTouchListener {
         invalidate();
     }
 
-    private void touchMove(int x, int y) {
+    private void dragMove(ViewTouch vt) {
         // ドラッグ中のアイコンを移動
         if (dragIcon != null) {
-            dragIcon.move((int)viewTouch.moveX, (int)viewTouch.moveY);
+            dragIcon.move((int)vt.moveX, (int)vt.moveY);
         }
-//        getInsertPosition(x,y);
 
         skipCount++;
         if (skipCount >= skipFrame) {
@@ -197,95 +241,106 @@ public class MyView5 extends View implements OnTouchListener {
         }
     }
 
-    private void getInsertPosition(int x, int y) {
-        // 挿入位置を求める
-        // ドラッグ中のアイコンの下にあるアイコンの左半分に位置していたら左側、右半分に位置していたら右側
-        // それ以外のスペースにドラッグしていたら最後のアイコンの右側
-        boolean isOverlaped = false;
+    private void dragEnd(ViewTouch vt) {
+        // ドロップアイコン
+        // 他のアイコンの上にドロップされたらドロップ処理を呼び出す
+        if (dragIcon == null) return;
 
+        boolean isDroped = false;
         for (MyIcon icon : icons) {
-            // 座標判定
-            if (dragIcon == icon) continue;
-            if (icon.x <= x && x < icon.getRight() &&
-                    icon.y <= y && y < icon.getBottom()) {
-                if (x <= icon.getX() + icon.getWidth() / 2) {
-                    // 左半分
-                    ins.setRect(icon.x - 20, icon.y, 20, icon.getHeight());
-                } else {
-                    // 右半分
-                    ins.setRect(icon.getRight(), icon.y, 20, icon.getHeight());
+            if (icon == dragIcon) continue;
+            if (icon.checkDrop(vt.x, vt.y)) {
+                switch(icon.getShape()) {
+                    case CIRCLE:
+                    case RECT:
+                        // ドラッグ位置にアイコンを挿入する
+                    {
+                        int index = icons.indexOf(icon);
+                        icons.remove(dragIcon);
+                        icons.add(index, dragIcon);
+
+                        // 再配置
+                        sortRects(true);
+                    }
+                        break;
+                    case IMAGE:
+                        break;
                 }
-                ins.isShow = true;
-                isOverlaped = true;
+                isDroped = true;
                 break;
             }
         }
-        // どのアイコンの上でもない場合は最後のアイコンの次の右側に表示
-        if (!isOverlaped) {
-            MyIcon icon = icons.getLast();
-            ins.setRect(icon.getRight(), icon.getY(), 20, icon.getHeight());
-        }
-    }
 
-    private void touchUp() {
+        // その他の場所にドロップされた場合
+        if (!isDroped) {
+            // 最後のアイコンの後の空きスペースにドロップされた場合
+            MyIcon lastIcon = icons.getLast();
+            if ((lastIcon.getY() <= vt.y && vt.y <= lastIcon.getBottom() &&
+                    lastIcon.getRight() <= vt.x) ||
+                    (lastIcon.getBottom() <= vt.y))
+            {
+                // ドラッグ中のアイコンをリストの最後に移動
+                icons.remove(dragIcon);
+                icons.add(dragIcon);
+            }
+
+            // 再配置
+            sortRects(true);
+        }
+
         dragIcon = null;
-        state = viewState.none;
-        ins.isShow = false;
     }
 
     public boolean onTouch(View v, MotionEvent e) {
         boolean ret = true;
 
+        if (state == viewState.icon_moving) return true;
+
         TouchType touchType = viewTouch.checkTouchType(e);
 
         switch(touchType) {
             case Click:
-
+                clickIcons(viewTouch);
                 break;
             case LongClick:
-
+                longClickIcons(viewTouch);
                 break;
             case MoveStart:
-                touchDown((int)e.getX(), (int)e.getY());
+                dragStart(viewTouch);
                 break;
             case Moving:
-                touchMove((int)e.getX(), (int)e.getY());
+                dragMove(viewTouch);
                 break;
             case MoveEnd:
-                touchUp();
+                dragEnd(viewTouch);
+                break;
+            case MoveCancel:
+                sortRects(false);
+                dragIcon = null;
+                invalidate();
                 break;
         }
-        /*
+
         switch(e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.v(TAG,"down");
-                touchDown((int)e.getX(), (int)e.getY());
-
                 // trueを返す。こうしないと以降のMoveイベントが発生しなくなる。
                 ret = true;
-
                 if (dragIcon != null) {
                     _callbacks.touchCallback(e.getAction());
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.v(TAG,"up");
-                touchUp((int)e.getX(), (int)e.getY());
                 ret = true;
 
                 _callbacks.touchCallback(e.getAction());
                 break;
             case MotionEvent.ACTION_MOVE:
-                //Log.v(TAG,"move");
-                touchMove((int)e.getX(), (int)e.getY());
                 ret = true;
                 _callbacks.touchCallback(e.getAction());
                 break;
-            case MotionEvent.ACTION_CANCEL:
-                break;
             default:
         }
-        */
+
         // コールバック
         return ret;
     }
