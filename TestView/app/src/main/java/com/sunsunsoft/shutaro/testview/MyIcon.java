@@ -132,9 +132,6 @@ abstract public class MyIcon {
         movingFrame = 0;
         movingFrameMax = frame;
         isMoving = true;
-
-        Log.v("mylog", "srcX:" + srcX + " srcY:" + srcY + " dstX:" + dstX + " dstY:" + dstY);
-
     }
 
     /**
@@ -146,7 +143,6 @@ abstract public class MyIcon {
         if (!isMoving) return true;
 
         float ratio = (float)movingFrame / (float)movingFrameMax;
-        Log.v(TAG, "movingFrame:" + movingFrame + " movingFrameMax:" + movingFrameMax +" ratio:" + ratio);
         x = srcX + ((dstX - srcX) * ratio);
         y = srcY + ((dstY - srcY) * ratio);
 

@@ -73,21 +73,21 @@ public class MyFragment4 extends Fragment implements OnClickListener, OnTouchLis
     //TouchEventCallbacks
     // 子Viewをタッチしている最中はスクロールしないようにする
     public void touchCallback(int action) {
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-            {
-                HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
-                viewPager.setSwipeHold(true);
-            }
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-            {
-                HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
-                viewPager.setSwipeHold(false);
-            }
-                break;
-            default:
-        }
+//        switch (action) {
+//            case MotionEvent.ACTION_DOWN:
+//            {
+//                HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
+//                viewPager.setSwipeHold(true);
+//            }
+//                break;
+//            case MotionEvent.ACTION_UP:
+//            case MotionEvent.ACTION_CANCEL:
+//            {
+//                HoldableViewPager viewPager = (HoldableViewPager)getActivity().findViewById(R.id.main_viewpager);
+//                viewPager.setSwipeHold(false);
+//            }
+//                break;
+//            default:
+//        }
     }
 }

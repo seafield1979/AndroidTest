@@ -242,7 +242,7 @@ public class MyView5 extends View implements OnTouchListener {
     }
 
     private void dragEnd(ViewTouch vt) {
-        // ドロップアイコン
+        // ドロップ処理
         // 他のアイコンの上にドロップされたらドロップ処理を呼び出す
         if (dragIcon == null) return;
 
@@ -252,6 +252,19 @@ public class MyView5 extends View implements OnTouchListener {
             if (icon.checkDrop(vt.x, vt.y)) {
                 switch(icon.getShape()) {
                     case CIRCLE:
+                        // ドラッグ位置のアイコンと場所を交換する
+                    {
+                        int index = icons.indexOf(icon);
+                        int index2 = icons.indexOf(dragIcon);
+                        icons.remove(dragIcon);
+                        icons.add(index, dragIcon);
+                        icons.remove(icon);
+                        icons.add(index2, icon);
+
+                        // 再配置
+                        sortRects(true);
+                    }
+                        break;
                     case RECT:
                         // ドラッグ位置にアイコンを挿入する
                     {
@@ -297,6 +310,11 @@ public class MyView5 extends View implements OnTouchListener {
         if (state == viewState.icon_moving) return true;
 
         TouchType touchType = viewTouch.checkTouchType(e);
+
+        if (viewTouch.checkLongTouch()) {
+            // ロングタッチの処理
+            Log.v("view5", "Long Touch");
+        }
 
         switch(touchType) {
             case Click:
