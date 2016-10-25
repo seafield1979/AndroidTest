@@ -171,6 +171,21 @@ abstract public class MyIcon {
     }
 
     /**
+     * アイコンのタッチ処理
+     * @param clickX
+     * @param clickY
+     * @return
+     */
+    public boolean checkTouch(float clickX, float clickY) {
+        if (x <= clickX && clickX <= getRight() &&
+                y <= clickY && clickY <= getBottom() )
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * クリックのチェックとクリック処理。このメソッドはすでにクリック判定された後の座標が渡される
      * @param clickX
      * @param clickY

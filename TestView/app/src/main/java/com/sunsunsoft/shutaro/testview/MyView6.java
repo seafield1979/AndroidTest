@@ -36,11 +36,7 @@ public class MyView6 extends View implements OnTouchListener {
     private int skipCount;
 
     // スクロールバー
-    private MyScrollBar scrollBar;
-
-    // アイコン表示領域
-    private int contentWidth, contentHeight;
-    private float scrollX, scrollY;
+    //private MyScrollBar scrollBar;
 
     // アイコンを動かす仕組み
     private MyIcon dragIcon;
@@ -114,7 +110,7 @@ public class MyView6 extends View implements OnTouchListener {
         if (firstDraw == false) {
             firstDraw = true;
             sortRects(false);
-            initScrollBar();
+//            initScrollBar();
         }
 
         // 背景塗りつぶし
@@ -158,17 +154,17 @@ public class MyView6 extends View implements OnTouchListener {
         }
 
         // スクロールバー
-        scrollBar.draw(canvas, paint);
+        //scrollBar.draw(canvas, paint);
     }
 
-    private void initScrollBar() {
-        if (scrollBar == null) {
-            scrollBar = new MyScrollBar(ScrollBarType.Vertical,
-                    getWidth() - 200, 0,
-                    getHeight(), 100,
-                    1000, 300);
-        }
-    }
+//    private void initScrollBar() {
+//        if (scrollBar == null) {
+//            scrollBar = new MyScrollBar(ScrollBarType.Vertical,
+//                    getWidth() - 200, 0,
+//                    getHeight(), 100,
+//                    1000, 300);
+//        }
+//    }
 
     /**
      * アイコンを整列する
@@ -222,9 +218,21 @@ public class MyView6 extends View implements OnTouchListener {
         }
 
         Collections.reverse(icons);
+    }
 
-        contentWidth = w;
-        contentHeight = h;
+
+    /**
+     * アイコンをタッチする処理
+     * @param vt
+     * @return
+     */
+    private boolean touchIcons(ViewTouch vt) {
+        for (MyIcon icon : icons) {
+            if (icon.checkClick(vt.touchX, vt.touchY)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -381,6 +389,11 @@ public class MyView6 extends View implements OnTouchListener {
         boolean done = false;
 
         switch(touchType) {
+            case Touch:
+                if (touchIcons(viewTouch)) {
+                    done = true;
+                }
+                break;
             case Click:
                 if (clickIcons(viewTouch)) {
                     done = true;
@@ -412,6 +425,7 @@ public class MyView6 extends View implements OnTouchListener {
                 break;
         }
         if (done) {
+            // 何かしらアイコンに対するタッチ処理が行われたのでScrollViewのスクロールは行わない
             v.getParent().requestDisallowInterceptTouchEvent(true);
         }
 
@@ -419,20 +433,12 @@ public class MyView6 extends View implements OnTouchListener {
             case MotionEvent.ACTION_DOWN:
                 // trueを返す。こうしないと以降のMoveイベントが発生しなくなる。
                 ret = true;
-
-                // ScrollViewのスクロールを停止
-                if (e.getX() < v.getWidth() / 2) {
-                    v.getParent().requestDisallowInterceptTouchEvent(true);
-                }
                 break;
             case MotionEvent.ACTION_UP:
                 ret = true;
                 break;
             case MotionEvent.ACTION_MOVE:
                 ret = true;
-                if (e.getX() < v.getWidth() / 2) {
-                    v.getParent().requestDisallowInterceptTouchEvent(true);
-                }
                 break;
             default:
         }
