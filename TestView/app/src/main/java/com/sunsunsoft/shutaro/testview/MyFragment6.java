@@ -14,9 +14,10 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 
 
-public class MyFragment6 extends Fragment implements OnClickListener, OnTouchListener, TouchEventCallbacks{
+public class MyFragment6 extends Fragment implements OnClickListener, OnTouchListener{
     private final static String BACKGROUND_COLOR = "background_color";
     private MyView6 myView;
+    private Button button;
 
     public static MyFragment6 newInstance(@ColorRes int IdRes) {
         MyFragment6 frag = new MyFragment6();
@@ -39,8 +40,10 @@ public class MyFragment6 extends Fragment implements OnClickListener, OnTouchLis
         linearLayout.setBackgroundResource(getArguments().getInt(BACKGROUND_COLOR));
 
         myView = (MyView6)view.findViewById(R.id.myView6);
-        myView.setCallbacks(this);
         myView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2000));
+
+        button = (Button)view.findViewById(R.id.button);
+        button.setOnClickListener(this);
 
         return view;
     }
@@ -48,12 +51,7 @@ public class MyFragment6 extends Fragment implements OnClickListener, OnTouchLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                myView.sortRects(true);
-                myView.invalidate();
-                break;
-            case R.id.button2:
-                ViewSettings.drawIconId = !ViewSettings.drawIconId;
-                myView.invalidate();
+                myView.updateWidth(700);
                 break;
         }
     }

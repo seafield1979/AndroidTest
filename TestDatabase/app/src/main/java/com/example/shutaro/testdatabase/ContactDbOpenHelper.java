@@ -8,7 +8,10 @@ import android.util.Log;
 public class ContactDbOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "ContactDbOpenHelper";
 
+    // データベース名
     static final String DATABASE_NAME = "contact.db";
+
+    // データベースバージョン
     static final int DATABASE_VERSION = 1;
 
     public ContactDbOpenHelper(Context context) {
@@ -17,6 +20,8 @@ public class ContactDbOpenHelper extends SQLiteOpenHelper {
         Log.d(TAG, "ContactDbOpenHelperのコンストラクタが呼ばれました");
     }
 
+    // DBが存在しない状態でOpenすると、onCreateがコールされる
+    // 新規作成されたDBのインスタンスが付与されるので、テーブルを作成する。
     @Override
     public void onCreate(SQLiteDatabase database) {
         Log.d(TAG, "ContactDbOpenHelper.onCreateが呼ばれました");
@@ -30,6 +35,8 @@ public class ContactDbOpenHelper extends SQLiteOpenHelper {
         // @formatter:on
     }
 
+    // コンストラクタで指定したバージョンと、参照先のDBのバージョンに差異があるときにコールされる
+    // 今回バージョンは１固定のため、処理は行わない。
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(TAG, "ContactDbOpenHelper.onUpgradeが呼ばれました");

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.LinearLayout;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -35,6 +36,10 @@ public class MyView6 extends View implements OnTouchListener {
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
 
+    // サイズ更新用
+    private boolean resetSize;
+    private int newWidth, newHeight;
+
     // スクロールバー
     //private MyScrollBar scrollBar;
 
@@ -52,11 +57,20 @@ public class MyView6 extends View implements OnTouchListener {
 
 
     private Paint paint = new Paint();
-    private TouchEventCallbacks _callbacks;
     private LinkedList<MyIcon> icons = new LinkedList<MyIcon>();
 
-    public void setCallbacks(TouchEventCallbacks callbacks){
-        _callbacks = callbacks;
+    // get/set
+
+    public void updateWidth(int width) {
+        sortRects(true, width);
+    }
+
+    public void setSize(int width, int height) {
+        resetSize = true;
+        newWidth = width;
+        newHeight = height;
+        Log.d("topview", "setSize:" + width + " " + height);
+        setLayoutParams(new LinearLayout.LayoutParams(width, height));
     }
 
     public MyView6(Context context) {
@@ -105,14 +119,30 @@ public class MyView6 extends View implements OnTouchListener {
         }
     }
 
+    /**
+     * Viewのサイズを指定する
+     * @param widthMeasureSpec
+     * @param heightMeasureSpec
+     */
     @Override
-    public void onDraw(Canvas canvas) {
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        Log.d("topview", "onMeasure " + widthMeasureSpec + " " + heightMeasureSpec);
         if (firstDraw == false) {
             firstDraw = true;
-            sortRects(false);
-//            initScrollBar();
+            sortRects(false, MeasureSpec.getSize(widthMeasureSpec));
         }
 
+        if (resetSize) {
+            int width = MeasureSpec.EXACTLY | newWidth;
+            int height = MeasureSpec.EXACTLY | newHeight;
+            setMeasuredDimension(width, height);
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+    }
+
+    @Override
+    public void onDraw(Canvas canvas) {
         // 背景塗りつぶし
         canvas.drawColor(Color.WHITE);
 
@@ -152,35 +182,34 @@ public class MyView6 extends View implements OnTouchListener {
                 }
                 break;
         }
-
-        // スクロールバー
-        //scrollBar.draw(canvas, paint);
     }
-
-//    private void initScrollBar() {
-//        if (scrollBar == null) {
-//            scrollBar = new MyScrollBar(ScrollBarType.Vertical,
-//                    getWidth() - 200, 0,
-//                    getHeight(), 100,
-//                    1000, 300);
-//        }
-//    }
 
     /**
      * アイコンを整列する
      * Viewのサイズが確定した時点で呼び出す
      */
     public void sortRects(boolean animate) {
-        int column = this.getWidth() / (ICON_W + 20);
+        sortRects(animate, 0);
+    }
+
+    public void sortRects(boolean animate, int width) {
+        if (width == 0) {
+            width = getWidth();
+        }
+        int column = width / (ICON_W + 20);
         if (column <= 0) {
             return;
         }
 
+        int maxHeight = 0;
         if (animate) {
             int i=0;
             for (MyIcon icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
+                if ( y > maxHeight ) {
+                    maxHeight = y;
+                }
                 icon.startMove(x,y,MOVING_TIME);
                 i++;
             }
@@ -192,12 +221,15 @@ public class MyView6 extends View implements OnTouchListener {
             for (MyIcon icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
+                if ( y > maxHeight ) {
+                    maxHeight = y;
+                }
                 icon.setPos(x, y);
                 i++;
             }
         }
 
-        setContentArea();
+        setSize(width, maxHeight + (ICON_H + 20) * 2);
     }
 
     /**

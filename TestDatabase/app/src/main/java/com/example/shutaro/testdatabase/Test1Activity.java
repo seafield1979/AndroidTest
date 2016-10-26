@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -184,7 +185,7 @@ public class Test1Activity extends AppCompatActivity {
                     createData2(db);
                     break;
                 case 4:
-                    updateData(db);
+                    updateData2(db);
                     break;
                 case 5:
                     deleteData(db);
@@ -319,11 +320,23 @@ public class Test1Activity extends AppCompatActivity {
         // 更新データを格納するContentValuesを生成
         ContentValues values = new ContentValues();
         // Contact.NAMEにaが含まれるデータの年齢を25に変更
-        values.put(Contact.AGE, mRand.nextInt(100));
+        values.put(Contact.AGE, 100);
         // 戻り値は更新した数が返却される
-        int n = db.update(Contact.TBNAME, values, Contact.NAME + " like ?",
-                new String[]{"%a%"});
+        int n = db.update(Contact.TBNAME, values, Contact.AGE + " = 11",
+                null);
         textView.append("update data:" + n + "\n");
+    }
+
+
+    /**
+     * rawQueryを使用したupdate
+     * @param db
+     */
+    private void updateData2(SQLiteDatabase db) {
+        String query = "UPDATE t_contact SET f_age=101 WHERE f_age=100";
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        cursor.close();
     }
 
     /**
