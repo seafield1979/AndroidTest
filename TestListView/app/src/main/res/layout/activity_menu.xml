@@ -14,9 +14,10 @@
         android:text="テスト項目"
         android:id="@+id/textView"/>
 
-    <Spinner
+    <ListView
+        android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner"/>
+        android:layout_height="match_parent"/>
+
 
 </LinearLayout>

@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener, OnItemClickListener{
+    private static final String[] DAYS = new String[]{"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
 
     private ListView listView;
     private Button addButton;
@@ -77,18 +78,31 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
                 for (int i = 0; i < checked.size(); i++) {
                     int at = checked.keyAt(i);
                     if (checked.get(at)) {
-
-                        mAdapter.remove(listView.getItemAtPosition(at).toString());
-//                        Log.d("example", "選択されている項目:" + );
-//                        Log.d("example", "そのキー" + at);
+                        String item = mAdapter.getItem(at);
+                        Log.d("list2", "item:" + item);
+                        mAdapter.remove(item);
+                        mList.remove(item);
                     }
                 }
-//                mList.
+                listView.clearChoices();
             }
                 break;
             case R.id.button3:
             {
-
+                // チェックがついた項目を更新する
+                SparseBooleanArray checked = listView.getCheckedItemPositions();
+                for (int i = 0; i < checked.size(); i++) {
+                    int at = checked.keyAt(i);
+                    if (checked.get(at)) {
+                        String newItem = "hoge" + addCount;
+                        String item = mAdapter.getItem(at);
+                        mAdapter.remove(item);
+                        mAdapter.insert(newItem, at);
+                        mList.set(at, newItem);
+                        addCount++;
+                    }
+                }
+                listView.clearChoices();
             }
                 break;
         }
@@ -106,8 +120,5 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         ListView lv = (ListView)parent;
         Log.v("myLog", (String)lv.getItemAtPosition(position));
     }
-
-
-        private static final String[] DAYS = new String[]{"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
 
 }
