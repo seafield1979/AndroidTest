@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/fragment_page1_linearlayout"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/holo_blue_dark"
+              android:orientation="vertical">
+
+    <Button
+        android:text="clear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"/>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        >
+
+        <LinearLayout
+            android:id="@+id/linearMain"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- ここにスクロールするWidgetを挿入 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="364dp"
+                android:text="New Text"
+                android:id="@+id/textView"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
