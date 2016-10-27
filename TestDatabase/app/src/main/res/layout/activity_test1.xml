@@ -6,89 +6,39 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
+    <Button
+        android:text="clear"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        android:orientation="horizontal"
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="create table"
-            android:id="@+id/button"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/button"/>
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="select"
-            android:id="@+id/button2"/>
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="select all"
-            android:id="@+id/button3"/>
-    </LinearLayout>
-
-    <LinearLayout
+    <ListView
+        android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        android:orientation="horizontal"
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="add1"
-            android:id="@+id/button4"/>
+        android:layout_height="200dp"/>
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="add2"
-            android:id="@+id/button5"/>
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="update"
-            android:id="@+id/button6"/>
-    </LinearLayout>
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        android:orientation="horizontal"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        >
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="delete"
-            android:id="@+id/button7"/>
+        <LinearLayout
+            android:id="@+id/linearMain"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="delete all"
-            android:id="@+id/button8"/>
+            <!-- ここにスクロールするWidgetを挿入 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="364dp"
+                android:text="New Text"
+                android:id="@+id/textView"/>
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="clear"
-            android:id="@+id/button9"/>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="364dp"
-        android:text="New Text"
-        android:id="@+id/textView"/>
+
 
 </LinearLayout>

@@ -7,7 +7,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -16,34 +20,43 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class Test1Activity extends AppCompatActivity {
+import android.widget.AdapterView.OnItemClickListener;
+
+enum TestMode {
+    Select,
+    SelectAll,
+    Add1,
+    Add2,
+    Update,
+    Delete,
+    DeleteAll,
+    Clear
+};
+
+public class Test1Activity extends AppCompatActivity implements OnItemClickListener {
 
     @InjectView(R.id.button)
     Button button;
-    @InjectView(R.id.button2)
-    Button button2;
-    @InjectView(R.id.button3)
-    Button button3;
-    @InjectView(R.id.button4)
-    Button button4;
-    @InjectView(R.id.button5)
-    Button button5;
-    @InjectView(R.id.button6)
-    Button button6;
-    @InjectView(R.id.button7)
-    Button button7;
-    @InjectView(R.id.button8)
-    Button button8;
-    @InjectView(R.id.button9)
-    Button button9;
-    @InjectView(R.id.textView)
+
+    public static final String[] modeItems = new String[]{
+            "Select",
+            "Select All",
+            "Add1",
+            "Add2",
+            "Update",
+            "Delete",
+            "DeleteAll",
+            "Clear"
+    };
+    private ListView listView;
+
     TextView textView;
 
     private static final String TAG = "myLog";
     private Random mRand;
 
     // @formatter:off
-    private String[] NAMES = new String[]{
+    private final String[] NAMES = new String[]{
             "Anastassia", "Juan", "Enrique",
             "Frannie", "Paloma", "Francisco",
             "Lorenzio", "Maryvonne", "Siv",
@@ -57,40 +70,53 @@ public class Test1Activity extends AppCompatActivity {
         setContentView(R.layout.activity_test1);
         ButterKnife.inject(this);
 
+        textView = (TextView)findViewById(R.id.textView);
+
         //Randomクラスのインスタンス化
         mRand = new Random();
+
+        listView = (ListView)findViewById(R.id.listView);
+
+        // Adapterの作成
+        ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, modeItems);
+        // Adapterの設定
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
+
+        test1();
     }
 
-    @OnClick({R.id.button, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6,R.id.button7, R.id.button8, R.id.button9})
+    // イベント処理をまとめる
+    @OnClick({R.id.button})
     public void onClick(View view) {
-        textView.setText("");
         switch (view.getId()) {
             case R.id.button:
-                test1();
+                textView.setText("");
                 break;
-            case R.id.button2:
-                test2();
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ListView lv = (ListView) parent;
+        Log.v("myLog", (String) lv.getItemAtPosition(position));
+
+        TestMode[] values = TestMode.values();
+        TestMode mode = values[position];
+
+        testQuery(mode);
+        switch (mode) {
+            case Select:
+            case SelectAll:
+            case Add1:
+            case Add2:
+            case Update:
+            case Delete:
+            case DeleteAll:
+                testQuery(mode);
                 break;
-            case R.id.button3:
-                test3();
-                break;
-            case R.id.button4:
-                test4();
-                break;
-            case R.id.button5:
-                test5();
-                break;
-            case R.id.button6:
-                test6();
-                break;
-            case R.id.button7:
-                test7();
-                break;
-            case R.id.button8:
-                test8();
-                break;
-            case R.id.button9:
-                test9();
+            case Clear:
+                textView.setText("");
                 break;
         }
     }
@@ -108,60 +134,7 @@ public class Test1Activity extends AppCompatActivity {
         helper.close();
     }
 
-    /**
-     * データを表示する
-     */
-    private void test2() {
-        testQuery(0);
-    }
-
-    /**
-     * データを全部表示する
-     */
-    private void test3() {
-        testQuery(1);
-    }
-
-    /**
-     * データを追加する(リスト)
-     */
-    private void test4() {
-        testQuery(2);
-    }
-
-    /**
-     * データを追加する(1件)
-     */
-    private void test5() {
-        testQuery(3);
-    }
-
-    /**
-     * データを更新する
-     */
-    private void test6() {
-        testQuery(4);
-    }
-
-    /**
-     * データを削除する(一部)
-     */
-    private void test7() {
-        testQuery(5);
-    }
-
-    /**
-     * データを全部削除する
-     */
-    private void test8() {
-        testQuery(6);
-    }
-
-    private void test9() {
-        textView.setText("");
-    }
-
-    private void testQuery(int mode) {
+    private void testQuery(TestMode mode) {
         ContactDbOpenHelper helper = null;
         SQLiteDatabase db = null;
         try {
@@ -171,26 +144,25 @@ public class Test1Activity extends AppCompatActivity {
             db = helper.getWritableDatabase();
 
             switch(mode) {
-                case 0:
-                    searchData(db);
+                case Select:
+                    select2(db);
                     break;
-                case 1:
-                    // データの検索
-                    showAllData(db);
+                case SelectAll:
+                    selectAll(db);
                     break;
-                case 2:
+                case Add1:
                     createData(db);
                     break;
-                case 3:
+                case Add2:
                     createData2(db);
                     break;
-                case 4:
+                case Update:
                     updateData2(db);
                     break;
-                case 5:
+                case Delete:
                     deleteData(db);
                     break;
-                case 6:
+                case DeleteAll:
                     deleteAllData(db);
                     break;
             }
@@ -202,11 +174,13 @@ public class Test1Activity extends AppCompatActivity {
                 helper.close();
             }
         }
-
     }
 
-
-    private void showAllData(SQLiteDatabase db) {
+    /**
+     * 全件取得
+     * @param db
+     */
+    private void selectAll(SQLiteDatabase db) {
         Cursor cursor = null;
         try {
             // Commentsテーブルのすべてのデータを取得
@@ -232,14 +206,14 @@ public class Test1Activity extends AppCompatActivity {
         }
     }
 
-
-    private void searchData(SQLiteDatabase db) {
+    /**
+     * SELECT文
+     * @param db
+     */
+    private void select1(SQLiteDatabase db) {
         Cursor cursor = null;
         try {
             // Commentsテーブルのすべてのデータを取得
-//            Cursor query(String table, String[] columns, String selection,
-//                    String[] selectionArgs, String groupBy, String having,
-//                    String orderBy) {
             cursor = db.query(Contact.TBNAME, null, Contact.AGE + " > ?",
                     new String[]{Integer.toString(10)}, null, null,
                     Contact.NAME);
@@ -262,6 +236,33 @@ public class Test1Activity extends AppCompatActivity {
         }
     }
 
+    /**
+     * SELECTのrawQuery版
+     * @param db
+     */
+    private void select2(SQLiteDatabase db) {
+        String query = "SELECT * FROM " + Contact.TBNAME + " WHERE " + Contact.AGE + " > 30";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                // 名前を取得
+                String name = cursor.getString(cursor
+                        .getColumnIndex(Contact.NAME));
+                // 年齢を取得
+                int age = cursor.getInt(cursor.getColumnIndex(Contact.AGE));
+                textView.append(name + ":" + age + "\n");
+            }
+
+        }
+
+        cursor.close();
+    }
+
+        /**
+         * NAMESのリストをまとめて追加
+         * @param db
+         */
     private void createData(SQLiteDatabase db) {
         for (int i = 0; i < NAMES.length; i++) {
             // 生成するデータを格納するContentValuesを生成
