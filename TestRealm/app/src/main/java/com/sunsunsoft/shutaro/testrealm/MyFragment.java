@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.view.View.OnTouchListener;
 import android.widget.ListAdapter;
@@ -20,6 +19,8 @@ import android.widget.TextView;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView.OnItemClickListener;
 
+import java.util.LinkedList;
+import java.util.Random;
 
 
 public class MyFragment extends Fragment implements OnTouchListener, OnClickListener, OnItemClickListener {
@@ -27,7 +28,11 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
         Select,
         SelectAll,
         Add1,
-        Add2
+        Add2,
+        Update,
+        Update2,
+        Delete,
+        DeleteAll
     }
 
     private final static String BACKGROUND_COLOR = "background_color";
@@ -35,18 +40,20 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
             "Select",
             "Select All",
             "Add1",
-            "Add2"
-//            "Update",
-//            "Delete",
-//            "DeleteAll",
-//            "Clear"
+            "Add2",
+            "Update",
+            "Update2",
+            "Delete",
+            "DeleteAll"
     };
 
     TextView textView;
     Button button;
     ListView listView;
 
-    UserModel mModel;
+    UserDAO mModel;
+
+    Random mRand = new Random();
 
     public static MyFragment newInstance(@ColorRes int IdRes) {
         MyFragment frag = new MyFragment();
@@ -80,7 +87,7 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
 
         textView = (TextView)view.findViewById(R.id.textView);
 
-        mModel = new UserModel(getActivity());
+        mModel = new UserDAO(getActivity());
 
         return view;
     }
@@ -109,7 +116,7 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
 
         switch (mode) {
             case Select:
-                mModel.select1();
+                mModel.select1(10);
                 break;
             case SelectAll: {
                 Log.d("page1", "select all");
@@ -125,7 +132,43 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
             case Add1:
                 mModel.add1("hoge", 1);
                 break;
-            case Add2:
+            case Add2: {
+                LinkedList<User> userList = new LinkedList();
+                User user;
+                for (int i=0; i<10; i++) {
+                    int rand = mRand.nextInt(100);
+                    user = new User();
+                    user.setName("hoge" + rand);
+                    user.setAge(rand);
+                    userList.add(user);
+                }
+                mModel.add2(userList);
+            }
+                break;
+            case Update: {
+                User user = mModel.selectOne();
+                if (user != null) {
+                    mModel.updateOne(user.getId(), user.getName(), 101);
+                }
+            }
+                break;
+            case Update2: {
+                User user = mModel.selectOne();
+                if (user != null) {
+                    mModel.updateAll(user.getAge(), user.getName(), 102);
+                }
+            }
+                break;
+            case Delete: {
+                User user = mModel.selectOne();
+                if (user != null) {
+                    mModel.deleteOne(user.getId());
+                }
+            }
+                break;
+            case DeleteAll: {
+                mModel.deleteAll();
+            }
                 break;
         }
     }

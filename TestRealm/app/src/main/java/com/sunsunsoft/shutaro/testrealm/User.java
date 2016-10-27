@@ -38,4 +38,8 @@ public class User extends RealmObject {
         this.age = age;
     }
 
+    public String getMessage() {
+        return "id:" + id + " name:" + name + " age:" + age;
+    }
+
 }

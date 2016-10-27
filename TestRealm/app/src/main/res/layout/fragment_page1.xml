@@ -16,7 +16,8 @@
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="150dp"/>
+        android:layout_height="150dp"
+        android:background="@android:color/background_light"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -33,9 +34,10 @@
             <!-- ここにスクロールするWidgetを挿入 -->
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="364dp"
+                android:layout_height="match_parent"
                 android:text="New Text"
-                android:id="@+id/textView"/>
+                android:id="@+id/textView"
+                android:background="?attr/colorButtonNormal"/>
 
         </LinearLayout>
     </ScrollView>

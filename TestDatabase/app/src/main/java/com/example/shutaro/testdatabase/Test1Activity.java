@@ -253,9 +253,7 @@ public class Test1Activity extends AppCompatActivity implements OnItemClickListe
                 int age = cursor.getInt(cursor.getColumnIndex(Contact.AGE));
                 textView.append(name + ":" + age + "\n");
             }
-
         }
-
         cursor.close();
     }
 
