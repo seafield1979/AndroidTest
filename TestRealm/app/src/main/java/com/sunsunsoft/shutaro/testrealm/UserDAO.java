@@ -26,6 +26,8 @@ public class UserDAO {
                 .build();
         Realm.setDefaultConfiguration(realmConfig);
         mRealm = Realm.getDefaultInstance();
+
+        Log.d("---------", "path: " + mRealm.getPath());
     }
 
     /**
@@ -52,16 +54,28 @@ public class UserDAO {
      * 全要素取得
      * @return nameのString[]
      */
-    public String[] selectAll() {
-        LinkedList<String> strs = new LinkedList();
+    public User[] selectAll() {
         RealmResults<User> results = mRealm.where(User.class).findAll();
         for (User user : results) {
             Log.d("select", "id:" + user.getId() + " name:" + user.getName() + " age:" + user
                     .getAge());
-            strs.add(user.getName());
         }
 
-        return strs.toArray(new String[0]);
+        return results.toArray(new User[0]);
+    }
+
+    /**
+     * ソートして全要素追加
+     * @return
+     */
+    public User[] selectSorted() {
+        RealmResults<User> results = mRealm.where(User.class).findAll();
+        results = results.sort("age");
+        for (User user : results) {
+            Log.d("select", "id:" + user.getId() + " name:" + user.getName() + " age:" + user.getAge());
+        }
+
+        return results.toArray(new User[0]);
     }
 
     /**
@@ -69,8 +83,6 @@ public class UserDAO {
      * @return
      */
     public User selectOne() {
-        //Realm realm = Realm.getDefaultInstance();
-
         User user = mRealm.where(User.class).findFirst();
         if (user != null) {
             Log.d("select", "name:" + user.getName());
@@ -85,8 +97,6 @@ public class UserDAO {
      * @param age
      */
     public void add1(String name, int age) {
-        //Realm realm = Realm.getDefaultInstance();
-
         int newId = getNextUserId(mRealm);
 
         User user = new User();
@@ -103,15 +113,34 @@ public class UserDAO {
      * 一度にたくさん追加
      */
     public void add2(List<User> list) {
+        mRealm.beginTransaction();
         for (User user : list) {
             int newId = getNextUserId(mRealm);
             user.setId(newId);
             Log.d("userdao", user.getMessage());
 
-            mRealm.beginTransaction();
             mRealm.copyToRealm(user);
-            mRealm.commitTransaction();
         }
+        mRealm.commitTransaction();
+    }
+
+    /**
+     * データを追加する(insert)
+     * 追加したオブジェクトを返さない分、通常のADD(copyToRealm)に比べて高速
+     * @param name
+     * @param age
+     */
+    public void insertOne(int pos, String name, int age) {
+        int newId = getNextUserId(mRealm);
+
+        User user = new User();
+        user.setId(newId);
+        user.setName(name);
+        user.setAge(age);
+
+        mRealm.beginTransaction();
+        mRealm.insert(user);
+        mRealm.commitTransaction();
     }
 
     /**

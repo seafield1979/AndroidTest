@@ -27,8 +27,10 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
     enum TestMode {
         Select,
         SelectAll,
+        SelectSorted,
         Add1,
         Add2,
+        Insert1,
         Update,
         Update2,
         Delete,
@@ -39,8 +41,10 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
     public static final String[] modeItems = new String[]{
             "Select",
             "Select All",
+            "SelectSorted",
             "Add1",
             "Add2",
+            "Insert1",
             "Update",
             "Update2",
             "Delete",
@@ -119,12 +123,21 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
                 mModel.select1(10);
                 break;
             case SelectAll: {
-                Log.d("page1", "select all");
                 textView.setText("");
-                String[] results = mModel.selectAll();
+                User[] results = mModel.selectAll();
                 if (results != null) {
-                    for (String result : results) {
-                        textView.append(result + "\n");
+                    for (User user : results) {
+                        textView.append("name:" + user.getName() + " age:" + user.getAge() + "\n");
+                    }
+                }
+            }
+                break;
+            case SelectSorted: {
+                textView.setText("");
+                User[] results = mModel.selectSorted();
+                if (results != null) {
+                    for (User user : results) {
+                        textView.append("name:" + user.getName() + " age:" + user.getAge() + "\n");
                     }
                 }
             }
@@ -143,6 +156,11 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
                     userList.add(user);
                 }
                 mModel.add2(userList);
+            }
+                break;
+            case Insert1: {
+                int rand = mRand.nextInt(100);
+                mModel.insertOne(0, "insert" + rand, rand);
             }
                 break;
             case Update: {
