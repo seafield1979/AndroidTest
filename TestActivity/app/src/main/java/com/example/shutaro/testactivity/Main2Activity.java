@@ -12,6 +12,8 @@ public class Main2Activity extends AppCompatActivity {
 
     private TextView textViewStr1;
     private TextView textViewInt1;
+    private EditText edit1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,6 +21,7 @@ public class Main2Activity extends AppCompatActivity {
 
         textViewStr1 = (TextView) findViewById(R.id.textViewStr1);
         textViewInt1 = (TextView) findViewById(R.id.textViewInt1);
+        edit1 = (EditText) findViewById(R.id.editText);
 
         // 引数を取得する
         Intent intent = getIntent();
@@ -34,7 +37,7 @@ public class Main2Activity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent data = new Intent();
-                    data.putExtra("key_name", "もどったぜ");
+                    data.putExtra("key_name", edit1.getText().toString());
                     setResult(RESULT_OK, data);
                     finish();
                 }

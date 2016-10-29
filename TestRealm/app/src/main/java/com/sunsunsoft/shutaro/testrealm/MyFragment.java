@@ -36,25 +36,13 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
         Delete,
         DeleteAll
     }
+    private LinkedList<String> modeItems = new LinkedList<>();
 
     private final static String BACKGROUND_COLOR = "background_color";
-    public static final String[] modeItems = new String[]{
-            "Select",
-            "Select All",
-            "SelectSorted",
-            "Add1",
-            "Add2",
-            "Insert1",
-            "Update",
-            "Update2",
-            "Delete",
-            "DeleteAll"
-    };
 
     TextView textView;
     Button button;
     ListView listView;
-
     UserDAO mModel;
 
     Random mRand = new Random();
@@ -70,6 +58,10 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        for (TestMode mode : TestMode.values()) {
+            modeItems.add(mode.toString());
+        }
     }
 
     @Override
@@ -82,15 +74,15 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
         button = (Button)view.findViewById(R.id.button);
         button.setOnClickListener(this);
 
+        // ListView
         listView = (ListView)view.findViewById(R.id.listView);
         listView.setOnItemClickListener(this);
-        // Adapterの作成
         ListAdapter adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, modeItems);
-        // Adapterの設定
         listView.setAdapter(adapter);
 
         textView = (TextView)view.findViewById(R.id.textView);
 
+        // DAOオブジェクト
         mModel = new UserDAO(getActivity());
 
         return view;
