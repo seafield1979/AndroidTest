@@ -35,7 +35,7 @@ public class Main2Activity extends AppCompatActivity implements OnClickListener{
     public void onClick(View v) {
         switch( v.getId()) {
             case R.id.button:
-                // アクティビティを閉じる
+                // アクティビティを閉じる。呼び出し元に戻り値を返す。
             {
                 Intent data = new Intent();
                 data.putExtra("str1", edit1.getText().toString());
