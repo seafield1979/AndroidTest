@@ -2,6 +2,8 @@ package com.example.shutaro.testfragment;
 
 
 import android.os.Bundle;
+import android.support.annotation.CheckResult;
+import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +21,29 @@ import butterknife.OnClick;
  */
 public class Fragment1 extends Fragment{
     public static final String FRAMGMENT_NAME = Fragment1.class.getName();
+    public static final String KEY_STR1 = "str1";
+    public static final String KEY_INT1 = "int1";
 
     @InjectView(R.id.button)
     Button button;
     @InjectView(R.id.textView)
     TextView textView;
+
+    // このメソッドからFragmentを作成することを強制する
+    @CheckResult
+    public static MainFragment createInstance(String str1, int int1) {
+        // Fragmentを作成して返すメソッド
+        // createInstanceメソッドを使用することで、そのクラスを作成する際にどのような値が必要になるか制約を設けることができる
+        MainFragment fragment = new MainFragment();
+        // Fragmentに渡す値はBundleという型でやり取りする
+        Bundle args = new Bundle();
+        // Key/Pairの形で値をセットする
+        args.putString(KEY_STR1, str1);
+        args.putInt(KEY_INT1, int1);
+        // Fragmentに値をセットする
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

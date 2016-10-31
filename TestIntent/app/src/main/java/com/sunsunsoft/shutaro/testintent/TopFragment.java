@@ -105,6 +105,9 @@ public class TopFragment extends Fragment implements OnClickListener, MyDialogFr
         fragmentTransaction.commit();
     }
 
+    /**
+     * DialogFragmentを表示
+     */
     void showDialog() {
         mStackLevel++;
 

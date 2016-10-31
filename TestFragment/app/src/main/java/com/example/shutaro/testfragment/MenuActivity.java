@@ -2,6 +2,7 @@ package com.example.shutaro.testfragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +12,12 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class MenuActivity extends AppCompatActivity {
+
+/**
+ * メニュー画面
+ * DialogFragmentを使用するために OnOkClickListener を implementsしている
+ */
+public class MenuActivity extends AppCompatActivity implements MyDialogFragment.OnOkClickListener {
 
     @InjectView(R.id.button)
     Button button;
@@ -57,11 +63,30 @@ public class MenuActivity extends AppCompatActivity {
             }
                 break;
             case R.id.button4:
+            {
+                Intent i = new Intent(getApplicationContext(),BasicFragmentActivity.class);
+                startActivity(i);
+            }
                 break;
             case R.id.button5:
+            {
+                // ActivityからDialogFragmentを使用する
+                DialogFragment dialogFragment = MyDialogFragment.createInstance("hoge");
+                dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
+            }
                 break;
             case R.id.button6:
                 break;
+        }
+    }
+
+    // コールバックされるメソッド
+    // OnOkClickListener インターフェース
+    @Override
+    public void onOkClicked(Bundle args) {
+        if (args != null) {
+            String retStr = args.getString(MyDialogFragment.KEY_RET);
+            textView.append(retStr);
         }
     }
 }
