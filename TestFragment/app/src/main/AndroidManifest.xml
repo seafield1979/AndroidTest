@@ -23,6 +23,8 @@
         </activity>
         <activity android:name=".BasicFragmentActivity">
         </activity>
+        <activity android:name=".MultiFragmentsActivity">
+        </activity>
     </application>
 
 </manifest>

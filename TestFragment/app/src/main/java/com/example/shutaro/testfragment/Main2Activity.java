@@ -9,9 +9,16 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+
+/**
+ * 表示するFragmentを切り替えられる
+ * stackModeをONにすると端末の戻るボタンで以前表示していたFragmentに戻る
+ */
 public class Main2Activity extends AppCompatActivity {
     // 新たにフラグメントを表示する時にスタックに積むかどうか
     public static final boolean stackMode = true;
+    private Fragment topFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +31,8 @@ public class Main2Activity extends AppCompatActivity {
             public void onClick(View v) {
                 // Fragment1を表示
                 Fragment newFragment = new Fragment1();
-                showFragment(newFragment);
+                topFragment = newFragment;
+                showFragment(newFragment, false);
             }
         });
         Button button2 = (Button)findViewById(R.id.button2);
@@ -32,7 +40,8 @@ public class Main2Activity extends AppCompatActivity {
             public void onClick(View v) {
                 // Fragment2を表示
                 Fragment newFragment = new Fragment2();
-                showFragment(newFragment);
+                topFragment = newFragment;
+                showFragment(newFragment, false);
             }
         });
         Button button3 = (Button)findViewById(R.id.button3);
@@ -40,7 +49,15 @@ public class Main2Activity extends AppCompatActivity {
             public void onClick(View v) {
                 // Fragment3を表示
                 Fragment newFragment = new Fragment3();
-                showFragment(newFragment);
+                topFragment = newFragment;
+                showFragment(newFragment, false);
+            }
+        });
+
+        Button button4 = (Button)findViewById(R.id.button4);
+        button4.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                removeFragment();
             }
         });
 
@@ -48,14 +65,13 @@ public class Main2Activity extends AppCompatActivity {
         if (savedInstanceState == null) {
             // 実際に使用するFragmentの作成
             Fragment newFragment = new Fragment1();
-            showFragment(newFragment);
+            showFragment(newFragment, true);
         }
     }
 
 
     // 表示するフラグメントを切り替える
-    private void showFragment(Fragment fragment) {
-        // FragmentManagerからFragmentTransactionを作成
+    private void showFragment(Fragment fragment, boolean isFirst) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         // Fragmentを組み込む
@@ -63,11 +79,30 @@ public class Main2Activity extends AppCompatActivity {
 
         // backstackに追加
         // これで戻るボタンで以前のフラグメントが表示されるようになる
-        if (Main2Activity.stackMode) {
+        if (!isFirst && Main2Activity.stackMode) {
             transaction.addToBackStack(null);
         }
 
         // 上記の変更を反映する
         transaction.commit();
+    }
+
+
+    /**
+     * Fragmentを削除する
+     */
+    private void removeFragment() {
+//        if (topFragment == null) return;
+//
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//
+//        transaction.remove(topFragment);
+//
+//        transaction.commit();
+//
+//        topFragment = null;
+
+        // 一番最初のFragmentに戻る
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }
