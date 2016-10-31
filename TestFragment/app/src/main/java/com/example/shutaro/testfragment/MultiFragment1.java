@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * 2つのFragmentを並べる用のFragment
  */
 public class MultiFragment1 extends Fragment {
     public static final String TAG = "MainFragment";

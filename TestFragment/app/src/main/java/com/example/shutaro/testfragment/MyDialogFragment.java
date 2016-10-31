@@ -102,13 +102,46 @@ public class MyDialogFragment extends DialogFragment {
         });
 
         edit1 = (EditText)view.findViewById(R.id.editText);
+
+        setMyStyle(0,0);
     }
 
+    /**
+     * 呼び出し元に引数を返して終了
+     */
     private void submit() {
         Bundle arg = new Bundle();
         String str = edit1.getText().toString() + "\n";
         arg.putString(MyDialogFragment.KEY_RET, str);
         mListener.onOkClicked(arg);
         dismiss();
+    }
+
+    /**
+     * DialogFragmentのスタイルを設定する
+     *
+     * @param _style
+     * @param _theme
+     */
+    private void setMyStyle(int _style, int _theme) {
+        int style = DialogFragment.STYLE_NORMAL, theme = 0;
+        switch (_style) {
+            case 0: style = DialogFragment.STYLE_NO_TITLE; break;
+            case 1: style = DialogFragment.STYLE_NO_FRAME; break;
+            case 2: style = DialogFragment.STYLE_NO_INPUT; break;
+            case 3: style = DialogFragment.STYLE_NORMAL; break;
+            case 4: style = DialogFragment.STYLE_NORMAL; break;
+            case 5: style = DialogFragment.STYLE_NO_TITLE; break;
+            case 6: style = DialogFragment.STYLE_NO_FRAME; break;
+            case 7: style = DialogFragment.STYLE_NORMAL; break;
+        }
+        switch (_theme) {
+            case 0: theme = android.R.style.Theme_Holo; break;
+            case 1: theme = android.R.style.Theme_Holo_Light_Dialog; break;
+            case 2: theme = android.R.style.Theme_Holo_Light; break;
+            case 3: theme = android.R.style.Theme_Holo_Light_Panel; break;
+            case 4: theme = android.R.style.Theme_Holo_Light; break;
+        }
+        setStyle(style, theme);
     }
 }

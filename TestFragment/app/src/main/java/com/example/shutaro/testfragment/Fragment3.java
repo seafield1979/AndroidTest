@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * ただのFragment
  */
 public class Fragment3 extends Fragment {
     public static final String FRAMGMENT_NAME = Fragment3.class.getName();
@@ -20,5 +20,4 @@ public class Fragment3 extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment23, container, false);
     }
-
 }

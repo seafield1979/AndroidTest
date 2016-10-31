@@ -17,7 +17,8 @@ import butterknife.OnClick;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * ただのFragment
+ * 受け取った引数を表示する
  */
 public class Fragment1 extends Fragment{
     public static final String FRAMGMENT_NAME = Fragment1.class.getName();

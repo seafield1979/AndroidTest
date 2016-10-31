@@ -12,9 +12,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-
 /**
- * A simple {@link Fragment} subclass.
+ * 2つのFragmentを並べる用のFragment
  */
 public class MultiFragment2 extends Fragment {
     public static final String TAG = "MainFragment";

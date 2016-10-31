@@ -6,7 +6,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 
 
-
+/**
+ * 基本的なFragment(MainFragment)を表示するためのActivity
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -15,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
+
+            // MainFragmentを生成、表示
             MainFragment fragment = MainFragment.createInstance("hoge", Color.rgb(255,128,0));
 
             // コンテナにMainFragmentを格納

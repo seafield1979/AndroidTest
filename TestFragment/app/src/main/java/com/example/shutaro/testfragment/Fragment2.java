@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+/**
+ * ただのFragment
+ */
 public class Fragment2 extends Fragment {
     public static final String FRAMGMENT_NAME = Fragment2.class.getName();
 
