@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.LinearLayout;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,6 +39,12 @@ public class MyView8 extends View implements OnTouchListener {
     // スクロール用
     private Size contentSize = new Size();  // 領域全体のサイズ
     private PointF contentTop = new PointF();  // 画面に表示する領域の左上の座標
+    MyScrollBar mScrollV;
+    MyScrollBar mDragScrollBar;   // todo
+
+    // サイズ更新用
+    private boolean resetSize;
+    private int newWidth, newHeight;
 
     // アイコンを動かす仕組み
     private IconBase dragIcon;
@@ -53,8 +60,19 @@ public class MyView8 extends View implements OnTouchListener {
 
     // get/set
 
-    public void updateWidth(int width) {
-        sortRects(true, width);
+    /**
+     * Viewのサイズを更新する
+     * @param width
+     * @param height
+     */
+    public void updateViewSize(int width, int height) {
+        resetSize = true;
+        newWidth = width;
+        newHeight = height;
+        if (mScrollV != null) {
+            mScrollV.updateContent(contentSize, width, height);
+        }
+        setLayoutParams(new LinearLayout.LayoutParams(width, height));
     }
 
     public void setContentSize(int width, int height) {
@@ -110,11 +128,6 @@ public class MyView8 extends View implements OnTouchListener {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (!firstDraw) {
-            firstDraw = true;
-            sortRects(false);
-        }
-
         // 背景塗りつぶし
         canvas.drawColor(Color.WHITE);
 
@@ -153,6 +166,36 @@ public class MyView8 extends View implements OnTouchListener {
                 }
                 break;
         }
+
+        // スクロールバー
+        mScrollV.draw(canvas, paint);
+    }
+
+    /**
+     * Viewのサイズを指定する
+     * @param widthMeasureSpec
+     * @param heightMeasureSpec
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        sortRects(false, MeasureSpec.getSize(widthMeasureSpec));
+
+        int viewW = MeasureSpec.getSize(widthMeasureSpec);
+        int viewH = MeasureSpec.getSize(heightMeasureSpec);
+
+        if (mScrollV == null) {
+            mScrollV = new MyScrollBar(ScrollBarType.Right, viewW, viewH, 40, contentSize.height);
+        } else {
+            mScrollV.updateContent(contentSize, viewW, viewH);
+        }
+
+        if (resetSize) {
+            int width = MeasureSpec.EXACTLY | newWidth;
+            int height = MeasureSpec.EXACTLY | newHeight;
+            setMeasuredDimension(width, height);
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
     }
 
     /**
@@ -178,8 +221,9 @@ public class MyView8 extends View implements OnTouchListener {
             for (IconBase icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
-                if ( y > maxHeight ) {
-                    maxHeight = y;
+                int height = y + (ICON_H + 20);
+                if ( height >= maxHeight ) {
+                    maxHeight = height;
                 }
                 icon.startMove(x,y,MOVING_TIME);
                 i++;
@@ -192,15 +236,16 @@ public class MyView8 extends View implements OnTouchListener {
             for (IconBase icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
-                if ( y > maxHeight ) {
-                    maxHeight = y;
+                int height = y + (ICON_H + 20);
+                if ( height >= maxHeight ) {
+                    maxHeight = height;
                 }
                 icon.setPos(x, y);
                 i++;
             }
         }
 
-        setContentSize(width, maxHeight + (ICON_H + 20) * 2);
+        setContentSize(width, maxHeight);
     }
 
     /**
@@ -272,14 +317,13 @@ public class MyView8 extends View implements OnTouchListener {
         Collections.reverse(icons);
         for (IconBase icon : icons) {
             // 座標判定
-            if (icon.x <= vt.touchX() && vt.touchX() < icon.getRight() &&
-                    icon.y <= vt.touchY() && vt.touchY() < icon.getBottom())
-            {
+            if (icon.checkTouch(vt.touchX(), vt.touchY())) {
                 dragIcon = icon;
                 ret = true;
                 break;
             }
         }
+
         Collections.reverse(icons);
 
         if (ret) {
@@ -296,6 +340,8 @@ public class MyView8 extends View implements OnTouchListener {
         if (dragIcon != null) {
             dragIcon.move((int)vt.moveX, (int)vt.moveY);
             ret = true;
+        } else if (mDragScrollBar != null) {
+//            mDragScrollBar.move(vt.moveX, vt.moveY);
         }
 
         skipCount++;
@@ -407,6 +453,10 @@ public class MyView8 extends View implements OnTouchListener {
                 contentTop.y = contentSize.height - getHeight();
             }
         }
+        // スクロールバーの表示を更新
+        //mScrollV.updateContent(contentSize, getHeight(), getHeight());
+        mScrollV.updateScroll(contentTop.y);
+
         invalidate();
 
         return true;

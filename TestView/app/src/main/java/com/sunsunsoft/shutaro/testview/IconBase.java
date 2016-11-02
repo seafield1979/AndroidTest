@@ -174,13 +174,13 @@ abstract public class IconBase {
 
     /**
      * アイコンのタッチ処理
-     * @param clickX
-     * @param clickY
+     * @param tx
+     * @param ty
      * @return
      */
-    public boolean checkTouch(float clickX, float clickY) {
-        if (x <= clickX && clickX <= getRight() &&
-                y <= clickY && clickY <= getBottom() )
+    public boolean checkTouch(float tx, float ty) {
+        if (x <= tx && tx <= getRight() &&
+                y <= ty && ty <= getBottom() )
         {
             return true;
         }

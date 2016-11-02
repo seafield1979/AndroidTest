@@ -54,7 +54,7 @@ public class MyFragment8 extends Fragment implements OnClickListener, OnTouchLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                myView.updateWidth(700);
+                myView.updateViewSize(1000, 700);
                 break;
         }
     }
