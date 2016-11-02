@@ -8,10 +8,10 @@ import android.graphics.Paint;
  * Created by shutaro on 2016/10/22.
  */
 
-public class MyIconCircle extends MyIcon {
+public class IconCircle extends IconBase {
     protected int radius;
 
-    public MyIconCircle(int x, int y, int width) {
+    public IconCircle(int x, int y, int width) {
         super(IconShape.CIRCLE, x,y,width,width);
 
         color = Color.rgb(0,255,255);

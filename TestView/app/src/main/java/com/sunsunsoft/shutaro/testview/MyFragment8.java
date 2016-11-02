@@ -17,13 +17,13 @@ import android.view.View.OnTouchListener;
  * Viewに表示しきれない領域をスクロールできるようにする
  * ScrollViewを使う方式
  */
-public class MyFragment6 extends Fragment implements OnClickListener, OnTouchListener{
+public class MyFragment8 extends Fragment implements OnClickListener, OnTouchListener{
     private final static String BACKGROUND_COLOR = "background_color";
-    private MyView6 myView;
+    private MyView8 myView;
     private Button button;
 
-    public static MyFragment6 newInstance(@ColorRes int IdRes) {
-        MyFragment6 frag = new MyFragment6();
+    public static MyFragment8 newInstance(@ColorRes int IdRes) {
+        MyFragment8 frag = new MyFragment8();
         Bundle b = new Bundle();
         b.putInt(BACKGROUND_COLOR, IdRes);
         frag.setArguments(b);
@@ -38,12 +38,12 @@ public class MyFragment6 extends Fragment implements OnClickListener, OnTouchLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page6, null);
+        View view = inflater.inflate(R.layout.fragment_page8, null);
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragment_page_linearlayout);
         linearLayout.setBackgroundResource(getArguments().getInt(BACKGROUND_COLOR));
 
-        myView = (MyView6)view.findViewById(R.id.myView6);
-        myView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2000));
+        myView = (MyView8)view.findViewById(R.id.myView8);
+//        myView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2000));
 
         button = (Button)view.findViewById(R.id.button);
         button.setOnClickListener(this);

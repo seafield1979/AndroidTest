@@ -8,9 +8,9 @@ import android.graphics.Paint;
  * Created by shutaro on 2016/10/22.
  */
 
-public class MyIconRect extends MyIcon {
+public class IconRect extends IconBase {
 
-    public MyIconRect(int x, int y, int width, int height) {
+    public IconRect(int x, int y, int width, int height) {
         super(IconShape.RECT, x,y,width,height);
 
         color = Color.rgb(0,255,255);

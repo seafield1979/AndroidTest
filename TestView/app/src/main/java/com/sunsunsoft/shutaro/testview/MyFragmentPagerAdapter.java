@@ -21,7 +21,7 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return MyFragment7.newInstance(android.R.color.holo_green_light);
             case 2:
-                return MyFragment3.newInstance(android.R.color.holo_red_dark);
+                return MyFragment8.newInstance(android.R.color.holo_red_dark);
             case 3:
                 return MyFragment4.newInstance(android.R.color.holo_purple);
             case 4:

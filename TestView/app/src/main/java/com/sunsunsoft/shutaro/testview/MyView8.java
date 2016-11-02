@@ -16,17 +16,18 @@ import java.util.LinkedList;
 
 
 /**
- * アイコン表示領域のスクロールテスト
+ * スクロールを自前で管理するView
+ * コンテンツ全体のサイズを自前で管理して、画面に表示するViewのサイズよりも大きかったらスクロールできるようにする。
  */
-public class MyView6 extends View implements OnTouchListener {
+public class MyView8 extends View implements OnTouchListener {
     enum viewState {
         none,
         drag,               // アイコンのドラッグ中
         icon_moving,        // アイコンの一変更後の移動中
     }
 
-    private static final int RECT_ICON_NUM = 20;
-    private static final int CIRCLE_ICON_NUM = 20;
+    private static final int RECT_ICON_NUM = 30;
+    private static final int CIRCLE_ICON_NUM = 30;
     private static final int ICON_W = 200;
     private static final int ICON_H = 150;
     private static final int MOVING_TIME = 10;
@@ -34,12 +35,13 @@ public class MyView6 extends View implements OnTouchListener {
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
 
+    // スクロール用
+    private int contentsW, contentsH;  // 領域全体のサイズ
+    private int topX, topY;  // 画面に表示する領域の左上の座標
+
     // サイズ更新用
     private boolean resetSize;
     private int newWidth, newHeight;
-
-    // スクロールバー
-    //private MyScrollBar scrollBar;
 
     // アイコンを動かす仕組み
     private MyIcon dragIcon;
@@ -52,7 +54,6 @@ public class MyView6 extends View implements OnTouchListener {
 
     // 挿入位置
     private InsertPoint ins = new InsertPoint(0,0,0,0);
-
 
     private Paint paint = new Paint();
     private LinkedList<MyIcon> icons = new LinkedList<MyIcon>();
@@ -67,15 +68,19 @@ public class MyView6 extends View implements OnTouchListener {
         resetSize = true;
         newWidth = width;
         newHeight = height;
-        Log.d("topview", "setSize:" + width + " " + height);
-        setLayoutParams(new LinearLayout.LayoutParams(width, height));
+
+        contentsW = width;
+        contentsH = height;
+
+                Log.d("topview", "setSize:" + width + " " + height);
+        setLayoutParams(new LinearLayout.LayoutParams(getWidth(), getHeight()));
     }
 
-    public MyView6(Context context) {
+    public MyView8(Context context) {
         this(context, null);
     }
 
-    public MyView6(Context context, AttributeSet attrs) {
+    public MyView8(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.setOnTouchListener(this);
 
@@ -117,30 +122,13 @@ public class MyView6 extends View implements OnTouchListener {
         }
     }
 
-    /**
-     * Viewのサイズを指定する
-     * @param widthMeasureSpec
-     * @param heightMeasureSpec
-     */
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.d("topview", "onMeasure " + widthMeasureSpec + " " + heightMeasureSpec);
-        if (firstDraw == false) {
-            firstDraw = true;
-            sortRects(false, MeasureSpec.getSize(widthMeasureSpec));
-        }
-
-        if (resetSize) {
-            int width = MeasureSpec.EXACTLY | newWidth;
-            int height = MeasureSpec.EXACTLY | newHeight;
-            setMeasuredDimension(width, height);
-        } else {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
-    }
-
     @Override
     public void onDraw(Canvas canvas) {
+        if (!firstDraw) {
+            firstDraw = true;
+            sortRects(false);
+        }
+
         // 背景塗りつぶし
         canvas.drawColor(Color.WHITE);
 
@@ -404,6 +392,42 @@ public class MyView6 extends View implements OnTouchListener {
         return ret;
     }
 
+
+    /**
+     * Viewをスクロールする処理
+     * @param tv
+     * @return
+     */
+    private boolean scrollView(ViewTouch tv) {
+        // 横
+        if (getWidth() < contentsW) {
+            topX += tv.moveX;
+            if (topX < 0) {
+                topX = 0;
+            } else if (topX + getWidth() > contentsW) {
+                topX = contentsW - getWidth();
+            }
+        }
+
+        // 縦
+        if (getHeight() < contentsH) {
+            topY += tv.moveY;
+            if (topY < 0) {
+                topY = 0;
+            } else if (topY + getHeight() > contentsH) {
+                topY = contentsH - getHeight();
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * タッチイベント処理
+     * @param v
+     * @param e
+     * @return
+     */
     public boolean onTouch(View v, MotionEvent e) {
         boolean ret = true;
 
@@ -441,6 +465,8 @@ public class MyView6 extends View implements OnTouchListener {
             case Moving:
                 if (dragMove(viewTouch)) {
                     done = true;
+                } else if (scrollView(viewTouch)){
+                    done = true;
                 }
                 break;
             case MoveEnd:
@@ -453,10 +479,6 @@ public class MyView6 extends View implements OnTouchListener {
                 dragIcon = null;
                 invalidate();
                 break;
-        }
-        if (done) {
-            // 何かしらアイコンに対するタッチ処理が行われたのでScrollViewのスクロールは行わない
-            v.getParent().requestDisallowInterceptTouchEvent(true);
         }
 
         switch(e.getAction()) {

@@ -14,7 +14,7 @@ import static com.sunsunsoft.shutaro.testview.ViewSettings.drawIconId;
 /**
  * ViewのonDrawで描画するアイコンの情報
  */
-abstract public class MyIcon {
+abstract public class IconBase {
 
     private static final String TAG = "MyIcon";
     private static int count;
@@ -34,11 +34,11 @@ abstract public class MyIcon {
 
     protected int color;
 
-    public MyIcon(IconShape shape, float x, float y, int width, int height) {
+    public IconBase(IconShape shape, float x, float y, int width, int height) {
         this(shape, x,y,width,height, Color.rgb(0,0,0));
     }
 
-    public MyIcon(IconShape shape, float x, float y, int width, int height, int color) {
+    public IconBase(IconShape shape, float x, float y, int width, int height, int color) {
         this.id = count;
         this.shape = shape;
         this.x = x;

@@ -13,10 +13,8 @@ package com.sunsunsoft.shutaro.testview;
     import java.util.Collections;
     import java.util.LinkedList;
 
-    import static android.content.ContentValues.TAG;
 
-
-    /**
+/**
      * アイコンの整列とアニメーション、挿入のテスト
      */
     public class MyView5 extends View implements OnTouchListener {
@@ -66,7 +64,7 @@ package com.sunsunsoft.shutaro.testview;
 
             // アイコンを追加
             for (int i=0; i<RECT_ICON_NUM; i++) {
-                MyIcon icon = new MyIconRect(0, 0, ICON_W, ICON_H);
+                MyIcon icon = new IconRect(0, 0, ICON_W, ICON_H);
                 icons.add(icon);
                 int color = 0;
                 switch (i%3) {
@@ -84,7 +82,7 @@ package com.sunsunsoft.shutaro.testview;
             }
 
             for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-                MyIcon icon = new MyIconCircle(0, 0, ICON_H);
+                MyIcon icon = new IconCircle(0, 0, ICON_H);
                 icons.add(icon);
                 int color = 0;
                 switch (i%3) {

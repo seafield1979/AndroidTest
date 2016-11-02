@@ -10,11 +10,11 @@ import android.graphics.Rect;
  * Created by shutaro on 2016/10/22.
  */
 
-public class MyIconBmp extends MyIcon {
+public class IconBmp extends IconBase {
 
     private Bitmap bmp;
 
-    public MyIconBmp(int x, int y, int width, int height, Bitmap bmp) {
+    public IconBmp(int x, int y, int width, int height, Bitmap bmp) {
         super(IconShape.IMAGE, x, y, width, height);
 
         this.bmp = bmp;
