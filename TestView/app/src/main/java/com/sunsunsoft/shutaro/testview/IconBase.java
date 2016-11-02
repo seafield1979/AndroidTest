@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.Log;
 import android.util.Size;
 import android.view.MotionEvent;
@@ -50,6 +51,7 @@ abstract public class IconBase {
     }
 
     abstract public void draw(Canvas canvas, Paint paint);
+    abstract public void draw(Canvas canvas, Paint paint, PointF top);
 
     public IconShape getShape() { return shape; }
     // 座標、サイズのGet/Set
@@ -218,7 +220,9 @@ abstract public class IconBase {
     //protected abstract void dropFunc();
 
     /**
-     *
+     * アイコンにIDを表示する
+     * @param canvas
+     * @param paint
      */
     protected void drawId(Canvas canvas, Paint paint) {
         // idを表示

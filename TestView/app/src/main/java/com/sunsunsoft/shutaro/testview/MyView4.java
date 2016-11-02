@@ -33,7 +33,7 @@ public class MyView4 extends View implements OnTouchListener {
     private boolean firstDraw = false;
 
     // アイコンを動かす仕組み
-    private MyIcon dragIcon;
+    private IconBase dragIcon;
     private int dragX;
     private int dragY;
 
@@ -44,7 +44,7 @@ public class MyView4 extends View implements OnTouchListener {
 
     private Paint paint = new Paint();
     private TouchEventCallbacks _callbacks;
-    private LinkedList<MyIcon> icons = new LinkedList<MyIcon>();
+    private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
     public void setCallbacks(TouchEventCallbacks callbacks){
         _callbacks = callbacks;
@@ -59,7 +59,7 @@ public class MyView4 extends View implements OnTouchListener {
         this.setOnTouchListener(this);
 
         for (int i=0; i<ICON_NUM; i++) {
-            MyIcon icon = new IconRect(0, 0, ICON_W, ICON_H);
+            IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
             icons.add(icon);
             int color = 0;
             switch (i%3) {
@@ -92,20 +92,20 @@ public class MyView4 extends View implements OnTouchListener {
 
         switch (state) {
             case none:
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null) continue;
                     icon.draw(canvas, paint);
                 }
                 break;
             case drag:
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null) continue;
                     icon.draw(canvas, paint);
                 }
                 break;
             case icon_moving:
                 boolean allFinish = true;
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null) continue;
                     if (!icon.move()) {
                         allFinish = false;
@@ -133,7 +133,7 @@ public class MyView4 extends View implements OnTouchListener {
 
         if (animate) {
             int i=0;
-            for (MyIcon icon : icons) {
+            for (IconBase icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
                 icon.startMove(x,y,MOVING_TIME);
@@ -143,7 +143,7 @@ public class MyView4 extends View implements OnTouchListener {
         }
         else {
             int i=0;
-            for (MyIcon icon : icons) {
+            for (IconBase icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
                 icon.setPos(x, y);
@@ -157,7 +157,7 @@ public class MyView4 extends View implements OnTouchListener {
         // 一番上のアイコンからタッチ判定したいのでリストを逆順（一番手前から）で参照する
         boolean touched = false;
         Collections.reverse(icons);
-        for (MyIcon icon : icons) {
+        for (IconBase icon : icons) {
             // 座標判定
             if (icon.x <= x && x < icon.getRight() &&
                     icon.y <= y && y < icon.getBottom())
@@ -178,7 +178,7 @@ public class MyView4 extends View implements OnTouchListener {
         }
 
 //        StringBuffer str = new StringBuffer();
-//        for (MyIcon icon : icons) {
+//        for (IconBase icon : icons) {
 //            str.append(" " + icon.id);
 //        }
 //        Log.v("mylog", str.toString());

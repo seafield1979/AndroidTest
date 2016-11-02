@@ -42,7 +42,7 @@ public class MyView6 extends View implements OnTouchListener {
     //private MyScrollBar scrollBar;
 
     // アイコンを動かす仕組み
-    private MyIcon dragIcon;
+    private IconBase dragIcon;
 
     // クリック判定の仕組み
     private ViewTouch viewTouch = new ViewTouch();
@@ -55,7 +55,7 @@ public class MyView6 extends View implements OnTouchListener {
 
 
     private Paint paint = new Paint();
-    private LinkedList<MyIcon> icons = new LinkedList<MyIcon>();
+    private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
     // get/set
 
@@ -81,7 +81,7 @@ public class MyView6 extends View implements OnTouchListener {
 
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
-            MyIcon icon = new IconRect(0, 0, ICON_W, ICON_H);
+            IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
             icons.add(icon);
             int color = 0;
             switch (i%3) {
@@ -99,7 +99,7 @@ public class MyView6 extends View implements OnTouchListener {
         }
 
         for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-            MyIcon icon = new IconCircle(0, 0, ICON_H);
+            IconBase icon = new IconCircle(0, 0, ICON_H);
             icons.add(icon);
             int color = 0;
             switch (i%3) {
@@ -149,13 +149,13 @@ public class MyView6 extends View implements OnTouchListener {
 
         switch (state) {
             case none:
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null) continue;
                     icon.draw(canvas, paint);
                 }
                 break;
             case drag:
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
                     icon.draw(canvas, paint);
                     ins.draw(canvas, paint);
@@ -166,7 +166,7 @@ public class MyView6 extends View implements OnTouchListener {
                 break;
             case icon_moving:
                 boolean allFinish = true;
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
                     if (!icon.move()) {
                         allFinish = false;
@@ -202,7 +202,7 @@ public class MyView6 extends View implements OnTouchListener {
         int maxHeight = 0;
         if (animate) {
             int i=0;
-            for (MyIcon icon : icons) {
+            for (IconBase icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
                 if ( y > maxHeight ) {
@@ -216,7 +216,7 @@ public class MyView6 extends View implements OnTouchListener {
         }
         else {
             int i=0;
-            for (MyIcon icon : icons) {
+            for (IconBase icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
                 if ( y > maxHeight ) {
@@ -238,7 +238,7 @@ public class MyView6 extends View implements OnTouchListener {
         int w = 0, h = 0;
         Collections.reverse(icons);
 
-        for (MyIcon icon : icons) {
+        for (IconBase icon : icons) {
             if (icon.getRight() > w) {
                 w = (int)icon.getRight();
             }
@@ -257,8 +257,8 @@ public class MyView6 extends View implements OnTouchListener {
      * @return
      */
     private boolean touchIcons(ViewTouch vt) {
-        for (MyIcon icon : icons) {
-            if (icon.checkClick(vt.touchX, vt.touchY)) {
+        for (IconBase icon : icons) {
+            if (icon.checkClick(vt.touchX(), vt.touchY())) {
                 return true;
             }
         }
@@ -272,8 +272,8 @@ public class MyView6 extends View implements OnTouchListener {
      */
     private boolean clickIcons(ViewTouch vt) {
         // どのアイコンがクリックされたかを判定
-        for (MyIcon icon : icons) {
-            if (icon.checkClick(vt.touchX, vt.touchY)) {
+        for (IconBase icon : icons) {
+            if (icon.checkClick(vt.touchX(), vt.touchY())) {
                 return true;
             }
         }
@@ -297,10 +297,10 @@ public class MyView6 extends View implements OnTouchListener {
         // 一番上のアイコンからタッチ判定したいのでリストを逆順（一番手前から）で参照する
         boolean ret = false;
         Collections.reverse(icons);
-        for (MyIcon icon : icons) {
+        for (IconBase icon : icons) {
             // 座標判定
-            if (icon.x <= vt.touchX && vt.touchX < icon.getRight() &&
-                    icon.y <= vt.touchY && vt.touchY < icon.getBottom())
+            if (icon.x <= vt.touchX() && vt.touchX() < icon.getRight() &&
+                    icon.y <= vt.touchY() && vt.touchY() < icon.getBottom())
             {
                 dragIcon = icon;
                 ret = true;
@@ -345,7 +345,7 @@ public class MyView6 extends View implements OnTouchListener {
         boolean ret = false;
 
         boolean isDroped = false;
-        for (MyIcon icon : icons) {
+        for (IconBase icon : icons) {
             if (icon == dragIcon) continue;
             if (icon.checkDrop(vt.x, vt.y)) {
                 switch(icon.getShape()) {
@@ -386,7 +386,7 @@ public class MyView6 extends View implements OnTouchListener {
         // その他の場所にドロップされた場合
         if (!isDroped) {
             // 最後のアイコンの後の空きスペースにドロップされた場合
-            MyIcon lastIcon = icons.getLast();
+            IconBase lastIcon = icons.getLast();
             if ((lastIcon.getY() <= vt.y && vt.y <= lastIcon.getBottom() &&
                     lastIcon.getRight() <= vt.x) ||
                     (lastIcon.getBottom() <= vt.y))

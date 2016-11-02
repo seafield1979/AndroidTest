@@ -1,5 +1,6 @@
 package com.sunsunsoft.shutaro.testview;
 
+import android.graphics.PointF;
 import android.text.method.Touch;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -38,6 +39,8 @@ public class ViewTouch {
 
     public TouchType type;
 
+    private PointF mContentTop;
+
     private Timer timer;
 
     // タッチ中にtrueになる
@@ -45,21 +48,20 @@ public class ViewTouch {
     private boolean isLongTouch;
 
     // タッチ開始した座標
-    float touchX, touchY;
+    private float touchX, touchY;
 
-    protected float x, y;
+    protected float x, y;       // スクリーン座標
     float moveX, moveY;
 
     // タッチ開始した時間
     long touchTime;
 
     // get/set
-    public float getMoveX() {
-        return moveX;
-    }
-    public float getMoveY() {
-        return moveY;
-    }
+    public float getCX() { return x + mContentTop.x; }
+    public float getCY() { return y + mContentTop.y; }
+    public float touchX() {return this.touchX + mContentTop.x;}
+    public float touchY() {return this.touchY + mContentTop.y;}
+
 
     public ViewTouch() {
         type = TouchType.None;
@@ -81,7 +83,13 @@ public class ViewTouch {
     }
 
     public TouchType checkTouchType(MotionEvent e) {
-
+        return checkTouchType(e, null);
+    }
+    public TouchType checkTouchType(MotionEvent e, PointF top) {
+        if (top == null) {
+            top = new PointF(0,0);
+        }
+        mContentTop = top;
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -168,6 +176,7 @@ public class ViewTouch {
                 }
                 break;
         }
+
         return type;
     }
 

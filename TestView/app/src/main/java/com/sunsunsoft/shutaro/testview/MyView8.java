@@ -4,12 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.LinearLayout;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -36,15 +36,11 @@ public class MyView8 extends View implements OnTouchListener {
     private int skipCount;
 
     // スクロール用
-    private int contentsW, contentsH;  // 領域全体のサイズ
-    private int topX, topY;  // 画面に表示する領域の左上の座標
-
-    // サイズ更新用
-    private boolean resetSize;
-    private int newWidth, newHeight;
+    private Size contentSize = new Size();  // 領域全体のサイズ
+    private PointF contentTop = new PointF();  // 画面に表示する領域の左上の座標
 
     // アイコンを動かす仕組み
-    private MyIcon dragIcon;
+    private IconBase dragIcon;
 
     // クリック判定の仕組み
     private ViewTouch viewTouch = new ViewTouch();
@@ -52,11 +48,8 @@ public class MyView8 extends View implements OnTouchListener {
     // アニメーション用
     private viewState state = viewState.none;
 
-    // 挿入位置
-    private InsertPoint ins = new InsertPoint(0,0,0,0);
-
     private Paint paint = new Paint();
-    private LinkedList<MyIcon> icons = new LinkedList<MyIcon>();
+    private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
     // get/set
 
@@ -64,16 +57,9 @@ public class MyView8 extends View implements OnTouchListener {
         sortRects(true, width);
     }
 
-    public void setSize(int width, int height) {
-        resetSize = true;
-        newWidth = width;
-        newHeight = height;
-
-        contentsW = width;
-        contentsH = height;
-
-                Log.d("topview", "setSize:" + width + " " + height);
-        setLayoutParams(new LinearLayout.LayoutParams(getWidth(), getHeight()));
+    public void setContentSize(int width, int height) {
+        contentSize.width = width;
+        contentSize.height = height;
     }
 
     public MyView8(Context context) {
@@ -86,7 +72,7 @@ public class MyView8 extends View implements OnTouchListener {
 
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
-            MyIcon icon = new IconRect(0, 0, ICON_W, ICON_H);
+            IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
             icons.add(icon);
             int color = 0;
             switch (i%3) {
@@ -104,7 +90,7 @@ public class MyView8 extends View implements OnTouchListener {
         }
 
         for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-            MyIcon icon = new IconCircle(0, 0, ICON_H);
+            IconBase icon = new IconCircle(0, 0, ICON_H);
             icons.add(icon);
             int color = 0;
             switch (i%3) {
@@ -137,29 +123,28 @@ public class MyView8 extends View implements OnTouchListener {
 
         switch (state) {
             case none:
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null) continue;
-                    icon.draw(canvas, paint);
+                    icon.draw(canvas, paint, contentTop);
                 }
                 break;
             case drag:
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
-                    icon.draw(canvas, paint);
-                    ins.draw(canvas, paint);
+                    icon.draw(canvas, paint, contentTop);
                 }
                 if (dragIcon != null) {
-                    dragIcon.draw(canvas, paint);
+                    dragIcon.draw(canvas, paint, contentTop);
                 }
                 break;
             case icon_moving:
                 boolean allFinish = true;
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
                     if (!icon.move()) {
                         allFinish = false;
                     }
-                    icon.draw(canvas, paint);
+                    icon.draw(canvas, paint, contentTop);
                 }
                 if (allFinish) {
                     state = viewState.none;
@@ -190,7 +175,7 @@ public class MyView8 extends View implements OnTouchListener {
         int maxHeight = 0;
         if (animate) {
             int i=0;
-            for (MyIcon icon : icons) {
+            for (IconBase icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
                 if ( y > maxHeight ) {
@@ -204,7 +189,7 @@ public class MyView8 extends View implements OnTouchListener {
         }
         else {
             int i=0;
-            for (MyIcon icon : icons) {
+            for (IconBase icon : icons) {
                 int x = (i%column) * (ICON_W + 20);
                 int y = (i/column) * (ICON_H + 20);
                 if ( y > maxHeight ) {
@@ -215,7 +200,7 @@ public class MyView8 extends View implements OnTouchListener {
             }
         }
 
-        setSize(width, maxHeight + (ICON_H + 20) * 2);
+        setContentSize(width, maxHeight + (ICON_H + 20) * 2);
     }
 
     /**
@@ -226,7 +211,7 @@ public class MyView8 extends View implements OnTouchListener {
         int w = 0, h = 0;
         Collections.reverse(icons);
 
-        for (MyIcon icon : icons) {
+        for (IconBase icon : icons) {
             if (icon.getRight() > w) {
                 w = (int)icon.getRight();
             }
@@ -245,8 +230,8 @@ public class MyView8 extends View implements OnTouchListener {
      * @return
      */
     private boolean touchIcons(ViewTouch vt) {
-        for (MyIcon icon : icons) {
-            if (icon.checkClick(vt.touchX, vt.touchY)) {
+        for (IconBase icon : icons) {
+            if (icon.checkClick(vt.touchX(), vt.touchY())) {
                 return true;
             }
         }
@@ -260,8 +245,8 @@ public class MyView8 extends View implements OnTouchListener {
      */
     private boolean clickIcons(ViewTouch vt) {
         // どのアイコンがクリックされたかを判定
-        for (MyIcon icon : icons) {
-            if (icon.checkClick(vt.touchX, vt.touchY)) {
+        for (IconBase icon : icons) {
+            if (icon.checkClick(vt.touchX(), vt.touchY())) {
                 return true;
             }
         }
@@ -285,10 +270,10 @@ public class MyView8 extends View implements OnTouchListener {
         // 一番上のアイコンからタッチ判定したいのでリストを逆順（一番手前から）で参照する
         boolean ret = false;
         Collections.reverse(icons);
-        for (MyIcon icon : icons) {
+        for (IconBase icon : icons) {
             // 座標判定
-            if (icon.x <= vt.touchX && vt.touchX < icon.getRight() &&
-                    icon.y <= vt.touchY && vt.touchY < icon.getBottom())
+            if (icon.x <= vt.touchX() && vt.touchX() < icon.getRight() &&
+                    icon.y <= vt.touchY() && vt.touchY() < icon.getBottom())
             {
                 dragIcon = icon;
                 ret = true;
@@ -333,9 +318,9 @@ public class MyView8 extends View implements OnTouchListener {
         boolean ret = false;
 
         boolean isDroped = false;
-        for (MyIcon icon : icons) {
+        for (IconBase icon : icons) {
             if (icon == dragIcon) continue;
-            if (icon.checkDrop(vt.x, vt.y)) {
+            if (icon.checkDrop(vt.getCX(), vt.getCY())) {
                 switch(icon.getShape()) {
                     case CIRCLE:
                         // ドラッグ位置のアイコンと場所を交換する
@@ -374,10 +359,10 @@ public class MyView8 extends View implements OnTouchListener {
         // その他の場所にドロップされた場合
         if (!isDroped) {
             // 最後のアイコンの後の空きスペースにドロップされた場合
-            MyIcon lastIcon = icons.getLast();
-            if ((lastIcon.getY() <= vt.y && vt.y <= lastIcon.getBottom() &&
-                    lastIcon.getRight() <= vt.x) ||
-                    (lastIcon.getBottom() <= vt.y))
+            IconBase lastIcon = icons.getLast();
+            if ((lastIcon.getY() <= vt.getCY() && vt.getCY() <= lastIcon.getBottom() &&
+                    lastIcon.getRight() <= vt.getCX()) ||
+                    (lastIcon.getBottom() <= vt.getCY()))
             {
                 // ドラッグ中のアイコンをリストの最後に移動
                 icons.remove(dragIcon);
@@ -399,25 +384,30 @@ public class MyView8 extends View implements OnTouchListener {
      * @return
      */
     private boolean scrollView(ViewTouch tv) {
+        // タッチの移動とスクロール方向は逆
+        float moveX = tv.moveX * (-1);
+        float moveY = tv.moveY * (-1);
+
         // 横
-        if (getWidth() < contentsW) {
-            topX += tv.moveX;
-            if (topX < 0) {
-                topX = 0;
-            } else if (topX + getWidth() > contentsW) {
-                topX = contentsW - getWidth();
+        if (getWidth() < contentSize.width) {
+            contentTop.x += moveX;
+            if (contentTop.x < 0) {
+                contentTop.x = 0;
+            } else if (contentTop.x + getWidth() > contentSize.width) {
+                contentTop.x = contentSize.width - getWidth();
             }
         }
 
         // 縦
-        if (getHeight() < contentsH) {
-            topY += tv.moveY;
-            if (topY < 0) {
-                topY = 0;
-            } else if (topY + getHeight() > contentsH) {
-                topY = contentsH - getHeight();
+        if (getHeight() < contentSize.height) {
+            contentTop.y += moveY;
+            if (contentTop.y < 0) {
+                contentTop.y = 0;
+            } else if (contentTop.y + getHeight() > contentSize.height) {
+                contentTop.y = contentSize.height - getHeight();
             }
         }
+        invalidate();
 
         return true;
     }
@@ -433,7 +423,7 @@ public class MyView8 extends View implements OnTouchListener {
 
         if (state == viewState.icon_moving) return true;
 
-        TouchType touchType = viewTouch.checkTouchType(e);
+        TouchType touchType = viewTouch.checkTouchType(e, contentTop);
 
         if (viewTouch.checkLongTouch()) {
             // ロングタッチの処理

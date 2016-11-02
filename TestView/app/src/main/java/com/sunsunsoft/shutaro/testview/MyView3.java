@@ -25,7 +25,7 @@ public class MyView3 extends View implements View.OnClickListener, View.OnTouchL
 
     private Paint paint = new Paint();
     private TouchEventCallbacks _callbacks;
-    private MyIcon[] icons = new MyIcon[ICON_NUM];
+    private IconBase[] icons = new IconBase[ICON_NUM];
 
     public void setCallbacks(TouchEventCallbacks callbacks){
         _callbacks = callbacks;
@@ -69,7 +69,7 @@ public class MyView3 extends View implements View.OnClickListener, View.OnTouchL
         // アンチエリアシング(境界のぼかし)
         paint.setAntiAlias(true);
 
-        for (MyIcon icon : icons) {
+        for (IconBase icon : icons) {
             if (icon == null) continue;
             icon.draw(canvas, paint);
         }

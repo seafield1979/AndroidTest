@@ -34,7 +34,7 @@ package com.sunsunsoft.shutaro.testview;
         private int skipCount;
 
         // アイコンを動かす仕組み
-        private MyIcon dragIcon;
+        private IconBase dragIcon;
 
         // クリック判定の仕組み
         private ViewTouch viewTouch = new ViewTouch();
@@ -48,7 +48,7 @@ package com.sunsunsoft.shutaro.testview;
 
         private Paint paint = new Paint();
         private TouchEventCallbacks _callbacks;
-        private LinkedList<MyIcon> icons = new LinkedList<MyIcon>();
+        private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
         public void setCallbacks(TouchEventCallbacks callbacks){
             _callbacks = callbacks;
@@ -64,7 +64,7 @@ package com.sunsunsoft.shutaro.testview;
 
             // アイコンを追加
             for (int i=0; i<RECT_ICON_NUM; i++) {
-                MyIcon icon = new IconRect(0, 0, ICON_W, ICON_H);
+                IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
                 icons.add(icon);
                 int color = 0;
                 switch (i%3) {
@@ -82,7 +82,7 @@ package com.sunsunsoft.shutaro.testview;
             }
 
             for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-                MyIcon icon = new IconCircle(0, 0, ICON_H);
+                IconBase icon = new IconCircle(0, 0, ICON_H);
                 icons.add(icon);
                 int color = 0;
                 switch (i%3) {
@@ -116,13 +116,13 @@ package com.sunsunsoft.shutaro.testview;
 
             switch (state) {
                 case none:
-                    for (MyIcon icon : icons) {
+                    for (IconBase icon : icons) {
                         if (icon == null) continue;
                         icon.draw(canvas, paint);
                     }
                     break;
                 case drag:
-                    for (MyIcon icon : icons) {
+                    for (IconBase icon : icons) {
                         if (icon == null || icon == dragIcon) continue;
                         icon.draw(canvas, paint);
                         ins.draw(canvas, paint);
@@ -133,7 +133,7 @@ package com.sunsunsoft.shutaro.testview;
                     break;
                 case icon_moving:
                     boolean allFinish = true;
-                    for (MyIcon icon : icons) {
+                    for (IconBase icon : icons) {
                         if (icon == null || icon == dragIcon) continue;
                         if (!icon.move()) {
                             allFinish = false;
@@ -161,7 +161,7 @@ package com.sunsunsoft.shutaro.testview;
 
             if (animate) {
                 int i=0;
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     int x = (i%column) * (ICON_W + 20);
                     int y = (i/column) * (ICON_H + 20);
                     icon.startMove(x,y,MOVING_TIME);
@@ -172,7 +172,7 @@ package com.sunsunsoft.shutaro.testview;
             }
             else {
                 int i=0;
-                for (MyIcon icon : icons) {
+                for (IconBase icon : icons) {
                     int x = (i%column) * (ICON_W + 20);
                     int y = (i/column) * (ICON_H + 20);
                     icon.setPos(x, y);
@@ -187,8 +187,8 @@ package com.sunsunsoft.shutaro.testview;
          */
         private void clickIcons(ViewTouch vt) {
             // どのアイコンがクリックされたかを判定
-            for (MyIcon icon : icons) {
-                if (icon.checkClick(vt.touchX, vt.touchY)) {
+            for (IconBase icon : icons) {
+                if (icon.checkClick(vt.touchX(), vt.touchY())) {
                     break;
                 }
             }
@@ -210,10 +210,10 @@ package com.sunsunsoft.shutaro.testview;
             // タッチされたアイコンを選択する
             // 一番上のアイコンからタッチ判定したいのでリストを逆順（一番手前から）で参照する
             Collections.reverse(icons);
-            for (MyIcon icon : icons) {
+            for (IconBase icon : icons) {
                 // 座標判定
-                if (icon.x <= vt.touchX && vt.touchX < icon.getRight() &&
-                        icon.y <= vt.touchY && vt.touchY < icon.getBottom())
+                if (icon.x <= vt.touchX() && vt.touchX() < icon.getRight() &&
+                        icon.y <= vt.touchY() && vt.touchY() < icon.getBottom())
                 {
                     dragIcon = icon;
                     break;
@@ -245,9 +245,9 @@ package com.sunsunsoft.shutaro.testview;
             if (dragIcon == null) return;
 
             boolean isDroped = false;
-            for (MyIcon icon : icons) {
+            for (IconBase icon : icons) {
                 if (icon == dragIcon) continue;
-                if (icon.checkDrop(vt.x, vt.y)) {
+                if (icon.checkDrop(vt.getCX(), vt.getCY())) {
                     switch(icon.getShape()) {
                         case CIRCLE:
                             // ドラッグ位置のアイコンと場所を交換する
@@ -285,10 +285,10 @@ package com.sunsunsoft.shutaro.testview;
             // その他の場所にドロップされた場合
             if (!isDroped) {
                 // 最後のアイコンの後の空きスペースにドロップされた場合
-                MyIcon lastIcon = icons.getLast();
-                if ((lastIcon.getY() <= vt.y && vt.y <= lastIcon.getBottom() &&
-                        lastIcon.getRight() <= vt.x) ||
-                        (lastIcon.getBottom() <= vt.y))
+                IconBase lastIcon = icons.getLast();
+                if ((lastIcon.getY() <= vt.getCX() && vt.getCY() <= lastIcon.getBottom() &&
+                        lastIcon.getRight() <= vt.getCX()) ||
+                        (lastIcon.getBottom() <= vt.getCY()))
                 {
                     // ドラッグ中のアイコンをリストの最後に移動
                     icons.remove(dragIcon);
