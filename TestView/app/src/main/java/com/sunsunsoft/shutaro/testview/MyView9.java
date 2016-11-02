@@ -1,6 +1,8 @@
 package com.sunsunsoft.shutaro.testview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,12 +17,11 @@ import android.widget.LinearLayout;
 import java.util.Collections;
 import java.util.LinkedList;
 
-
 /**
  * メニューバー、サブViewのサンプル
  *
  */
-public class MyView9 extends View implements OnTouchListener {
+public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
     enum viewState {
         none,
         drag,               // アイコンのドラッグ中
@@ -35,6 +36,9 @@ public class MyView9 extends View implements OnTouchListener {
     private boolean firstDraw = false;
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
+
+    // メニューバー
+    private MenuBar mMenuBar;
 
     // スクロール用
     private Size contentSize = new Size();  // 領域全体のサイズ
@@ -169,6 +173,9 @@ public class MyView9 extends View implements OnTouchListener {
 
         // スクロールバー
         mScrollV.draw(canvas, paint);
+
+        // メニューバー
+        mMenuBar.draw(canvas, paint);
     }
 
     /**
@@ -183,11 +190,19 @@ public class MyView9 extends View implements OnTouchListener {
         int viewW = MeasureSpec.getSize(widthMeasureSpec);
         int viewH = MeasureSpec.getSize(heightMeasureSpec);
 
+        // メニューバー
+        if (mMenuBar == null) {
+            initMenuBar(viewW, viewH);
+        }
+
+        // スクロールバー
         if (mScrollV == null) {
             mScrollV = new MyScrollBar(ScrollBarType.Right, viewW, viewH, 40, contentSize.height);
         } else {
             mScrollV.updateContent(contentSize, viewW, viewH);
         }
+
+
 
         if (resetSize) {
             int width = MeasureSpec.EXACTLY | newWidth;
@@ -249,6 +264,55 @@ public class MyView9 extends View implements OnTouchListener {
     }
 
     /**
+     * メニューバーを初期化
+     */
+    private void initMenuBar(int viewW, int viewH) {
+        mMenuBar = new MenuBar(viewW, viewH);
+
+        // トップ要素
+        int bmpId = R.drawable.hogeman;
+        MenuItemId retId = MenuItemId.AddBook;
+        TopMenu topId = TopMenu.Add;
+
+        addTopMenuItem(TopMenu.Add, MenuItemId.AddTop, R.drawable.hogeman);
+        addTopMenuItem(TopMenu.Sort, MenuItemId.SortTop, R.drawable.hogeman);
+        addTopMenuItem(TopMenu.ListType, MenuItemId.ListTypeTop, R.drawable.hogeman);
+
+        // 子要素
+        addChildMenuItem(TopMenu.Add, MenuItemId.AddCard, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.Add, MenuItemId.AddBook, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.Add, MenuItemId.AddBox, R.drawable.hogeman);
+
+    }
+
+    /**
+     * メニューのトップ項目を追加する
+     * @param topId
+     * @param menuId
+     * @param bmpId
+     */
+    private void addTopMenuItem(TopMenu topId, MenuItemId menuId, int bmpId) {
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), bmpId);
+        MenuItem item = new MenuItem(menuId, bmp);
+        item.setCallbacks(this);
+        mMenuBar.addItem(topId, item);
+    }
+
+
+    /**
+     * メニューの子要素を追加する
+     * @param topId
+     * @param menuId
+     * @param bmpId
+     */
+    private void addChildMenuItem(TopMenu topId, MenuItemId menuId, int bmpId) {
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), bmpId);
+        MenuItem item = new MenuItem(menuId, bmp);
+        item.setCallbacks(this);
+        mMenuBar.addChildItem(topId, item);
+    }
+
+    /**
      * コンテンツ表示領域を計算する
      */
     private void setContentArea() {
@@ -276,7 +340,7 @@ public class MyView9 extends View implements OnTouchListener {
      */
     private boolean touchIcons(ViewTouch vt) {
         for (IconBase icon : icons) {
-            if (icon.checkClick(vt.touchX(), vt.touchY())) {
+            if (icon.checkTouch(vt.touchX(), vt.touchY())) {
                 return true;
             }
         }
@@ -296,6 +360,10 @@ public class MyView9 extends View implements OnTouchListener {
             }
         }
         return false;
+    }
+
+    private boolean clickMenuBar(ViewTouch vt) {
+        return mMenuBar.checkClick(vt.touchOrgX(), vt.touchOrgY());
     }
 
     /**
@@ -489,7 +557,10 @@ public class MyView9 extends View implements OnTouchListener {
                 }
                 break;
             case Click:
-                if (clickIcons(viewTouch)) {
+                if (clickMenuBar(viewTouch)) {
+                    invalidate();
+                    done = true;
+                } else if (clickIcons(viewTouch)) {
                     done = true;
                 }
                 break;
@@ -537,5 +608,17 @@ public class MyView9 extends View implements OnTouchListener {
 
         // コールバック
         return ret;
+    }
+
+
+    /**
+     * メニューアイテムをタップした時のコールバック
+     */
+    public void callback1(MenuItemId id) {
+        MyLog.print("MyView9", "menu item clicked " + id);
+    }
+
+    public void callback2() {
+        MyLog.print("MyView9", "menu item moved");
     }
 }

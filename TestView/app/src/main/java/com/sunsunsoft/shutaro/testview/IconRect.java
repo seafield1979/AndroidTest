@@ -28,7 +28,7 @@ public class IconRect extends IconBase {
         }
 
         // 内部を塗りつぶし
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setStyle(Paint.Style.FILL);
         // 色
         paint.setColor(color);
 
