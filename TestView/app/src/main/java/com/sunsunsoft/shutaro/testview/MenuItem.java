@@ -5,10 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.util.Log;
-
-import java.util.LinkedList;
-
 
 // メニューをタッチした時に返されるID
 enum MenuItemId {
@@ -30,24 +26,18 @@ enum MenuItemId {
  * メニューに表示する項目
  * アイコンを表示してタップされたらIDを返すぐらいの機能しか持たない
  */
-public class MenuItem {
+abstract public class MenuItem {
     public static final int ITEM_W = 120;
     public static final int ITEM_H = 120;
-    private static final int CHILD_MARGIN_V = 50;
 
-    private PointF pos = new PointF();
+    protected PointF pos = new PointF();
 
-    // タップされた時に返すID
-    private MenuItemId id;
+    protected MenuItemId id;
 
     // アイコン用画像
-    private Bitmap icon;
+    protected Bitmap icon;
 
-    private MenuItemCallbacks mCallbacks;
-
-    private LinkedList<MenuItem> childItems;
-
-    private boolean isOpened;
+    protected MenuItemCallbacks mCallbacks;
 
     public void setCallbacks(MenuItemCallbacks callbacks){
         mCallbacks = callbacks;
@@ -65,29 +55,6 @@ public class MenuItem {
     public MenuItem(MenuItemId id, Bitmap icon) {
         this.id = id;
         this.icon = icon;
-    }
-
-    public LinkedList<MenuItem> getChildItems() {
-        return childItems;
-    }
-
-    public boolean isOpened() {
-        return isOpened;
-    }
-
-    public void setOpened(boolean opened) {
-        isOpened = opened;
-    }
-
-    /**
-     * 子要素を追加する
-     * @param item
-     */
-    public void addItem(MenuItem item) {
-        if (childItems == null) {
-            childItems = new LinkedList<MenuItem>();
-        }
-        childItems.add(item);
     }
 
     public void draw(Canvas canvas, Paint paint, PointF parentPos) {
@@ -111,18 +78,6 @@ public class MenuItem {
             canvas.drawBitmap(icon, new Rect(0,0,icon.getWidth(), icon.getHeight()),
                     new Rect((int)drawPos.x, (int)drawPos.y, (int)drawPos.x + ITEM_W,(int)drawPos.y + ITEM_H),
                     paint);
-        }
-
-        // 子要素をまとめて描画
-        PointF _pos = new PointF();
-        if (isOpened && childItems != null) {
-            for (int i=0; i<childItems.size(); i++) {
-                MenuItem child = childItems.get(i);
-
-                _pos.x = drawPos.x;
-                _pos.y = drawPos.y - (i+1) * (ITEM_H + CHILD_MARGIN_V);
-                child.drawAtPos(canvas, paint, _pos);
-            }
         }
     }
 
@@ -155,27 +110,5 @@ public class MenuItem {
      * @param clickX
      * @param clickY
      */
-    public boolean checkClick(float clickX, float clickY) {
-        if (pos.x <= clickX && clickX <= pos.x + ITEM_W &&
-                pos.y <= clickY && clickY <= pos.y + ITEM_H)
-        {
-            Log.d("MenuItem", "clicked");
-            // 子要素を持っていたら Open/Close
-            if (childItems != null) {
-                if (isOpened) {
-                    isOpened = false;
-                } else {
-                    isOpened = true;
-                }
-                Log.d("MenuItem", "isOpened " + isOpened);
-            }
-
-            // タッチされた時の処理
-            if (mCallbacks != null) {
-                mCallbacks.callback1(id);
-            }
-            return true;
-        }
-        return false;
-    }
+    abstract public boolean checkClick(float clickX, float clickY);
 }

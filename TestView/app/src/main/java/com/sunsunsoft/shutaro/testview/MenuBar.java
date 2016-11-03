@@ -28,7 +28,7 @@ public class MenuBar {
 
     private PointF pos = new PointF();
     private int width, height;
-    MenuItem[] topItems = new MenuItem[TOP_MENU_MAX];
+    MenuItemTop[] topItems = new MenuItemTop[TOP_MENU_MAX];
 
     public MenuBar(int viewW, int viewH) {
         pos.x = 0;
@@ -42,7 +42,7 @@ public class MenuBar {
      * @param index   項目を追加する位置
      * @param item    追加する項目
      */
-    public void addItem(TopMenu index, MenuItem item) {
+    public void addItem(TopMenu index, MenuItemTop item) {
         int pos = index.ordinal();
         if (pos >= TOP_MENU_MAX) return;
 
@@ -58,8 +58,8 @@ public class MenuBar {
      * @param index
      * @param item
      */
-    public void addChildItem(TopMenu index, MenuItem item) {
-        MenuItem topItem = topItems[index.ordinal()];
+    public void addChildItem(TopMenu index, MenuItemChild item) {
+        MenuItemTop topItem = topItems[index.ordinal()];
         if (topItem == null) return;
 
         topItem.addItem(item);
@@ -101,22 +101,12 @@ public class MenuBar {
         clickY -= pos.y;
         boolean done = false;
         for (int i=0; i<topItems.length; i++) {
-            MenuItem item = topItems[i];
+            MenuItemTop item = topItems[i];
             if (item == null) continue;
 
             if (item.checkClick(clickX, clickY)) {
                 done = true;
                 break;
-            }
-            // 子要素
-            LinkedList<MenuItem> childs = item.getChildItems();
-            if (childs != null) {
-                for (MenuItem child : childs) {
-                    if (child.checkClick(clickX, clickY)) {
-                        done = true;
-                        break;
-                    }
-                }
             }
             if (done) break;
         }

@@ -279,9 +279,18 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         addTopMenuItem(TopMenu.ListType, MenuItemId.ListTypeTop, R.drawable.hogeman);
 
         // 子要素
+        // Add
         addChildMenuItem(TopMenu.Add, MenuItemId.AddCard, R.drawable.hogeman);
         addChildMenuItem(TopMenu.Add, MenuItemId.AddBook, R.drawable.hogeman);
         addChildMenuItem(TopMenu.Add, MenuItemId.AddBox, R.drawable.hogeman);
+        // Sort
+        addChildMenuItem(TopMenu.Sort, MenuItemId.Sort1, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.Sort, MenuItemId.Sort2, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.Sort, MenuItemId.Sort3, R.drawable.hogeman);
+        // ListType
+        addChildMenuItem(TopMenu.ListType, MenuItemId.ListType1, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.ListType, MenuItemId.ListType2, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.ListType, MenuItemId.ListType3, R.drawable.hogeman);
 
     }
 
@@ -293,7 +302,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
      */
     private void addTopMenuItem(TopMenu topId, MenuItemId menuId, int bmpId) {
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), bmpId);
-        MenuItem item = new MenuItem(menuId, bmp);
+        MenuItemTop item = new MenuItemTop(menuId, bmp);
         item.setCallbacks(this);
         mMenuBar.addItem(topId, item);
     }
@@ -307,7 +316,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
      */
     private void addChildMenuItem(TopMenu topId, MenuItemId menuId, int bmpId) {
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), bmpId);
-        MenuItem item = new MenuItem(menuId, bmp);
+        MenuItemChild item = new MenuItemChild(menuId, bmp);
         item.setCallbacks(this);
         mMenuBar.addChildItem(topId, item);
     }
@@ -609,7 +618,6 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         // コールバック
         return ret;
     }
-
 
     /**
      * メニューアイテムをタップした時のコールバック
