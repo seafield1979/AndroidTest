@@ -2,6 +2,7 @@ package com.sunsunsoft.shutaro.testview;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -29,6 +30,8 @@ enum MenuItemId {
 abstract public class MenuItem{
     public static final int ITEM_W = 120;
     public static final int ITEM_H = 120;
+    public static final int ANIME_FRAME = 15;
+    public static final double RAD = 3.1415 / 180.0;
 
     protected PointF pos = new PointF();
 
@@ -39,11 +42,17 @@ abstract public class MenuItem{
 
     protected MenuItemCallbacks mCallbacks;
 
+    // アニメーション用
+    private boolean isAnimating;
+    private int animeFrame;
+    private int animeFrameMax;
+    private int animeColor;
+
+    // Get/Set
     public void setCallbacks(MenuItemCallbacks callbacks){
         mCallbacks = callbacks;
     }
 
-    // Get/Set
     public void setPos(float x, float y) {
         pos.x = x;
         pos.y = y;
@@ -61,24 +70,56 @@ abstract public class MenuItem{
         // 内部を塗りつぶし
         paint.setStyle(Paint.Style.FILL);
         // 色
-        paint.setColor(0xffff0000);
+        paint.setColor(0);
 
         PointF drawPos = new PointF();
         drawPos.x = pos.x + parentPos.x;
         drawPos.y = pos.y + parentPos.y;
 
-        canvas.drawRect(drawPos.x,
-                drawPos.y,
-                drawPos.x + ITEM_W,
-                drawPos.y + ITEM_H,
-                paint);
+//        canvas.drawRect(drawPos.x,
+//                drawPos.y,
+//                drawPos.x + ITEM_W,
+//                drawPos.y + ITEM_H,
+//                paint);
 
         if (icon != null) {
             // 領域の幅に合わせて伸縮
+            if (isAnimating) {
+                double v1 = ((double)animeFrame / (double)animeFrameMax) * 180;
+                int alpha = (int)((1.0 -  Math.sin(v1 * RAD)) * 255);
+                MyLog.print("MenuItem", "v1:" + v1 + " alpha:" + alpha);
+                paint.setColor((alpha << 24) | animeColor);
+            } else {
+                paint.setColor(0xff000000);
+            }
+
             canvas.drawBitmap(icon, new Rect(0,0,icon.getWidth(), icon.getHeight()),
                     new Rect((int)drawPos.x, (int)drawPos.y, (int)drawPos.x + ITEM_W,(int)drawPos.y + ITEM_H),
                     paint);
         }
+    }
+
+    public void startAnim() {
+        isAnimating = true;
+        animeFrame = 0;
+        animeFrameMax = ANIME_FRAME;
+        animeColor = Color.argb(0,255,255,255);
+    }
+
+    /**
+     * アニメーション処理
+     * といいつつフレームのカウンタを増やしているだけ
+     * @return true:アニメーション中
+     */
+    public boolean animate() {
+        if (!isAnimating) return false;
+        if (animeFrame >= animeFrameMax) {
+            isAnimating = false;
+            return false;
+        }
+
+        animeFrame++;
+        return true;
     }
 
     /**

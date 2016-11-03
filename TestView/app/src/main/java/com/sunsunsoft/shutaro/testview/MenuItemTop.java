@@ -103,6 +103,9 @@ public class MenuItemTop extends MenuItem{
             if (mCallbacks != null) {
                 mCallbacks.callback1(id);
             }
+            // アニメーション
+            startAnim();
+
             return true;
         }
 
@@ -159,6 +162,28 @@ public class MenuItemTop extends MenuItem{
             }
         }
 
+        return !allFinished;
+    }
+
+    /**
+     * 自分と子アイテムのアニメーション処理を行う
+     * @return true:アニメーション中
+     */
+    @Override
+    public boolean animate() {
+        boolean allFinished = true;
+        if (super.animate()) {
+            allFinished = false;
+        }
+
+        // 子要素
+        if (childItems != null) {
+            for (MenuItemChild item : childItems) {
+                if (item.animate()) {
+                    allFinished = false;
+                }
+            }
+        }
         return !allFinished;
     }
 }

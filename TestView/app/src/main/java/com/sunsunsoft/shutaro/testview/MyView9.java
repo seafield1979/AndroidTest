@@ -556,54 +556,55 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
 
         boolean done = false;
 
-        switch(touchType) {
-            case Touch:
-                if (touchIcons(viewTouch)) {
-                    done = true;
-                }
-                break;
-            case Click:
-                if (clickMenuBar(viewTouch)) {
-                    invalidate();
-                    done = true;
-                } else if (clickIcons(viewTouch)) {
-                    done = true;
-                }
-                break;
-            case LongClick:
-                longClickIcons(viewTouch);
-                done = true;
-                break;
-            case MoveStart:
-                if (dragStart(viewTouch)) {
-                    done = true;
-                }
-                break;
-            case Moving:
-                if (dragMove(viewTouch)) {
-                    done = true;
-                }
-                break;
-            case MoveEnd:
-                if (dragEnd(viewTouch)) {
-                    done = true;
-                }
-                break;
-            case MoveCancel:
-                sortRects(false);
-                dragIcon = null;
-                invalidate();
-                break;
+        // スクロールバーのタッチ処理
+        if (mScrollV.touchEvent(viewTouch)) {
+            contentTop.y = mScrollV.getTopPos();
+            done = true;
+            invalidate();
         }
 
         if (!done) {
-            // スクロールバーのタッチ処理
-            if (mScrollV.touchEvent(viewTouch)) {
-                contentTop.y = mScrollV.getTopPos();
-                done = true;
-                invalidate();
+            switch (touchType) {
+                case Touch:
+                    if (touchIcons(viewTouch)) {
+                        done = true;
+                    }
+                    break;
+                case Click:
+                    if (clickMenuBar(viewTouch)) {
+                        invalidate();
+                        done = true;
+                    } else if (clickIcons(viewTouch)) {
+                        done = true;
+                    }
+                    break;
+                case LongClick:
+                    longClickIcons(viewTouch);
+                    done = true;
+                    break;
+                case MoveStart:
+                    if (dragStart(viewTouch)) {
+                        done = true;
+                    }
+                    break;
+                case Moving:
+                    if (dragMove(viewTouch)) {
+                        done = true;
+                    }
+                    break;
+                case MoveEnd:
+                    if (dragEnd(viewTouch)) {
+                        done = true;
+                    }
+                    break;
+                case MoveCancel:
+                    sortRects(false);
+                    dragIcon = null;
+                    invalidate();
+                    break;
             }
         }
+
         if (!done) {
             // 画面のスクロール処理
             if (scrollView(viewTouch)){
@@ -612,7 +613,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         }
 
         switch(e.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+                                   case MotionEvent.ACTION_DOWN:
                 // trueを返す。こうしないと以降のMoveイベントが発生しなくなる。
                 ret = true;
                 break;

@@ -20,7 +20,7 @@ public class MenuBar {
     private static final int MENU_BAR_H = 150;
     private static final int MARGIN_L = 30;
     private static final int MARGIN_LR = 50;
-    private static final int MARGIN_TOP = 30;
+    private static final int MARGIN_TOP = 15;
     public static final int TOP_MENU_MAX = TopMenu.TopMenuMax.ordinal();
 
     private PointF pos = new PointF();
@@ -99,7 +99,13 @@ public class MenuBar {
 
         boolean allFinished = true;
         for (MenuItemTop item : topItems) {
+            // 移動
             if (item.moveChilds()) {
+                allFinished = false;
+            }
+
+            // アニメーション
+            if (item.animate()) {
                 allFinished = false;
             }
         }
@@ -142,6 +148,7 @@ public class MenuBar {
 
         return done;
     }
+
 
     /**
      * メニューを閉じる

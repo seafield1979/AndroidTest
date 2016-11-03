@@ -59,6 +59,9 @@ public class MenuItemChild extends MenuItem implements AutoMovable{
             if (mCallbacks != null) {
                 mCallbacks.callback1(id);
             }
+            // アニメーション
+            startAnim();
+
             return true;
         }
         return false;
