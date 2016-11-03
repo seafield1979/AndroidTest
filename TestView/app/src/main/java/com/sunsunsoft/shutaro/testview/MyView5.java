@@ -247,7 +247,7 @@ package com.sunsunsoft.shutaro.testview;
             boolean isDroped = false;
             for (IconBase icon : icons) {
                 if (icon == dragIcon) continue;
-                if (icon.checkDrop(vt.getCX(), vt.getCY())) {
+                if (icon.checkDrop(vt.touchX(), vt.touchY())) {
                     switch(icon.getShape()) {
                         case CIRCLE:
                             // ドラッグ位置のアイコンと場所を交換する
@@ -286,9 +286,9 @@ package com.sunsunsoft.shutaro.testview;
             if (!isDroped) {
                 // 最後のアイコンの後の空きスペースにドロップされた場合
                 IconBase lastIcon = icons.getLast();
-                if ((lastIcon.getY() <= vt.getCX() && vt.getCY() <= lastIcon.getBottom() &&
-                        lastIcon.getRight() <= vt.getCX()) ||
-                        (lastIcon.getBottom() <= vt.getCY()))
+                if ((lastIcon.getY() <= vt.touchY() && vt.touchY() <= lastIcon.getBottom() &&
+                        lastIcon.getRight() <= vt.touchX()) ||
+                        (lastIcon.getBottom() <= vt.touchY()))
                 {
                     // ドラッグ中のアイコンをリストの最後に移動
                     icons.remove(dragIcon);

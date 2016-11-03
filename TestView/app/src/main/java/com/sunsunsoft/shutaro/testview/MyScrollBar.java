@@ -280,8 +280,8 @@ public class MyScrollBar {
      */
     private boolean touchDown(ViewTouch vt) {
         // スペース部分をタッチしたら１画面分スクロール
-        float ex = vt.touchOrgX();
-        float ey = vt.touchOrgY();
+        float ex = vt.touchX();
+        float ey = vt.touchY();
 
         if (isVertical()) {
             if (x <= ex && ex < x + bgWidth &&

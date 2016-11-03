@@ -269,7 +269,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
      * メニューバーを初期化
      */
     private void initMenuBar(int viewW, int viewH) {
-        mMenuBar = new MenuBar(viewW, viewH);
+        mMenuBar = new MenuBar(this, this, viewW, viewH);
 
         // トップ要素
         int bmpId = R.drawable.hogeman;
@@ -374,7 +374,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
     }
 
     private boolean clickMenuBar(ViewTouch vt) {
-        return mMenuBar.checkClick(vt.touchOrgX(), vt.touchOrgY());
+        return mMenuBar.checkClick(vt.touchX(), vt.touchY());
     }
 
     /**
@@ -445,7 +445,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         boolean isDroped = false;
         for (IconBase icon : icons) {
             if (icon == dragIcon) continue;
-            if (icon.checkDrop(vt.getCX(), vt.getCY())) {
+            if (icon.checkDrop(vt.touchX(), vt.touchY())) {
                 switch(icon.getShape()) {
                     case CIRCLE:
                         // ドラッグ位置のアイコンと場所を交換する
@@ -485,9 +485,9 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         if (!isDroped) {
             // 最後のアイコンの後の空きスペースにドロップされた場合
             IconBase lastIcon = icons.getLast();
-            if ((lastIcon.getY() <= vt.getCY() && vt.getCY() <= lastIcon.getBottom() &&
-                    lastIcon.getRight() <= vt.getCX()) ||
-                    (lastIcon.getBottom() <= vt.getCY()))
+            if ((lastIcon.getY() <= vt.touchY() && vt.touchY() <= lastIcon.getBottom() &&
+                    lastIcon.getRight() <= vt.touchX()) ||
+                    (lastIcon.getBottom() <= vt.touchY()))
             {
                 // ドラッグ中のアイコンをリストの最後に移動
                 icons.remove(dragIcon);
@@ -552,7 +552,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
 
         if (state == viewState.icon_moving) return true;
 
-        TouchType touchType = viewTouch.checkTouchType(e, contentTop);
+        TouchType touchType = viewTouch.checkTouchType(e);
 
         boolean done = false;
 

@@ -17,9 +17,9 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return MyFragment9.newInstance(android.R.color.holo_blue_bright);
+                return MyFragment10.newInstance(android.R.color.holo_blue_bright);
             case 1:
-                return MyFragment7.newInstance(android.R.color.holo_green_light);
+                return MyFragment9.newInstance(android.R.color.holo_green_light);
             case 2:
                 return MyFragment8.newInstance(android.R.color.holo_red_dark);
             case 3:

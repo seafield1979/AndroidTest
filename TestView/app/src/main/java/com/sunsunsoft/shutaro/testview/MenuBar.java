@@ -1,8 +1,11 @@
 package com.sunsunsoft.shutaro.testview;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.view.View;
 
 // メニューバーのトップ項目
 enum TopMenu {
@@ -25,13 +28,68 @@ public class MenuBar {
 
     private PointF pos = new PointF();
     private int width, height;
+    private View mParentView;
+    private MenuItemCallbacks mCallbackClass;
     MenuItemTop[] topItems = new MenuItemTop[TOP_MENU_MAX];
 
-    public MenuBar(int viewW, int viewH) {
+    public MenuBar(View parentView, MenuItemCallbacks callbackClass, int viewW, int viewH) {
         pos.x = 0;
         pos.y = viewH - MENU_BAR_H - 100;
         width = viewW;
         height = MENU_BAR_H;
+        mParentView = parentView;
+        mCallbackClass = callbackClass;
+    }
+
+    /**
+     * メニューバーを初期化
+     */
+    public void initMenuBar() {
+        // トップ要素
+        addTopMenuItem(TopMenu.Add, MenuItemId.AddTop, R.drawable.hogeman);
+        addTopMenuItem(TopMenu.Sort, MenuItemId.SortTop, R.drawable.hogeman);
+        addTopMenuItem(TopMenu.ListType, MenuItemId.ListTypeTop, R.drawable.hogeman);
+
+        // 子要素
+        // Add
+        addChildMenuItem(TopMenu.Add, MenuItemId.AddCard, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.Add, MenuItemId.AddBook, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.Add, MenuItemId.AddBox, R.drawable.hogeman);
+        // Sort
+        addChildMenuItem(TopMenu.Sort, MenuItemId.Sort1, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.Sort, MenuItemId.Sort2, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.Sort, MenuItemId.Sort3, R.drawable.hogeman);
+        // ListType
+        addChildMenuItem(TopMenu.ListType, MenuItemId.ListType1, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.ListType, MenuItemId.ListType2, R.drawable.hogeman);
+        addChildMenuItem(TopMenu.ListType, MenuItemId.ListType3, R.drawable.hogeman);
+    }
+
+    /**
+     * メニューのトップ項目を追加する
+     * @param topId
+     * @param menuId
+     * @param bmpId
+     */
+    private void addTopMenuItem(TopMenu topId, MenuItemId menuId, int bmpId) {
+        Bitmap bmp = BitmapFactory.decodeResource(mParentView.getResources(), bmpId);
+        MenuItemTop item = new MenuItemTop(menuId, bmp);
+        item.setCallbacks(mCallbackClass);
+        addItem(topId, item);
+    }
+
+
+    /**
+     * メニューの子要素を追加する
+     * @param topId
+     * @param menuId
+     * @param bmpId
+     */
+    private void addChildMenuItem(TopMenu topId, MenuItemId menuId, int bmpId) {
+        Bitmap bmp = BitmapFactory.decodeResource(mParentView.getResources(), bmpId);
+        MenuItemChild item = new MenuItemChild(menuId, bmp);
+        item.setCallbacks(mCallbackClass);
+        addChildItem(topId, item);
     }
 
     /**

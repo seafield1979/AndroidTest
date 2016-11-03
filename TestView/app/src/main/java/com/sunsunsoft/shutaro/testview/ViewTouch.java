@@ -39,8 +39,6 @@ public class ViewTouch {
 
     public TouchType type;
 
-    private PointF mContentTop;
-
     private Timer timer;
 
     // タッチ中にtrueになる
@@ -57,12 +55,8 @@ public class ViewTouch {
     long touchTime;
 
     // get/set
-    public float getCX() { return x + mContentTop.x; }
-    public float getCY() { return y + mContentTop.y; }
-    public float touchX() {return this.touchX + mContentTop.x;}
-    public float touchY() {return this.touchY + mContentTop.y;}
-    public float touchOrgX() {return this.touchX;}
-    public float touchOrgY() {return this.touchY;}
+    public float touchX() {return this.touchX;}
+    public float touchY() {return this.touchY;}
 
 
     public ViewTouch() {
@@ -85,14 +79,6 @@ public class ViewTouch {
     }
 
     public TouchType checkTouchType(MotionEvent e) {
-        return checkTouchType(e, null);
-    }
-    public TouchType checkTouchType(MotionEvent e, PointF top) {
-        if (top == null) {
-            top = new PointF(0,0);
-        }
-        mContentTop = top;
-
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
             {

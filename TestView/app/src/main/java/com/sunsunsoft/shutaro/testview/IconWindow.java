@@ -1,31 +1,22 @@
 package com.sunsunsoft.shutaro.testview;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.widget.LinearLayout;
 
 import java.util.Collections;
 import java.util.LinkedList;
 
-
 /**
- * スクロールを自前で管理するView
- * コンテンツ全体のサイズを自前で管理して、画面に表示するViewのサイズよりも大きかったらスクロールできるようにする。
+ * アイコンのリストを表示するWindow
  */
-public class MyView8 extends View implements OnTouchListener {
-    enum viewState {
-        none,
-        drag,               // アイコンのドラッグ中
-        icon_moving,        // アイコンの一変更後の移動中
-    }
+
+public class IconWindow {
+    PointF pos = new PointF();
+    Size size = new Size();
+
 
     private static final int RECT_ICON_NUM = 30;
     private static final int CIRCLE_ICON_NUM = 30;
@@ -42,51 +33,18 @@ public class MyView8 extends View implements OnTouchListener {
     MyScrollBar mScrollV;
     MyScrollBar mDragScrollBar;   // todo
 
-    // サイズ更新用
-    private boolean resetSize;
-    private int newWidth, newHeight;
-
     // アイコンを動かす仕組み
     private IconBase dragIcon;
 
-    // クリック判定の仕組み
-    private ViewTouch viewTouch = new ViewTouch();
-
     // アニメーション用
-    private viewState state = viewState.none;
+    private MyView10.viewState state = MyView10.viewState.none;
 
-    private Paint paint = new Paint();
     private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
-    // get/set
 
-    /**
-     * Viewのサイズを更新する
-     * @param width
-     * @param height
-     */
-    public void updateViewSize(int width, int height) {
-        resetSize = true;
-        newWidth = width;
-        newHeight = height;
-        if (mScrollV != null) {
-            mScrollV.updateContent(contentSize, width, height);
-        }
-        setLayoutParams(new LinearLayout.LayoutParams(width, height));
-    }
-
-    public void setContentSize(int width, int height) {
-        contentSize.width = width;
-        contentSize.height = height;
-    }
-
-    public MyView8(Context context) {
-        this(context, null);
-    }
-
-    public MyView8(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        this.setOnTouchListener(this);
+    public void createWindow(int width, int height) {
+        size.width = width;
+        size.height = height;
 
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
@@ -124,15 +82,18 @@ public class MyView8 extends View implements OnTouchListener {
             }
             icon.setColor(color);
         }
+        sortRects(false);
+
+        mScrollV = new MyScrollBar(ScrollBarType.Right, width, height, 50, contentSize.height);
+        mScrollV.updateContent(contentSize, width, height);
     }
 
-    @Override
-    public void onDraw(Canvas canvas) {
-        // 背景塗りつぶし
-        canvas.drawColor(Color.WHITE);
+    public void setContentSize(int width, int height) {
+        contentSize.width = width;
+        contentSize.height = height;
+    }
 
-        // アンチエリアシング(境界のぼかし)
-        paint.setAntiAlias(true);
+    public boolean draw(Canvas canvas, Paint paint) {
 
         switch (state) {
             case none:
@@ -160,42 +121,26 @@ public class MyView8 extends View implements OnTouchListener {
                     icon.draw(canvas, paint, contentTop);
                 }
                 if (allFinish) {
-                    state = viewState.none;
+                    state = MyView10.viewState.none;
                 } else {
-                    invalidate();
+                    return true;
                 }
                 break;
         }
 
         // スクロールバー
         mScrollV.draw(canvas, paint);
+
+        return false;
     }
 
-    /**
-     * Viewのサイズを指定する
-     * @param widthMeasureSpec
-     * @param heightMeasureSpec
-     */
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        sortRects(false, MeasureSpec.getSize(widthMeasureSpec));
+    public void setSize(int width, int height) {
+        // アイコンの整列
+        sortRects(false);
 
-        int viewW = MeasureSpec.getSize(widthMeasureSpec);
-        int viewH = MeasureSpec.getSize(heightMeasureSpec);
+        // スクロールバー
+        mScrollV.updateContent(contentSize, width, height);
 
-        if (mScrollV == null) {
-            mScrollV = new MyScrollBar(ScrollBarType.Right, viewW, viewH, 40, contentSize.height);
-        } else {
-            mScrollV.updateContent(contentSize, viewW, viewH);
-        }
-
-        if (resetSize) {
-            int width = MeasureSpec.EXACTLY | newWidth;
-            int height = MeasureSpec.EXACTLY | newHeight;
-            setMeasuredDimension(width, height);
-        } else {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
     }
 
     /**
@@ -203,14 +148,7 @@ public class MyView8 extends View implements OnTouchListener {
      * Viewのサイズが確定した時点で呼び出す
      */
     public void sortRects(boolean animate) {
-        sortRects(animate, 0);
-    }
-
-    public void sortRects(boolean animate, int width) {
-        if (width == 0) {
-            width = getWidth();
-        }
-        int column = width / (ICON_W + 20);
+        int column = size.width / (ICON_W + 20);
         if (column <= 0) {
             return;
         }
@@ -228,8 +166,7 @@ public class MyView8 extends View implements OnTouchListener {
                 icon.startMove(x,y,MOVING_TIME);
                 i++;
             }
-            state = viewState.icon_moving;
-            invalidate();
+            state = MyView10.viewState.icon_moving;
         }
         else {
             int i=0;
@@ -245,29 +182,8 @@ public class MyView8 extends View implements OnTouchListener {
             }
         }
 
-        setContentSize(width, maxHeight);
+        setContentSize(size.width, maxHeight);
     }
-
-    /**
-     * コンテンツ表示領域を計算する
-     */
-    private void setContentArea() {
-        //　全アイコンが収まるサイズを求める
-        int w = 0, h = 0;
-        Collections.reverse(icons);
-
-        for (IconBase icon : icons) {
-            if (icon.getRight() > w) {
-                w = (int)icon.getRight();
-            }
-            if (icon.getBottom() > h) {
-                h = (int)icon.getBottom();
-            }
-        }
-
-        Collections.reverse(icons);
-    }
-
 
     /**
      * アイコンをタッチする処理
@@ -276,7 +192,7 @@ public class MyView8 extends View implements OnTouchListener {
      */
     private boolean touchIcons(ViewTouch vt) {
         for (IconBase icon : icons) {
-            if (icon.checkClick(vt.touchX(), vt.touchY())) {
+            if (icon.checkTouch(vt.touchX(), vt.touchY())) {
                 return true;
             }
         }
@@ -327,8 +243,7 @@ public class MyView8 extends View implements OnTouchListener {
         Collections.reverse(icons);
 
         if (ret) {
-            state = viewState.drag;
-            invalidate();
+            state = MyView10.viewState.drag;
             return true;
         }
         return ret;
@@ -346,7 +261,6 @@ public class MyView8 extends View implements OnTouchListener {
 
         skipCount++;
         if (skipCount >= skipFrame) {
-            invalidate();
             skipCount = 0;
         }
         return ret;
@@ -366,7 +280,7 @@ public class MyView8 extends View implements OnTouchListener {
         boolean isDroped = false;
         for (IconBase icon : icons) {
             if (icon == dragIcon) continue;
-            if (icon.checkDrop(vt.touchX(), vt.touchY())) {
+            if (icon.checkDrop(vt.touchX(), vt.touchX())) {
                 switch(icon.getShape()) {
                     case CIRCLE:
                         // ドラッグ位置のアイコンと場所を交換する
@@ -426,6 +340,7 @@ public class MyView8 extends View implements OnTouchListener {
 
     /**
      * Viewをスクロールする処理
+     * Viewの空きスペースをドラッグすると表示領域をスクロールすることができる
      * @param tv
      * @return
      */
@@ -435,106 +350,92 @@ public class MyView8 extends View implements OnTouchListener {
         float moveY = tv.moveY * (-1);
 
         // 横
-        if (getWidth() < contentSize.width) {
+        if (size.width < contentSize.width) {
             contentTop.x += moveX;
             if (contentTop.x < 0) {
                 contentTop.x = 0;
-            } else if (contentTop.x + getWidth() > contentSize.width) {
-                contentTop.x = contentSize.width - getWidth();
+            } else if (contentTop.x + size.width > contentSize.width) {
+                contentTop.x = contentSize.width - size.width;
             }
         }
 
         // 縦
-        if (getHeight() < contentSize.height) {
+        if (size.height < contentSize.height) {
             contentTop.y += moveY;
             if (contentTop.y < 0) {
                 contentTop.y = 0;
-            } else if (contentTop.y + getHeight() > contentSize.height) {
-                contentTop.y = contentSize.height - getHeight();
+            } else if (contentTop.y + size.height > contentSize.height) {
+                contentTop.y = contentSize.height - size.height;
             }
         }
         // スクロールバーの表示を更新
         mScrollV.updateScroll(contentTop);
 
-        invalidate();
-
         return true;
     }
 
     /**
-     * タッチイベント処理
-     * @param v
-     * @param e
-     * @return
+     * タッチ処理
+     * @param vt
+     * @return trueならViewを再描画
      */
-    public boolean onTouch(View v, MotionEvent e) {
-        boolean ret = true;
-
-        if (state == viewState.icon_moving) return true;
-
-        TouchType touchType = viewTouch.checkTouchType(e);
-
-        if (viewTouch.checkLongTouch()) {
-            // ロングタッチの処理
-            Log.v("view5", "Long Touch");
-        }
-
+    public boolean touchEvent(ViewTouch vt) {
         boolean done = false;
+        boolean invalidate = false;
 
-        switch(touchType) {
-            case Touch:
-                if (touchIcons(viewTouch)) {
+        // スクロールバーのタッチ処理
+        if (mScrollV.touchEvent(vt)) {
+            contentTop.y = mScrollV.getTopPos();
+            invalidate = true;
+            done = true;
+        }
+
+        if (!done) {
+            switch (vt.type) {
+                case Touch:
+                    if (touchIcons(vt)) {
+                        done = true;
+                    }
+                    break;
+                case Click:
+                    if (clickIcons(vt)) {
+                        done = true;
+                    }
+                    break;
+                case LongClick:
+                    longClickIcons(vt);
                     done = true;
-                }
-                break;
-            case Click:
-                if (clickIcons(viewTouch)) {
-                    done = true;
-                }
-                break;
-            case LongClick:
-                longClickIcons(viewTouch);
+                    break;
+                case MoveStart:
+                    if (dragStart(vt)) {
+                        done = true;
+                    }
+                    break;
+                case Moving:
+                    if (dragMove(vt)) {
+                        done = true;
+                    }
+                    break;
+                case MoveEnd:
+                    if (dragEnd(vt)) {
+                        done = true;
+                    }
+                    break;
+                case MoveCancel:
+                    sortRects(false);
+                    dragIcon = null;
+                    invalidate = true;
+                    break;
+            }
+        }
+
+        if (!done) {
+            // 画面のスクロール処理
+            if (scrollView(vt)){
                 done = true;
-                break;
-            case MoveStart:
-                if (dragStart(viewTouch)) {
-                    done = true;
-                }
-                break;
-            case Moving:
-                if (dragMove(viewTouch)) {
-                    done = true;
-                } else if (scrollView(viewTouch)){
-                    done = true;
-                }
-                break;
-            case MoveEnd:
-                if (dragEnd(viewTouch)) {
-                    done = true;
-                }
-                break;
-            case MoveCancel:
-                sortRects(false);
-                dragIcon = null;
-                invalidate();
-                break;
+                invalidate = true;
+            }
         }
-
-        switch(e.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                // trueを返す。こうしないと以降のMoveイベントが発生しなくなる。
-                ret = true;
-                break;
-            case MotionEvent.ACTION_UP:
-                ret = true;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                ret = true;
-                break;
-            default:
-        }
-
-        // コールバック
-        return ret;
+        return invalidate;
     }
 }
