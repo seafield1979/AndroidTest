@@ -454,8 +454,7 @@ public class MyView8 extends View implements OnTouchListener {
             }
         }
         // スクロールバーの表示を更新
-        //mScrollV.updateContent(contentSize, getHeight(), getHeight());
-        mScrollV.updateScroll(contentTop.y);
+        mScrollV.updateScroll(contentTop);
 
         invalidate();
 

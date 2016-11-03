@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class MenuItemTop extends MenuItem{
 
-    private static final int CHILD_MARGIN_V = 50;
+    private static final int CHILD_MARGIN_V = 30;
 
     // Member variables
     private LinkedList<MenuItemChild> childItems;
@@ -46,7 +46,7 @@ public class MenuItemTop extends MenuItem{
      */
     public void addItem(MenuItemChild child) {
         if (childItems == null) {
-            childItems = new LinkedList<MenuItemChild>();
+            childItems = new LinkedList<>();
         }
 
         // 座標を設定する
@@ -103,7 +103,6 @@ public class MenuItemTop extends MenuItem{
             if (mCallbacks != null) {
                 mCallbacks.callback1(id);
             }
-
             return true;
         }
 
@@ -126,6 +125,7 @@ public class MenuItemTop extends MenuItem{
     public void openMenu() {
         if (childItems == null) return;
 
+        isOpened = true;
         for (MenuItemChild item : childItems) {
             item.openMenu();
         }
@@ -137,6 +137,7 @@ public class MenuItemTop extends MenuItem{
     public void closeMenu() {
         if (childItems == null) return;
 
+        isOpened = false;
         for (MenuItemChild item : childItems) {
             item.closeMenu();
         }

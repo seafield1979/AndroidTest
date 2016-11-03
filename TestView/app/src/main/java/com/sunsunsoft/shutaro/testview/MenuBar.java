@@ -4,9 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
-import java.util.LinkedList;
-import java.util.List;
-
 // メニューバーのトップ項目
 enum TopMenu {
     Add,            // 追加
@@ -125,12 +122,16 @@ public class MenuBar {
 
             if (item.checkClick(clickX, clickY)) {
                 done = true;
+                if (item.isOpened()) {
+                    // 他に開かれたメニューを閉じる
+                    closeAllMenu(i);
+                }
                 break;
             }
             if (done) break;
         }
 
-        // メニューバーの領域をクリックしていたらとりあえすtrueを返す
+        // メニューバーの領域をクリックしていたら、メニュー以外がクリックされるのを防ぐためにtrueを返す
         if (!done) {
             if (0 <= clickX && clickX <= width &&
                     0 <= clickY && clickY <= height)
@@ -140,6 +141,18 @@ public class MenuBar {
         }
 
         return done;
+    }
+
+    /**
+     * メニューを閉じる
+     * @param excludedIndex
+     */
+    private void closeAllMenu(int excludedIndex) {
+        for (int i = 0; i < topItems.length; i++) {
+            if (i == excludedIndex) continue;
+            MenuItemTop item = topItems[i];
+            item.closeMenu();
+        }
     }
 
 }

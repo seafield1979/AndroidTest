@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -27,7 +26,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         drag,               // アイコンのドラッグ中
         icon_moving,        // アイコンの一変更後の移動中
     }
-
+    public static final String TAG = "MyView9";
     private static final int RECT_ICON_NUM = 30;
     private static final int CIRCLE_ICON_NUM = 30;
     private static final int ICON_W = 200;
@@ -201,11 +200,10 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
 
         // スクロールバー
         if (mScrollV == null) {
-            mScrollV = new MyScrollBar(ScrollBarType.Right, viewW, viewH, 40, contentSize.height);
+            mScrollV = new MyScrollBar(ScrollBarType.Left, viewW, viewH, 40, contentSize.height);
         } else {
             mScrollV.updateContent(contentSize, viewW, viewH);
         }
-
 
 
         if (resetSize) {
@@ -507,6 +505,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
 
     /**
      * Viewをスクロールする処理
+     * Viewの空きスペースをドラッグすると表示領域をスクロールすることができる
      * @param tv
      * @return
      */
@@ -535,8 +534,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
             }
         }
         // スクロールバーの表示を更新
-        //mScrollV.updateContent(contentSize, getHeight(), getHeight());
-        mScrollV.updateScroll(contentTop.y);
+        mScrollV.updateScroll(contentTop);
 
         invalidate();
 
@@ -555,11 +553,6 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         if (state == viewState.icon_moving) return true;
 
         TouchType touchType = viewTouch.checkTouchType(e, contentTop);
-
-        if (viewTouch.checkLongTouch()) {
-            // ロングタッチの処理
-            Log.v("view5", "Long Touch");
-        }
 
         boolean done = false;
 
@@ -589,8 +582,6 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
             case Moving:
                 if (dragMove(viewTouch)) {
                     done = true;
-                } else if (scrollView(viewTouch)){
-                    done = true;
                 }
                 break;
             case MoveEnd:
@@ -603,6 +594,21 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
                 dragIcon = null;
                 invalidate();
                 break;
+        }
+
+        if (!done) {
+            // スクロールバーのタッチ処理
+            if (mScrollV.touchEvent(viewTouch)) {
+                contentTop.y = mScrollV.getTopPos();
+                done = true;
+                invalidate();
+            }
+        }
+        if (!done) {
+            // 画面のスクロール処理
+            if (scrollView(viewTouch)){
+                done = true;
+            }
         }
 
         switch(e.getAction()) {
@@ -627,10 +633,10 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
      * メニューアイテムをタップした時のコールバック
      */
     public void callback1(MenuItemId id) {
-        MyLog.print("MyView9", "menu item clicked " + id);
+        MyLog.print(TAG, "menu item clicked " + id);
     }
 
     public void callback2() {
-        MyLog.print("MyView9", "menu item moved");
+        MyLog.print(TAG, "menu item moved");
     }
 }

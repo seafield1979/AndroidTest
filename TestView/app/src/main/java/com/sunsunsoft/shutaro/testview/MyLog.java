@@ -21,6 +21,7 @@ public class MyLog {
         setEnable("viewtouch", false);
         setEnable("MyView9", true);
         setEnable("MenuBar", false);
+        setEnable(MyScrollBar.TAG, true);
     }
 
     // ログ出力

@@ -115,7 +115,7 @@ public class ViewTouch {
 
                 if (type == TouchType.Moving) {
                     MyLog.print("viewtouch", "MoveEnd");
-                    type = TouchType.None;
+                    type = TouchType.MoveEnd;
                     return TouchType.MoveEnd;
                 } else {
                     float x = (e.getX() - touchX);
