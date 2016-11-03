@@ -22,11 +22,6 @@ import java.util.LinkedList;
 
   */
 public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks{
-    enum viewState {
-        none,
-        drag,               // アイコンのドラッグ中
-        icon_moving,        // アイコンの一変更後の移動中
-    }
     public static final String TAG = "MyView10";
 
     // IconWindow
@@ -77,7 +72,9 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         // アンチエリアシング(境界のぼかし)
         paint.setAntiAlias(true);
 
-        mIconWin.draw(canvas, paint);
+        if (mIconWin.draw(canvas, paint)) {
+            invalidate();
+        }
 
         // メニューバー
         if (mMenuBar.doAction()) {
@@ -131,7 +128,10 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
 
         viewTouch.checkTouchType(e);
 
-        if (mIconWin.touchEvent(viewTouch)) {
+        if (mMenuBar.touchEvent(viewTouch)) {
+            invalidate();
+        }
+        else if (mIconWin.touchEvent(viewTouch)) {
             invalidate();
         }
 

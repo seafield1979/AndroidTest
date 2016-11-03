@@ -82,29 +82,31 @@ public class MenuItemTop extends MenuItem{
      * @param clickY
      * @return
      */
-    public boolean checkClick(float clickX, float clickY) {
+    public boolean checkClick(ViewTouch vt, float clickX, float clickY) {
         if (pos.x <= clickX && clickX <= pos.x + ITEM_W &&
                 pos.y <= clickY && clickY <= pos.y + ITEM_H)
         {
             MyLog.print("MenuItem", "clicked");
-            // 子要素を持っていたら Open/Close
-            if (childItems != null) {
-                if (isOpened) {
-                    isOpened = false;
-                    closeMenu();
-                } else {
-                    isOpened = true;
-                    openMenu();
+            if (vt.type == TouchType.Click) {
+                // 子要素を持っていたら Open/Close
+                if (childItems != null) {
+                    if (isOpened) {
+                        isOpened = false;
+                        closeMenu();
+                    } else {
+                        isOpened = true;
+                        openMenu();
+                    }
+                    MyLog.print("MenuItem", "isOpened " + isOpened);
                 }
-                MyLog.print("MenuItem", "isOpened " + isOpened);
-            }
 
-            // タッチされた時の処理
-            if (mCallbacks != null) {
-                mCallbacks.callback1(id);
+                // タッチされた時の処理
+                if (mCallbacks != null) {
+                    mCallbacks.callback1(id);
+                }
+                // アニメーション
+                startAnim();
             }
-            // アニメーション
-            startAnim();
 
             return true;
         }
@@ -113,7 +115,7 @@ public class MenuItemTop extends MenuItem{
         if (isOpened()) {
             if (childItems != null) {
                 for (MenuItemChild child : childItems) {
-                    if (child.checkClick(clickX, clickY)) {
+                    if (child.checkClick(vt, clickX, clickY)) {
                         return true;
                     }
                 }

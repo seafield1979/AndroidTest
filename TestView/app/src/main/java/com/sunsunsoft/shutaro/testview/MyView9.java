@@ -374,7 +374,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
     }
 
     private boolean clickMenuBar(ViewTouch vt) {
-        return mMenuBar.checkClick(vt.touchX(), vt.touchY());
+        return mMenuBar.touchEvent(vt);
     }
 
     /**
@@ -396,7 +396,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         Collections.reverse(icons);
         for (IconBase icon : icons) {
             // 座標判定
-            if (icon.checkTouch(vt.touchX(), vt.touchY())) {
+            if (icon.checkTouch(vt.getX(contentTop.x), vt.getY(contentTop.y))) {
                 dragIcon = icon;
                 ret = true;
                 break;
@@ -445,7 +445,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         boolean isDroped = false;
         for (IconBase icon : icons) {
             if (icon == dragIcon) continue;
-            if (icon.checkDrop(vt.touchX(), vt.touchY())) {
+            if (icon.checkDrop(vt.getX(contentTop.x), vt.getY(contentTop.y))) {
                 switch(icon.getShape()) {
                     case CIRCLE:
                         // ドラッグ位置のアイコンと場所を交換する
@@ -486,8 +486,8 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
             // 最後のアイコンの後の空きスペースにドロップされた場合
             IconBase lastIcon = icons.getLast();
             if ((lastIcon.getY() <= vt.touchY() && vt.touchY() <= lastIcon.getBottom() &&
-                    lastIcon.getRight() <= vt.touchX()) ||
-                    (lastIcon.getBottom() <= vt.touchY()))
+                    lastIcon.getRight() <= vt.getX(contentTop.x)) ||
+                    (lastIcon.getBottom() <= vt.getY(contentTop.y)))
             {
                 // ドラッグ中のアイコンをリストの最後に移動
                 icons.remove(dragIcon);
@@ -582,12 +582,12 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
                     longClickIcons(viewTouch);
                     done = true;
                     break;
-                case MoveStart:
-                    if (dragStart(viewTouch)) {
-                        done = true;
-                    }
-                    break;
                 case Moving:
+                    if (viewTouch.isMoveStart()) {
+                        if (dragStart(viewTouch)) {
+                            done = true;
+                        }
+                    }
                     if (dragMove(viewTouch)) {
                         done = true;
                     }

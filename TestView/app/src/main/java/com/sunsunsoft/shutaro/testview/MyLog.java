@@ -18,10 +18,10 @@ public class MyLog {
 
     // 初期化、アプリ起動時に１回だけ呼ぶ
     public static void init() {
-        setEnable("viewtouch", false);
-        setEnable("MyView9", true);
+        setEnable("viewtouch", true);
+        setEnable("MyView9", false);
         setEnable("MenuBar", false);
-        setEnable(MyScrollBar.TAG, true);
+        setEnable(MyScrollBar.TAG, false);
     }
 
     // ログ出力

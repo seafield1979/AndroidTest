@@ -321,10 +321,10 @@ package com.sunsunsoft.shutaro.testview;
                 case LongClick:
                     longClickIcons(viewTouch);
                     break;
-                case MoveStart:
-                    dragStart(viewTouch);
-                    break;
                 case Moving:
+                    if (viewTouch.isMoveStart()) {
+                        dragStart(viewTouch);
+                    }
                     dragMove(viewTouch);
                     break;
                 case MoveEnd:

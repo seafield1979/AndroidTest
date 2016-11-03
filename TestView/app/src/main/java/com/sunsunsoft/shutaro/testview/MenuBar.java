@@ -172,19 +172,21 @@ public class MenuBar {
     }
 
     /**
-     * クリックをチェックする
+     * タッチ処理を行う
+     * 現状はクリック以外は受け付けない
      * メニューバー以下の項目(メニューの子要素も含めて全て)のクリック判定
      */
-    public boolean checkClick(float clickX, float clickY) {
-        // 渡されるクリック座標をメニューバーの座標系に変換
-        clickX -= pos.x;
-        clickY -= pos.y;
+    public boolean touchEvent(ViewTouch vt) {
         boolean done = false;
-        for (int i=0; i<topItems.length; i++) {
+        float clickX = vt.touchX() - pos.x;
+        float clickY = vt.touchY() - pos.y;
+
+        // 渡されるクリック座標をメニューバーの座標系に変換
+        for (int i = 0; i < topItems.length; i++) {
             MenuItemTop item = topItems[i];
             if (item == null) continue;
 
-            if (item.checkClick(clickX, clickY)) {
+            if (item.checkClick(vt, clickX, clickY)) {
                 done = true;
                 if (item.isOpened()) {
                     // 他に開かれたメニューを閉じる

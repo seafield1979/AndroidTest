@@ -13,7 +13,6 @@ enum TouchType {
     Touch,        // タッチ開始
     Click,        // ただのクリック（タップ)
     LongClick,    // 長クリック
-    MoveStart,    // 移動開始
     Moving,       // 移動
     MoveEnd,      // 移動終了
     MoveCancel    // 移動キャンセル
@@ -23,7 +22,7 @@ enum TouchType {
  *
  */
 public class ViewTouch {
-    private static final boolean _DEBUG = false;
+    private static final String TAG = "ViewTouch";
 
     // クリック判定するためのタッチ座標誤差
     public static final int CLICK_DISTANCE = 30;
@@ -50,14 +49,21 @@ public class ViewTouch {
 
     protected float x, y;       // スクリーン座標
     float moveX, moveY;
+    private boolean isMoveStart;
 
     // タッチ開始した時間
     long touchTime;
 
     // get/set
+    public float getX() { return x; }
+    public float getY() { return y; }
+    public float getX(float offset) { return x + offset; }
+    public float getY(float offset) { return y + offset; }
     public float touchX() {return this.touchX;}
     public float touchY() {return this.touchY;}
-
+    public float touchX(float offset) {return this.touchX + offset;}
+    public float touchY(float offset) {return this.touchY + offset;}
+    public boolean isMoveStart() { return isMoveStart; }
 
     public ViewTouch() {
         type = TouchType.None;
@@ -102,7 +108,7 @@ public class ViewTouch {
                 if (type == TouchType.Moving) {
                     MyLog.print("viewtouch", "MoveEnd");
                     type = TouchType.MoveEnd;
-                    return TouchType.MoveEnd;
+                    return type;
                 } else {
                     float x = (e.getX() - touchX);
                     float y = (e.getY() - touchY);
@@ -125,10 +131,8 @@ public class ViewTouch {
             }
                 break;
             case MotionEvent.ACTION_MOVE:
-                // 少し同じ位置をタッチ時続けないと移動状態にならない
-                boolean moveStart = false;
-
                 // クリックが判定できるようにタッチ時間が一定時間以上、かつ移動距離が一定時間以上で移動判定される
+                isMoveStart = false;
                 if ( type != TouchType.Moving) {
                     float dx = (e.getX() - touchX);
                     float dy = (e.getY() - touchY);
@@ -138,7 +142,7 @@ public class ViewTouch {
                         long time = System.currentTimeMillis() - touchTime;
                         if (time >= MOVE_START_TIME) {
                             type = TouchType.Moving;
-                            moveStart = true;
+                            isMoveStart = true;
                             x = touchX;
                             y = touchY;
                         }
@@ -151,10 +155,6 @@ public class ViewTouch {
                 x = e.getX();
                 y = e.getY();
 
-                if (moveStart) {
-                    MyLog.print("viewtouch", "MoveStart");
-                    return TouchType.MoveStart;
-                }
                 break;
             case MotionEvent.ACTION_CANCEL:
                 MyLog.print("viewtouch", "Cancel");

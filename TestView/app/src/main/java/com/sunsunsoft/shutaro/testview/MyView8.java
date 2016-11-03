@@ -496,12 +496,13 @@ public class MyView8 extends View implements OnTouchListener {
                 longClickIcons(viewTouch);
                 done = true;
                 break;
-            case MoveStart:
-                if (dragStart(viewTouch)) {
-                    done = true;
-                }
-                break;
             case Moving:
+                if (viewTouch.isMoveStart()) {
+                    if (dragStart(viewTouch)) {
+                        done = true;
+                    }
+                }
+
                 if (dragMove(viewTouch)) {
                     done = true;
                 } else if (scrollView(viewTouch)){

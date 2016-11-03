@@ -87,7 +87,6 @@ abstract public class MenuItem{
             if (isAnimating) {
                 double v1 = ((double)animeFrame / (double)animeFrameMax) * 180;
                 int alpha = (int)((1.0 -  Math.sin(v1 * RAD)) * 255);
-                MyLog.print("MenuItem", "v1:" + v1 + " alpha:" + alpha);
                 paint.setColor((alpha << 24) | animeColor);
             } else {
                 paint.setColor(0xff000000);
@@ -124,8 +123,9 @@ abstract public class MenuItem{
 
     /**
      * クリックをチェック
+     * @param vt
      * @param clickX
      * @param clickY
      */
-    abstract public boolean checkClick(float clickX, float clickY);
+    abstract public boolean checkClick(ViewTouch vt, float clickX, float clickY);
 }

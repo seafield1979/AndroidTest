@@ -259,8 +259,6 @@ public class MyScrollBar {
                     return true;
                 }
                 break;
-            case MoveStart:
-                break;
             case Moving:
                 if (touchMove(tv)) {
                     return true;

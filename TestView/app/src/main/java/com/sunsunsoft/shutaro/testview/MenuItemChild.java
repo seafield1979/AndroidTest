@@ -50,17 +50,19 @@ public class MenuItemChild extends MenuItem implements AutoMovable{
         super(id, icon);
     }
 
-    public boolean checkClick(float clickX, float clickY) {
+    public boolean checkClick(ViewTouch vt, float clickX, float clickY) {
         if (pos.x <= clickX && clickX <= pos.x + ITEM_W &&
                 pos.y <= clickY && clickY <= pos.y + ITEM_H)
         {
-            MyLog.print("MenuItem", "clicked");
-            // タッチされた時の処理
-            if (mCallbacks != null) {
-                mCallbacks.callback1(id);
+            if (vt.type == TouchType.Click) {
+                MyLog.print("MenuItem", "clicked");
+                // タッチされた時の処理
+                if (mCallbacks != null) {
+                    mCallbacks.callback1(id);
+                }
+                // アニメーション
+                startAnim();
             }
-            // アニメーション
-            startAnim();
 
             return true;
         }

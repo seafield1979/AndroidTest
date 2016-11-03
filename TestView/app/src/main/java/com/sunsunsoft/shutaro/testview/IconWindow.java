@@ -14,6 +14,12 @@ import java.util.LinkedList;
  */
 
 public class IconWindow {
+    enum viewState {
+        none,
+        drag,               // アイコンのドラッグ中
+        icon_moving,        // アイコンの一変更後の移動中
+    }
+
     PointF pos = new PointF();
     Size size = new Size();
 
@@ -30,14 +36,13 @@ public class IconWindow {
     // スクロール用
     private Size contentSize = new Size();  // 領域全体のサイズ
     private PointF contentTop = new PointF();  // 画面に表示する領域の左上の座標
-    MyScrollBar mScrollV;
-    MyScrollBar mDragScrollBar;   // todo
+    MyScrollBar mScrollBar;
 
     // アイコンを動かす仕組み
     private IconBase dragIcon;
 
     // アニメーション用
-    private MyView10.viewState state = MyView10.viewState.none;
+    private viewState state = viewState.none;
 
     private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
@@ -84,8 +89,8 @@ public class IconWindow {
         }
         sortRects(false);
 
-        mScrollV = new MyScrollBar(ScrollBarType.Right, width, height, 50, contentSize.height);
-        mScrollV.updateContent(contentSize, width, height);
+        mScrollBar = new MyScrollBar(ScrollBarType.Right, width, height, 50, contentSize.height);
+        mScrollBar.updateContent(contentSize, width, height);
     }
 
     public void setContentSize(int width, int height) {
@@ -93,8 +98,15 @@ public class IconWindow {
         contentSize.height = height;
     }
 
+    /**
+     * 描画処理
+     * @param canvas
+     * @param paint
+     * @return trueなら描画継続
+     */
     public boolean draw(Canvas canvas, Paint paint) {
 
+        boolean invalidate = false;
         switch (state) {
             case none:
                 for (IconBase icon : icons) {
@@ -121,17 +133,17 @@ public class IconWindow {
                     icon.draw(canvas, paint, contentTop);
                 }
                 if (allFinish) {
-                    state = MyView10.viewState.none;
+                    state = viewState.none;
                 } else {
-                    return true;
+                    invalidate = true;
                 }
                 break;
         }
 
         // スクロールバー
-        mScrollV.draw(canvas, paint);
+        mScrollBar.draw(canvas, paint);
 
-        return false;
+        return invalidate;
     }
 
     public void setSize(int width, int height) {
@@ -139,7 +151,7 @@ public class IconWindow {
         sortRects(false);
 
         // スクロールバー
-        mScrollV.updateContent(contentSize, width, height);
+        mScrollBar.updateContent(contentSize, width, height);
 
     }
 
@@ -166,7 +178,7 @@ public class IconWindow {
                 icon.startMove(x,y,MOVING_TIME);
                 i++;
             }
-            state = MyView10.viewState.icon_moving;
+            state = viewState.icon_moving;
         }
         else {
             int i=0;
@@ -192,7 +204,7 @@ public class IconWindow {
      */
     private boolean touchIcons(ViewTouch vt) {
         for (IconBase icon : icons) {
-            if (icon.checkTouch(vt.touchX(), vt.touchY())) {
+            if (icon.checkTouch(vt.touchX(contentTop.x), vt.touchY(contentTop.y))) {
                 return true;
             }
         }
@@ -207,7 +219,7 @@ public class IconWindow {
     private boolean clickIcons(ViewTouch vt) {
         // どのアイコンがクリックされたかを判定
         for (IconBase icon : icons) {
-            if (icon.checkClick(vt.touchX(), vt.touchY())) {
+            if (icon.checkClick(vt.touchX(contentTop.x), vt.touchY(contentTop.y))) {
                 return true;
             }
         }
@@ -233,7 +245,7 @@ public class IconWindow {
         Collections.reverse(icons);
         for (IconBase icon : icons) {
             // 座標判定
-            if (icon.checkTouch(vt.touchX(), vt.touchY())) {
+            if (icon.checkTouch(vt.touchX(contentTop.x), vt.touchY(contentTop.y))) {
                 dragIcon = icon;
                 ret = true;
                 break;
@@ -243,7 +255,7 @@ public class IconWindow {
         Collections.reverse(icons);
 
         if (ret) {
-            state = MyView10.viewState.drag;
+            state = viewState.drag;
             return true;
         }
         return ret;
@@ -255,8 +267,6 @@ public class IconWindow {
         if (dragIcon != null) {
             dragIcon.move((int)vt.moveX, (int)vt.moveY);
             ret = true;
-        } else if (mDragScrollBar != null) {
-//            mDragScrollBar.move(vt.moveX, vt.moveY);
         }
 
         skipCount++;
@@ -280,7 +290,7 @@ public class IconWindow {
         boolean isDroped = false;
         for (IconBase icon : icons) {
             if (icon == dragIcon) continue;
-            if (icon.checkDrop(vt.touchX(), vt.touchX())) {
+            if (icon.checkDrop(vt.getX(contentTop.x), vt.getY(contentTop.y))) {
                 switch(icon.getShape()) {
                     case CIRCLE:
                         // ドラッグ位置のアイコンと場所を交換する
@@ -320,9 +330,9 @@ public class IconWindow {
         if (!isDroped) {
             // 最後のアイコンの後の空きスペースにドロップされた場合
             IconBase lastIcon = icons.getLast();
-            if ((lastIcon.getY() <= vt.touchY() && vt.touchY() <= lastIcon.getBottom() &&
-                    lastIcon.getRight() <= vt.touchX()) ||
-                    (lastIcon.getBottom() <= vt.touchY()))
+            if ((lastIcon.getY() <= vt.getY() && vt.getY() <= lastIcon.getBottom() &&
+                    lastIcon.getRight() <= vt.getX(contentTop.x)) ||
+                    (lastIcon.getBottom() <= vt.getY(contentTop.y)))
             {
                 // ドラッグ中のアイコンをリストの最後に移動
                 icons.remove(dragIcon);
@@ -369,7 +379,7 @@ public class IconWindow {
             }
         }
         // スクロールバーの表示を更新
-        mScrollV.updateScroll(contentTop);
+        mScrollBar.updateScroll(contentTop);
 
         return true;
     }
@@ -380,13 +390,12 @@ public class IconWindow {
      * @return trueならViewを再描画
      */
     public boolean touchEvent(ViewTouch vt) {
+        if (state == viewState.icon_moving) return false;
         boolean done = false;
-        boolean invalidate = false;
 
         // スクロールバーのタッチ処理
-        if (mScrollV.touchEvent(vt)) {
-            contentTop.y = mScrollV.getTopPos();
-            invalidate = true;
+        if (mScrollBar.touchEvent(vt)) {
+            contentTop.y = mScrollBar.getTopPos();
             done = true;
         }
 
@@ -406,12 +415,12 @@ public class IconWindow {
                     longClickIcons(vt);
                     done = true;
                     break;
-                case MoveStart:
-                    if (dragStart(vt)) {
-                        done = true;
-                    }
-                    break;
                 case Moving:
+                    if (vt.isMoveStart()) {
+                        if (dragStart(vt)) {
+                            done = true;
+                        }
+                    }
                     if (dragMove(vt)) {
                         done = true;
                     }
@@ -424,7 +433,6 @@ public class IconWindow {
                 case MoveCancel:
                     sortRects(false);
                     dragIcon = null;
-                    invalidate = true;
                     break;
             }
         }
@@ -433,9 +441,8 @@ public class IconWindow {
             // 画面のスクロール処理
             if (scrollView(vt)){
                 done = true;
-                invalidate = true;
             }
         }
-        return invalidate;
+        return done;
     }
 }
