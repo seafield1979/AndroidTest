@@ -15,7 +15,7 @@ import static com.sunsunsoft.shutaro.testview.ViewSettings.drawIconId;
 /**
  * ViewのonDrawで描画するアイコンの情報
  */
-abstract public class IconBase {
+abstract public class IconBase implements AutoMovable {
 
     private static final String TAG = "MyIcon";
     private static int count;
@@ -123,7 +123,7 @@ abstract public class IconBase {
      * @param dstY  目的位置y
      * @param frame  移動にかかるフレーム数
      */
-    protected void startMove(float dstX, float dstY, int frame) {
+    public void startMove(float dstX, float dstY, int frame) {
         if (x == dstX && y == dstY) {
             return;
         }
@@ -141,7 +141,7 @@ abstract public class IconBase {
      * 移動開始位置、終了位置、経過フレームから現在位置を計算する
      * @return 移動完了したらtrue
      */
-    protected boolean move() {
+    public boolean move() {
         if (!isMoving) return true;
 
         float ratio = (float)movingFrame / (float)movingFrameMax;

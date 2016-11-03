@@ -4,15 +4,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.Rect;
-import android.util.Log;
 
 import java.util.LinkedList;
 
 /**
  * メニューバーのトップ項目
+ * アイコンをクリックすると子要素があったら子要素をOpen/Closeする
+ *
  */
-
 public class MenuItemTop extends MenuItem{
 
     private static final int CHILD_MARGIN_V = 50;
@@ -43,17 +42,18 @@ public class MenuItemTop extends MenuItem{
 
     /**
      * 子要素を追加する
-     * @param item
+     * @param child
      */
-    public void addItem(MenuItemChild item) {
+    public void addItem(MenuItemChild child) {
         if (childItems == null) {
             childItems = new LinkedList<MenuItemChild>();
         }
 
         // 座標を設定する
-        item.setPos( pos.x, pos.y - ((childItems.size() + 1) * (MenuItem.ITEM_H + CHILD_MARGIN_V)));
+        child.setBasePos( pos.x, pos.y - ((childItems.size() + 1) * (MenuItem.ITEM_H + CHILD_MARGIN_V)));
+        child.setParentPos( pos );
 
-        childItems.add(item);
+        childItems.add(child);
     }
 
     /**
@@ -63,17 +63,17 @@ public class MenuItemTop extends MenuItem{
      * @param parentPos
      */
     public void draw(Canvas canvas, Paint paint, PointF parentPos) {
-        super.draw(canvas, paint, parentPos);
-
         // 子要素をまとめて描画
-        PointF _pos = new PointF();
-        PointF drawPos = new PointF(pos.x - parentPos.x, pos.y - parentPos.y);
-        if (isOpened && childItems != null) {
+        if (childItems != null) {
             for (int i=0; i<childItems.size(); i++) {
-                MenuItem child = childItems.get(i);
-                child.draw(canvas, paint, parentPos);
+                MenuItemChild child = childItems.get(i);
+                if (isOpened || child.isMoving()) {
+                    child.draw(canvas, paint, parentPos);
+                }
             }
         }
+
+        super.draw(canvas, paint, parentPos);
     }
 
     /**
@@ -86,15 +86,17 @@ public class MenuItemTop extends MenuItem{
         if (pos.x <= clickX && clickX <= pos.x + ITEM_W &&
                 pos.y <= clickY && clickY <= pos.y + ITEM_H)
         {
-            Log.d("MenuItem", "clicked");
+            MyLog.print("MenuItem", "clicked");
             // 子要素を持っていたら Open/Close
             if (childItems != null) {
                 if (isOpened) {
                     isOpened = false;
+                    closeMenu();
                 } else {
                     isOpened = true;
+                    openMenu();
                 }
-                Log.d("MenuItem", "isOpened " + isOpened);
+                MyLog.print("MenuItem", "isOpened " + isOpened);
             }
 
             // タッチされた時の処理
@@ -116,5 +118,46 @@ public class MenuItemTop extends MenuItem{
             }
         }
         return false;
+    }
+
+    /**
+     * メニューをOpenしたときの処理
+     */
+    public void openMenu() {
+        if (childItems == null) return;
+
+        for (MenuItemChild item : childItems) {
+            item.openMenu();
+        }
+    }
+
+    /**
+     * メニューをCloseしたときの処理
+     */
+    public void closeMenu() {
+        if (childItems == null) return;
+
+        for (MenuItemChild item : childItems) {
+            item.closeMenu();
+        }
+    }
+
+    /**
+     * メニューのOpen/Close時の子要素の移動処理
+     * @return  true:移動中 / false:移動完了
+     */
+    public boolean moveChilds() {
+        if (childItems == null) return false;
+
+        // 移動中のものが１つでもあったら false になる
+        boolean allFinished = true;
+
+        for (MenuItemChild item : childItems) {
+            if (item.move() == false) {
+                allFinished = false;
+            }
+        }
+
+        return !allFinished;
     }
 }

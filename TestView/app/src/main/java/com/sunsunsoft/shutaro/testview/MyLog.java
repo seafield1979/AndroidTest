@@ -20,6 +20,7 @@ public class MyLog {
     public static void init() {
         setEnable("viewtouch", false);
         setEnable("MyView9", true);
+        setEnable("MenuBar", false);
     }
 
     // ログ出力

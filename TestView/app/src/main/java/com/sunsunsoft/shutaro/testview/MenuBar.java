@@ -84,11 +84,30 @@ public class MenuBar {
                 paint);
 
 
-        for (MenuItem item : topItems) {
+        for (MenuItemTop item : topItems) {
             if (item != null) {
                 item.draw(canvas, paint, pos);
             }
         }
+    }
+
+    /**
+     * メニューのアクション
+     * メニューアイテムを含めて何かしらの処理を行う
+     *
+     * @return true:処理中 / false:完了
+     */
+    public boolean doAction() {
+        MyLog.print("MenuBar", "doAction");
+
+        boolean allFinished = true;
+        for (MenuItemTop item : topItems) {
+            if (item.moveChilds()) {
+                allFinished = false;
+            }
+        }
+
+        return !allFinished;
     }
 
     /**

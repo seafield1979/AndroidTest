@@ -26,7 +26,7 @@ enum MenuItemId {
  * メニューに表示する項目
  * アイコンを表示してタップされたらIDを返すぐらいの機能しか持たない
  */
-abstract public class MenuItem {
+abstract public class MenuItem{
     public static final int ITEM_W = 120;
     public static final int ITEM_H = 120;
 
@@ -77,30 +77,6 @@ abstract public class MenuItem {
             // 領域の幅に合わせて伸縮
             canvas.drawBitmap(icon, new Rect(0,0,icon.getWidth(), icon.getHeight()),
                     new Rect((int)drawPos.x, (int)drawPos.y, (int)drawPos.x + ITEM_W,(int)drawPos.y + ITEM_H),
-                    paint);
-        }
-    }
-
-    /**
-     * 指定の座標に描画
-     * 子メニューを描画するのに使用する
-     */
-    private void drawAtPos(Canvas canvas, Paint paint, PointF drawPos) {
-        // 内部を塗りつぶし
-        paint.setStyle(Paint.Style.FILL);
-        // 色
-        paint.setColor(0xffff0000);
-
-        canvas.drawRect(drawPos.x,
-                drawPos.y,
-                drawPos.x + ITEM_W,
-                drawPos.y + ITEM_H,
-                paint);
-
-        if (icon != null) {
-            // 領域の幅に合わせて伸縮
-            canvas.drawBitmap(icon, new Rect(0, 0, icon.getWidth(), icon.getHeight()),
-                    new Rect((int) drawPos.x, (int) drawPos.y, (int)drawPos.x + ITEM_W, (int) drawPos.y + ITEM_H),
                     paint);
         }
     }

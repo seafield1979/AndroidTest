@@ -175,6 +175,10 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         mScrollV.draw(canvas, paint);
 
         // メニューバー
+        if (mMenuBar.doAction()) {
+            invalidate();
+        }
+
         mMenuBar.draw(canvas, paint);
     }
 
