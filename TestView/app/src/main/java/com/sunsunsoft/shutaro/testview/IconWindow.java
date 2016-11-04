@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.view.View;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -21,15 +20,19 @@ public class IconWindow {
         icon_moving,        // アイコンの一変更後の移動中
     }
 
-    PointF pos = new PointF();
-    Size size = new Size();
-    RectF rect = new RectF();
+    private PointF pos = new PointF();
+    private Size size = new Size();
+    private RectF rect = new RectF();
+    private int bgColor;
 
-    private static final int RECT_ICON_NUM = 30;
-    private static final int CIRCLE_ICON_NUM = 30;
+    private static final int RECT_ICON_NUM = 3;
+    private static final int CIRCLE_ICON_NUM = 3;
+
     private static final int ICON_W = 200;
     private static final int ICON_H = 150;
+
     private static final int MOVING_TIME = 10;
+    private static final int SCROLL_BAR_W = 100;
     private boolean firstDraw = false;
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
@@ -67,6 +70,7 @@ public class IconWindow {
         size.height = height;
     }
 
+
     // 座標系を変換する
     // 座標系は以下の３つある
     // 1.Screen座標系  画面上の左上原点
@@ -95,9 +99,11 @@ public class IconWindow {
      * @param width
      * @param height
      */
-    public void createWindow(float x, float y, int width, int height) {
+    public void createWindow(float x, float y, int width, int height, int bgColor) {
         setPos(x, y,false);
         setSize(width, height);
+        this.bgColor = bgColor;
+
         updateRect();
 
         // アイコンを追加
@@ -139,7 +145,7 @@ public class IconWindow {
 
         sortRects(false);
 
-        mScrollBar = new MyScrollBar(ScrollBarType.Right, width, height, 50, contentSize.height);
+        mScrollBar = new MyScrollBar(ScrollBarType.Right, ScrollBarInOut.In, this.pos, width, height, SCROLL_BAR_W, contentSize.height);
         mScrollBar.updateContent(contentSize);
         mScrollBar.setBgColor(Color.rgb(128,128,128));
     }
@@ -158,6 +164,14 @@ public class IconWindow {
     public boolean draw(Canvas canvas, Paint paint) {
 
         boolean invalidate = false;
+
+        // クリッピング領域を設定
+        canvas.save();
+        canvas.clipRect(rect);
+
+        // 背景色
+        canvas.drawColor(bgColor);
+
         switch (state) {
             case none:
                 for (IconBase icon : icons) {
@@ -192,9 +206,27 @@ public class IconWindow {
         }
 
         // スクロールバー
-        mScrollBar.draw(canvas, paint, pos);
+        mScrollBar.draw(canvas, paint);
+
+        // クリップ解除
+        canvas.restore();
 
         return invalidate;
+    }
+
+    /**
+     * ドラッグ中のアイコンを描画
+     * @param canvas
+     * @param paint
+     */
+    public void drawDragIcon(Canvas canvas, Paint paint) {
+        if (dragIcon == null) return;
+
+        // ドラッグアイコンは２つのWindowをまたいで表示されるのでクリップ外で描画
+        if (state == viewState.drag) {
+            dragIcon.draw(canvas, paint, getWin2ScreenPos(), null);
+            return;
+        }
     }
 
     /**
@@ -453,17 +485,17 @@ public class IconWindow {
         if (state == viewState.icon_moving) return false;
         boolean done = false;
 
+        // スクロールバーのタッチ処理
+        if (mScrollBar.touchEvent(vt)) {
+            contentTop.y = mScrollBar.getTopPos();
+            return true;
+        }
+
         // 範囲外なら除外
         if (vt.touchX() < rect.left || rect.right < vt.touchX() ||
                 vt.touchY() < rect.top || rect.bottom < vt.touchY())
         {
             return false;
-        }
-
-        // スクロールバーのタッチ処理
-        if (mScrollBar.touchEvent(vt)) {
-            contentTop.y = mScrollBar.getTopPos();
-            done = true;
         }
 
         if (!done) {

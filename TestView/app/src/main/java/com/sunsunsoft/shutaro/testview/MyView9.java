@@ -17,8 +17,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * メニューバー、サブViewのサンプル
- *
+ * メニューバーのサンプル
  */
 public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
     enum viewState {
@@ -62,6 +61,26 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
     private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
     // get/set
+
+    // 座標系を変換する
+    // 座標系は以下の３つある
+    // 1.Screen座標系  画面上の左上原点
+    // 2.Window座標系  ウィンドウの左上原点
+    // 3.Window2座標系  ウィンドウ内のスクロールを加味した座標系
+
+    // Screen座標系 -> Window2座標系
+    public float toWin2X(float screenX) {
+        return screenX + contentTop.x;
+    }
+    public float toWin2Y(float screenY) {
+        return screenY + contentTop.y;
+    }
+
+    // Window2座標系 -> Screen座標系に変換するための値
+    // Window内のオブジェクトを描画する際にこの値を加算する
+    public PointF getWin2ScreenPos() {
+        return new PointF(-contentTop.x, -contentTop.y);
+    }
 
     /**
      * Viewのサイズを更新する
@@ -141,7 +160,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
             case none:
                 for (IconBase icon : icons) {
                     if (icon == null) continue;
-                    icon.draw(canvas, paint, contentTop, null);
+                    icon.draw(canvas, paint, getWin2ScreenPos(), null);
                 }
                 break;
             case drag:
@@ -150,7 +169,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
                     icon.draw(canvas, paint, contentTop, null);
                 }
                 if (dragIcon != null) {
-                    dragIcon.draw(canvas, paint, contentTop, null);
+                    dragIcon.draw(canvas, paint, getWin2ScreenPos(), null);
                 }
                 break;
             case icon_moving:
@@ -160,7 +179,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
                     if (!icon.move()) {
                         allFinish = false;
                     }
-                    icon.draw(canvas, paint, contentTop, null);
+                    icon.draw(canvas, paint, getWin2ScreenPos(), null);
                 }
                 if (allFinish) {
                     state = viewState.none;
@@ -171,7 +190,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         }
 
         // スクロールバー
-        mScrollV.draw(canvas, paint, new PointF());
+        mScrollV.draw(canvas, paint);
 
         // メニューバー
         if (mMenuBar.doAction()) {
@@ -200,7 +219,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
 
         // スクロールバー
         if (mScrollV == null) {
-            mScrollV = new MyScrollBar(ScrollBarType.Left, viewW, viewH, 40, contentSize.height);
+            mScrollV = new MyScrollBar(ScrollBarType.Left, ScrollBarInOut.In, new PointF(), viewW, viewH, 40, contentSize.height);
         } else {
             mScrollV.updateContent(contentSize);
         }

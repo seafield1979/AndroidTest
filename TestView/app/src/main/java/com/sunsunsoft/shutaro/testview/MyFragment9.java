@@ -14,8 +14,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 
 /**
- * Viewに表示しきれない領域をスクロールできるようにする
- * ScrollViewを使う方式
+ * 自作メニューバーのサンプル
  */
 public class MyFragment9 extends Fragment implements OnClickListener, OnTouchListener{
     private final static String BACKGROUND_COLOR = "background_color";

@@ -168,7 +168,7 @@ public class MyView8 extends View implements OnTouchListener {
         }
 
         // スクロールバー
-        mScrollV.draw(canvas, paint, new PointF());
+        mScrollV.draw(canvas, paint);
     }
 
     /**
@@ -184,7 +184,7 @@ public class MyView8 extends View implements OnTouchListener {
         int viewH = MeasureSpec.getSize(heightMeasureSpec);
 
         if (mScrollV == null) {
-            mScrollV = new MyScrollBar(ScrollBarType.Right, viewW, viewH, 40, contentSize.height);
+            mScrollV = new MyScrollBar(ScrollBarType.Right, ScrollBarInOut.In, new PointF(), viewW, viewH, 40, contentSize.height);
         } else {
             mScrollV.updateContent(contentSize);
         }

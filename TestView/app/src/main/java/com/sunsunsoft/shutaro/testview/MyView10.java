@@ -1,31 +1,24 @@
 package com.sunsunsoft.shutaro.testview;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.LinearLayout;
 
-import java.util.Collections;
-import java.util.LinkedList;
-
 /**
  * メニューバー、サブViewのサンプル
-
 
   */
 public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks{
     public static final String TAG = "MyView10";
 
     // IconWindow
-    private IconWindow mIconWin;
+    private IconWindow[] mWindows = new IconWindow[2];
 
     // メニューバー
     private MenuBar mMenuBar;
@@ -55,7 +48,16 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
     }
 
     public void updateWindowSize(int width, int height) {
-        mIconWin.updateSize(width, height);
+        for (IconWindow win : mWindows) {
+            win.updateSize(width, height);
+        }
+        invalidate();
+    }
+
+    public void updateWindowPos(float x, float y){
+        for (IconWindow win : mWindows) {
+            win.setPos(x, y, true);
+        }
         invalidate();
     }
 
@@ -76,11 +78,17 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         // アンチエリアシング(境界のぼかし)
         paint.setAntiAlias(true);
 
-        if (mIconWin.draw(canvas, paint)) {
-            invalidate();
+        // アイコンWindow
+        for (IconWindow win : mWindows) {
+            if (win.draw(canvas, paint)) {
+                invalidate();
+            }
+        }
+        for (IconWindow win : mWindows) {
+            win.drawDragIcon(canvas, paint);
         }
 
-        // メニューバー
+            // メニューバー
         if (mMenuBar.doAction()) {
             invalidate();
         }
@@ -104,10 +112,15 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
             mMenuBar.initMenuBar();
         }
 
-        if (mIconWin == null) {
-            mIconWin = new IconWindow();
-            mIconWin.createWindow(0, 0, viewW - 200, viewH - 500);
+        if (mWindows[0] == null) {
+            mWindows[0] = new IconWindow();
+            mWindows[0].createWindow(0, 0, viewW, (viewH - 200)/2, Color.WHITE);
         }
+        if (mWindows[1] == null) {
+            mWindows[1] = new IconWindow();
+            mWindows[1].createWindow(0, (viewH - 200)/2, viewW, (viewH - 200)/2, Color.LTGRAY);
+        }
+
 
         if (resetSize) {
             int width = MeasureSpec.EXACTLY | newWidth;
@@ -133,7 +146,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         if (mMenuBar.touchEvent(viewTouch)) {
             invalidate();
         }
-        else if (mIconWin.touchEvent(viewTouch)) {
+        else if (IconWindoTouchEvent(viewTouch)) {
             invalidate();
         }
 
@@ -153,6 +166,15 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
 
         // コールバック
         return ret;
+    }
+
+    private boolean IconWindoTouchEvent(ViewTouch vt) {
+        for (IconWindow win : mWindows) {
+            if (win.touchEvent(vt)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

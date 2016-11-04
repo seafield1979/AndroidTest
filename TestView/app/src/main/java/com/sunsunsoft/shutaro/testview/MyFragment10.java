@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 
 /**
  * SubViewのテスト
- * 今までViewがアイコンのWindowを管理していたが、２つに増やすためにWindowクラスを作成する
+ * 今までViewがアイコンのWindowを管理していたが、２つに増やすためにIconWindowクラスを作成する
  */
 public class MyFragment10 extends Fragment implements View.OnClickListener, View.OnTouchListener {
     private final static String BACKGROUND_COLOR = "background_color";
@@ -51,7 +51,7 @@ public class MyFragment10 extends Fragment implements View.OnClickListener, View
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                myView.updateWindowSize(800, 500);
+                myView.updateWindowPos(100,100);
                 break;
         }
     }

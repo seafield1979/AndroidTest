@@ -21,14 +21,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
+    private static final int[] buttonIds = new int[6]{
+                R.id.button1,
+                R.id.button2,
+                R.id.button3,
+                R.id.button4,
+                R.id.button5,
+                R.id.button6,
+                R.id.button_capture,
+                R.id.button_screen
+    }
 
-    private Button button1;
-    private Button button2;
-    private Button button3;
-    private Button button4;
-    private Button button5;
-    private Button button_capture;
-    private Button button_screen;
     private SampleView sampleView;
 
     @Override
@@ -36,22 +39,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.button1 = (Button)findViewById(R.id.button1);
-        button1.setOnClickListener(this);
-        this.button2 = (Button)findViewById(R.id.button2);
-        button2.setOnClickListener(this);
-        this.button3 = (Button)findViewById(R.id.button3);
-        button3.setOnClickListener(this);
-        this.button4 = (Button)findViewById(R.id.button4);
-        button4.setOnClickListener(this);
-        this.button5 = (Button)findViewById(R.id.button5);
-        button5.setOnClickListener(this);
-
-        this.button_capture = (Button)findViewById(R.id.button_capture);
-        button_capture.setOnClickListener(this);
-
-        this.button_screen= (Button)findViewById(R.id.button_screen);
-        button_screen.setOnClickListener(this);
+        for (int id : buttonIds) {
+            ((Button) findViewById(id)).setOnClickListener(this);
+        }
 
         this.sampleView = (SampleView)findViewById(R.id.custom_view);
 
@@ -75,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 break;
             case R.id.button5:
                 sampleView.setDrawMode(5);
+                break;
+            case R.id.button6:
+                sampleView.setDrawMode(6);
                 break;
             case R.id.button_capture:
                 // 指定のViewをスクリーンショット

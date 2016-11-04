@@ -54,6 +54,8 @@ public class SampleView extends View{
             case 5:
                 drawImage(canvas);
                 break;
+            case 6:
+                drawCanvasCopy(canvas);
             default:
         }
     }
@@ -159,6 +161,12 @@ public class SampleView extends View{
         }
     }
 
+    private static void drawCircle(Canvas canvas, Paint paint, float x, float y, float radius, int color) {
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(color);
+        canvas.drawCircle(x, y, radius, paint);
+    }
+
     /**
      * 画像を描画する
      * @param canvas
@@ -173,5 +181,32 @@ public class SampleView extends View{
         canvas.scale(1.5f, 1.5f);
         canvas.drawBitmap(mBmp, 100, 100, paint);
 
+    }
+
+    /**
+     * 自前のCanvasに描画する
+     */
+    private void drawCanvasCopy(Canvas canvas) {
+        //保存用Bitmap準備
+        Bitmap image = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+        Canvas myCanvas = new Canvas(image);
+
+        drawCircle(myCanvas, paint, 100, 100, 100, Color.rgb(255,0,0));
+
+
+//        //新しいcanvasに保存用Bitmapをセット
+//            Canvas canvas = new Canvas(image);
+//            //canvasに対して描画
+//            try {
+//                    //出力ファイルを準備
+//                    FileOutputStream fos = new FileOutputStream(new File("sample.png"));
+//                    //PNG形式で出力
+//                    image.compress(CompressFormat.PNG, 100, fos);
+//                    fos.close();
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
     }
 }
