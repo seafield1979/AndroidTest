@@ -8,6 +8,7 @@ import android.graphics.RectF;
 
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * アイコンのリストを表示するWindow
@@ -112,8 +113,19 @@ public class IconWindow {
      * @return
      */
     public IconBase addIcon(IconShape type) {
-        IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
+
+        IconBase icon = null;
+        switch (type) {
+            case RECT:
+                icon = new IconRect(0, 0, ICON_W, ICON_H);
+                break;
+            case CIRCLE:
+            default:
+                icon = new IconCircle(0, 0, ICON_H);
+                break;
+        }
         icons.add(icon);
+
         return icon;
     }
 
@@ -235,21 +247,6 @@ public class IconWindow {
                     dragIcon.draw(canvas, paint, getWin2ScreenPos(), rect);
                 }
                 break;
-            case icon_moving:
-                boolean allFinish = true;
-                for (IconBase icon : icons) {
-                    if (icon == null || icon == dragIcon) continue;
-                    if (!icon.move()) {
-                        allFinish = false;
-                    }
-                    icon.draw(canvas, paint, getWin2ScreenPos(), rect);
-                }
-                if (allFinish) {
-                    state = viewState.none;
-                } else {
-                    invalidate = true;
-                }
-                break;
         }
 
         // スクロールバー
@@ -257,6 +254,22 @@ public class IconWindow {
 
         // クリップ解除
         canvas.restore();
+
+        if (state == viewState.icon_moving) {
+            boolean allFinish = true;
+            for (IconBase icon : icons) {
+                if (icon == null || icon == dragIcon) continue;
+                if (!icon.move()) {
+                    allFinish = false;
+                }
+                icon.draw(canvas, paint, getWin2ScreenPos(), null);
+            }
+            if (allFinish) {
+                state = viewState.none;
+            } else {
+                invalidate = true;
+            }
+        }
 
         return invalidate;
     }
@@ -418,7 +431,7 @@ public class IconWindow {
     /**
      * ドラッグ終了時の処理
      * @param vt
-     * @return
+     * @return trueならViewを再描画
      */
     private boolean dragEnd(ViewTouch vt) {
         // ドロップ処理
@@ -427,68 +440,89 @@ public class IconWindow {
         boolean ret = false;
 
         boolean isDroped = false;
-        for (IconBase icon : icons) {
-            if (icon == dragIcon) continue;
 
-            if (checkDropToWindows(vt)) {
-                isDroped = true;
-                break;
-            }
-            if (icon.checkDrop(toWin2X(vt.getX()), toWin2Y(vt.getY()))) {
-                switch(icon.getShape()) {
-                    case CIRCLE:
-                        // ドラッグ位置のアイコンと場所を交換する
-                    {
-                        int index = icons.indexOf(icon);
-                        int index2 = icons.indexOf(dragIcon);
-                        icons.remove(dragIcon);
-                        icons.add(index, dragIcon);
-                        icons.remove(icon);
-                        icons.add(index2, icon);
+        // 全てのWindowの全ての
+        for (IconWindow window : windows) {
 
-                        // 再配置
-                        sortRects(true);
-                    }
-                    break;
-                    case RECT:
-                        // ドラッグ位置にアイコンを挿入する
-                    {
-                        int index = icons.indexOf(icon);
-                        icons.remove(dragIcon);
-                        icons.add(index, dragIcon);
-
-                        // 再配置
-                        sortRects(true);
-                    }
-                    break;
-                    case IMAGE:
-                        break;
-                }
-                isDroped = true;
-                ret = true;
-                break;
-            }
-        }
-
-        // その他の場所にドロップされた場合
-        if (!isDroped) {
-            // 最後のアイコンの後の空きスペースにドロップされた場合
-            IconBase lastIcon = icons.getLast();
-            if ((lastIcon.getY() <= vt.getY() && vt.getY() <= lastIcon.getBottom() &&
-                    lastIcon.getRight() <= toWin2X(vt.getX())) ||
-                    (lastIcon.getBottom() <= toWin2Y(vt.getY())))
+            // Windowの領域外ならスキップ
+            if (!(window.rect.left <= vt.getX() && vt.getX() <= window.rect.right &&
+                    window.rect.top <= vt.getY() && vt.getY() <= window.rect.bottom) )
             {
-                // ドラッグ中のアイコンをリストの最後に移動
-                icons.remove(dragIcon);
-                icons.add(dragIcon);
+                continue;
             }
 
-            // 再配置
-            sortRects(true);
+            float winX = 0, winY = 0;
+            LinkedList<IconBase> srcIcons = this.icons;
+            LinkedList<IconBase> dstIcons = window.icons;
+
+            // スクリーン座標系からWindow座標系に変換
+            if (window == this) {
+                winX = toWin2X(vt.getX());
+                winY = toWin2Y(vt.getY());
+
+            } else {
+                winX = window.toWin2X(vt.getX());
+                winY = window.toWin2X(vt.getY());
+            }
+
+            for (IconBase icon : dstIcons) {
+                if (icon == dragIcon) continue;
+
+                if (icon.checkDrop(winX, winY)) {
+                    switch (icon.getShape()) {
+                        case CIRCLE:
+                            // ドラッグ位置のアイコンと場所を交換する
+                            changeIcons(srcIcons, dstIcons, dragIcon, icon, window);
+                            break;
+                        case RECT:
+                            // ドラッグ位置にアイコンを挿入する
+                            insertIcons(srcIcons, dstIcons, dragIcon, icon, window);
+                            break;
+                        case IMAGE:
+                            break;
+                    }
+                    isDroped = true;
+                    break;
+                }
+            }
+
+            // その他の場所にドロップされた場合
+            if (!isDroped) {
+                // 最後のアイコンの後の空きスペースにドロップされた場合
+                if (dstIcons.size() > 0) {
+                    IconBase lastIcon = dstIcons.getLast();
+                    if ((lastIcon.getY() <= winY &&
+                            winY <= lastIcon.getBottom() &&
+                            lastIcon.getRight() <= winX) ||
+                            (lastIcon.getBottom() <= winY))
+                    {
+                        // ドラッグ中のアイコンをリストの最後に移動
+                        srcIcons.remove(dragIcon);
+                        dstIcons.add(dragIcon);
+                    }
+                } else {
+                    // ドラッグ中のアイコンをリストの最後に移動
+                    srcIcons.remove(dragIcon);
+                    dstIcons.add(dragIcon);
+                }
+
+                // 再配置
+                if (srcIcons != dstIcons) {
+                    // 座標系変換(移動元Windowから移動先Window)
+                    dragIcon.setPos(dragIcon.pos.x + this.pos.x - window.pos.x,
+                            dragIcon.pos.y + this.pos.y - window.pos.y);
+
+                    window.sortRects(true);
+                }
+                this.sortRects(true);
+
+                isDroped = true;
+            }
+            if (isDroped) break;
         }
 
         dragIcon = null;
-        return ret;
+        return isDroped;
     }
 
 
@@ -598,30 +632,64 @@ public class IconWindow {
     }
 
     /**
-     * 他のWindowにアイコンをドロップしたかのチェック
-     * @return
+     * ２つのアイコンの位置を交換する
+     * @param srcIcons
+     * @param dstIcons
+     * @param icon1
+     * @param icon2
+     * @param window
      */
-    private boolean checkDropToWindows(ViewTouch vt) {
-        for (IconWindow window : windows) {
-            if (window == this) continue;
+    private void changeIcons(List<IconBase> srcIcons, List<IconBase> dstIcons, IconBase
+            icon1, IconBase icon2, IconWindow window )
+    {
+        // アイコンの位置を交換
+        // 並び順も重要！
+        int index = dstIcons.indexOf(icon2);
+        int index2 = srcIcons.indexOf(icon1);
+        if (index == -1 || index2 == -1) return;
 
-            if (window.rect.left <= vt.getX() && vt.getX() <= window.rect.right &&
-                    window.rect.top <= vt.getY() && vt.getY() <= window.rect.bottom )
-            {
-                // アイコンを移動(移動元から削除、移動先に追加)
-                window.addIcon(dragIcon);
-                this.removeIcon(dragIcon);
+        srcIcons.remove(icon1);
+        dstIcons.add(index, icon1);
+        dstIcons.remove(icon2);
+        srcIcons.add(index2, icon2);
 
-                // 座標系変換(移動元Windowから移動先Window)
-                dragIcon.setPos(dragIcon.pos.x + this.pos.x - window.pos.x,
-                                dragIcon.pos.y + this.pos.y - window.pos.y);
-                dragIcon = null;
+        // 再配置
+        if (srcIcons != dstIcons) {
+            // ドロップアイコンの座標系を変換
+            dragIcon.setPos(dragIcon.pos.x + this.pos.x - window.pos.x,
+                    dragIcon.pos.y + this.pos.y - window.pos.y);
 
-                window.sortRects(true);
-                this.sortRects(true);
-                return true;
-            }
+            icon2.setPos(icon2.pos.x + window.pos.x - this.pos.x,
+                    icon2.pos.y + window.pos.y - this.pos.y);
+            window.sortRects(true);
         }
-        return false;
+        this.sortRects(true);
     }
+
+    /**
+     * アイコンを挿入する
+     * @param srcIcons
+     * @param dstIcons
+     * @param srcIcon  挿入元のアイコン
+     * @param dstIcon  挿入先のアイコン
+     * @param window
+     */
+    private void insertIcons(List<IconBase> srcIcons, List<IconBase> dstIcons, IconBase srcIcon, IconBase dstIcon, IconWindow window)
+    {
+        int index = dstIcons.indexOf(dstIcon);
+        if (index == -1) return;
+
+        srcIcons.remove(srcIcon);
+        dstIcons.add(index, srcIcon);
+
+        // 再配置
+        if (srcIcons != dstIcons) {
+            // ドロップアイコンの座標系を変換
+            dragIcon.setPos(srcIcon.pos.x + this.pos.x - window.pos.x,
+                    srcIcon.pos.y + this.pos.y - window.pos.y);
+            window.sortRects(true);
+        }
+        sortRects(true);
+    }
+
 }
