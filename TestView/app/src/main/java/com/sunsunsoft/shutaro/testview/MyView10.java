@@ -51,8 +51,12 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         newWidth = width;
         newHeight = height;
 
-        mIconWin.setSize(width, height);
         setLayoutParams(new LinearLayout.LayoutParams(width, height));
+    }
+
+    public void updateWindowSize(int width, int height) {
+        mIconWin.updateSize(width, height);
+        invalidate();
     }
 
     public MyView10(Context context) {
@@ -102,9 +106,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
 
         if (mIconWin == null) {
             mIconWin = new IconWindow();
-            mIconWin.createWindow(viewW, viewH - 500);
-        } else {
-            mIconWin.setSize(viewW, viewH);
+            mIconWin.createWindow(0, 0, viewW - 200, viewH - 500);
         }
 
         if (resetSize) {

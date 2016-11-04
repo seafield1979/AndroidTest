@@ -73,7 +73,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         newWidth = width;
         newHeight = height;
         if (mScrollV != null) {
-            mScrollV.updateContent(contentSize, width, height);
+            mScrollV.updateContent(contentSize);
         }
         setLayoutParams(new LinearLayout.LayoutParams(width, height));
     }
@@ -141,16 +141,16 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
             case none:
                 for (IconBase icon : icons) {
                     if (icon == null) continue;
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, contentTop, null);
                 }
                 break;
             case drag:
                 for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, contentTop, null);
                 }
                 if (dragIcon != null) {
-                    dragIcon.draw(canvas, paint, contentTop);
+                    dragIcon.draw(canvas, paint, contentTop, null);
                 }
                 break;
             case icon_moving:
@@ -160,7 +160,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
                     if (!icon.move()) {
                         allFinish = false;
                     }
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, contentTop, null);
                 }
                 if (allFinish) {
                     state = viewState.none;
@@ -202,7 +202,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         if (mScrollV == null) {
             mScrollV = new MyScrollBar(ScrollBarType.Left, viewW, viewH, 40, contentSize.height);
         } else {
-            mScrollV.updateContent(contentSize, viewW, viewH);
+            mScrollV.updateContent(contentSize);
         }
 
 

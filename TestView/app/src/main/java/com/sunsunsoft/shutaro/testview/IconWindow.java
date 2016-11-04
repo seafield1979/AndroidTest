@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.view.View;
 
 import java.util.Collections;
@@ -22,7 +23,7 @@ public class IconWindow {
 
     PointF pos = new PointF();
     Size size = new Size();
-
+    RectF rect = new RectF();
 
     private static final int RECT_ICON_NUM = 30;
     private static final int CIRCLE_ICON_NUM = 30;
@@ -48,9 +49,22 @@ public class IconWindow {
 
 
     // Get/Set
-    public void setPos(float x, float y) {
+    public void setPos(float x, float y, boolean update) {
         pos.x = x;
         pos.y = y;
+        if (update) {
+            updateRect();
+        }
+    }
+    private void updateRect() {
+        rect.left = pos.x;
+        rect.right = pos.x + size.width;
+        rect.top = pos.y;
+        rect.bottom = pos.y + size.height;
+    }
+    private void setSize(int width, int height) {
+        size.width = width;
+        size.height = height;
     }
 
     // 座標系を変換する
@@ -73,9 +87,18 @@ public class IconWindow {
         return new PointF(pos.x - contentTop.x, pos.y - contentTop.y);
     }
 
-    public void createWindow(int width, int height) {
-        size.width = width;
-        size.height = height;
+    /**
+     * Windowを生成する
+     * インスタンス生成後に一度だけ呼ぶ
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
+    public void createWindow(float x, float y, int width, int height) {
+        setPos(x, y,false);
+        setSize(width, height);
+        updateRect();
 
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
@@ -113,11 +136,12 @@ public class IconWindow {
             }
             icon.setColor(color);
         }
-        setPos(100,100);
+
         sortRects(false);
 
         mScrollBar = new MyScrollBar(ScrollBarType.Right, width, height, 50, contentSize.height);
-        mScrollBar.updateContent(contentSize, width, height);
+        mScrollBar.updateContent(contentSize);
+        mScrollBar.setBgColor(Color.rgb(128,128,128));
     }
 
     public void setContentSize(int width, int height) {
@@ -138,16 +162,16 @@ public class IconWindow {
             case none:
                 for (IconBase icon : icons) {
                     if (icon == null) continue;
-                    icon.draw(canvas, paint, getWin2ScreenPos());
+                    icon.draw(canvas, paint, getWin2ScreenPos(), rect);
                 }
                 break;
             case drag:
                 for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
-                    icon.draw(canvas, paint, getWin2ScreenPos());
+                    icon.draw(canvas, paint, getWin2ScreenPos(), rect);
                 }
                 if (dragIcon != null) {
-                    dragIcon.draw(canvas, paint, getWin2ScreenPos());
+                    dragIcon.draw(canvas, paint, getWin2ScreenPos(), rect);
                 }
                 break;
             case icon_moving:
@@ -157,7 +181,7 @@ public class IconWindow {
                     if (!icon.move()) {
                         allFinish = false;
                     }
-                    icon.draw(canvas, paint, getWin2ScreenPos());
+                    icon.draw(canvas, paint, getWin2ScreenPos(), rect);
                 }
                 if (allFinish) {
                     state = viewState.none;
@@ -173,13 +197,22 @@ public class IconWindow {
         return invalidate;
     }
 
-    public void setSize(int width, int height) {
+    /**
+     * Windowのサイズを更新する
+     * サイズ変更に合わせて中のアイコンを再配置する
+     * @param width
+     * @param height
+     */
+    public void updateSize(int width, int height) {
+        setSize(width, height);
+        updateRect();
+
         // アイコンの整列
         sortRects(false);
 
         // スクロールバー
-        mScrollBar.updateContent(contentSize, width, height);
-
+        mScrollBar.updateSize(width, height);
+        mScrollBar.updateContent(contentSize);
     }
 
     /**
@@ -419,6 +452,13 @@ public class IconWindow {
     public boolean touchEvent(ViewTouch vt) {
         if (state == viewState.icon_moving) return false;
         boolean done = false;
+
+        // 範囲外なら除外
+        if (vt.touchX() < rect.left || rect.right < vt.touchX() ||
+                vt.touchY() < rect.top || rect.bottom < vt.touchY())
+        {
+            return false;
+        }
 
         // スクロールバーのタッチ処理
         if (mScrollBar.touchEvent(vt)) {

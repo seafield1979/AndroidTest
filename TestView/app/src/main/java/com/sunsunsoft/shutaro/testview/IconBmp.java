@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 /**
  * Created by shutaro on 2016/10/22.
@@ -22,15 +23,16 @@ public class IconBmp extends IconBase {
         this.bmp = bmp;
     }
 
-    public void draw(Canvas canvas,Paint paint) {
-        draw(canvas, paint, null);
+    public boolean draw(Canvas canvas,Paint paint) {
+        return draw(canvas, paint, null, null);
     }
 
-    public void draw(Canvas canvas,Paint paint, PointF toScreen) {
+    public boolean draw(Canvas canvas,Paint paint, PointF toScreen, RectF clipRect) {
         if (toScreen == null) {
             toScreen = new PointF(0,0);
         }
         if (bmp != null) {
+
             // そのままのサイズで描画
             //         canvas.drawBitmap(bmp, x, y, paint);
 
@@ -40,5 +42,7 @@ public class IconBmp extends IconBase {
                     paint);
         }
         drawId(canvas, paint);
+
+        return true;
     }
 }

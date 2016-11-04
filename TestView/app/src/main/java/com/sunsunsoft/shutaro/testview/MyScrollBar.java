@@ -45,6 +45,14 @@ public class MyScrollBar {
 
     // Get/Set
 
+    public void setBgColor(int bgColor) {
+        this.bgColor = bgColor;
+    }
+
+    public void setBarColor(int barColor) {
+        this.barColor = barColor;
+    }
+
     public float getTopPos() {
         return topPos;
     }
@@ -87,7 +95,15 @@ public class MyScrollBar {
      */
     public MyScrollBar(ScrollBarType type, int viewWidth, int viewHeight, int width, int contentLen ) {
         this(type, 0, 0, 0, width, contentLen, viewHeight);
+        updateSize(viewWidth, viewHeight);
+    }
 
+    /**
+     * スクロールバーを表示する先のViewのサイズが変更された時の処理
+     * @param viewWidth
+     * @param viewHeight
+     */
+    public void updateSize(int viewWidth, int viewHeight) {
         switch (type) {
             case Top:
                 x = 0;
@@ -96,19 +112,20 @@ public class MyScrollBar {
             case Bottom:
                 x = 0;
                 bgLength = viewWidth;
-                y = viewHeight - width - 200;
+                y = viewHeight - bgWidth - 200;
                 break;
             case Left:
                 y = 0;
                 bgLength = viewHeight;
                 break;
             case Right:
-                x = viewWidth - width;
+                x = viewWidth - bgWidth;
                 y = 0;
                 bgLength = viewHeight;
                 break;
         }
         barLength = (int)(bgLength * ((float)viewLen / (float)contentLen));
+        barPos = 0;
     }
 
 
@@ -149,13 +166,11 @@ public class MyScrollBar {
     /**
      * コンテンツやViewのサイズが変更された時の処理
      */
-    public void updateContent(Size contentSize, int viewW, int viewH) {
+    public void updateContent(Size contentSize) {
         if (isVertical()) {
             this.contentLen = contentSize.height;
-            this.viewLen = viewH;
         } else {
             this.contentLen = contentSize.width;
-            this.viewLen = viewW;
         }
 
         barLength = (int)(this.bgLength * ((float)viewLen / (float)contentLen));

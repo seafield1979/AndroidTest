@@ -51,7 +51,7 @@ public class MyFragment10 extends Fragment implements View.OnClickListener, View
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                myView.updateViewSize(1000, 700);
+                myView.updateWindowSize(800, 500);
                 break;
         }
     }

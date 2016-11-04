@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -47,8 +49,26 @@ abstract public class IconBase implements AutoMovable {
         count++;
     }
 
-    abstract public void draw(Canvas canvas, Paint paint);
-    abstract public void draw(Canvas canvas, Paint paint, PointF top);
+    abstract public boolean draw(Canvas canvas, Paint paint);
+    abstract public boolean draw(Canvas canvas, Paint paint, PointF top, RectF clipRect);
+
+    /**
+     * クリッピング
+     * オブジェクトが親Windowの範囲内にあるかどうかを判定する
+     * @param iconRect
+     * @param clipRect
+     * @return true: 範囲外(描画しない) / false:範囲内
+     */
+    public boolean isClip(RectF iconRect, RectF clipRect) {
+        if (iconRect.right < clipRect.left ||
+                iconRect.left > clipRect.right ||
+                iconRect.bottom < clipRect.top ||
+                iconRect.top > clipRect.bottom )
+        {
+            return true;
+        }
+        return false;
+    }
 
     public IconShape getShape() { return shape; }
 
@@ -210,10 +230,6 @@ abstract public class IconBase implements AutoMovable {
         }
         return false;
     }
-
-
-    // ドロップ処理
-    //protected abstract void dropFunc();
 
     /**
      * アイコンにIDを表示する
