@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
-    private static final int[] buttonIds = new int[6]{
+    private static final int[] buttonIds = {
                 R.id.button1,
                 R.id.button2,
                 R.id.button3,
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 R.id.button6,
                 R.id.button_capture,
                 R.id.button_screen
-    }
+    };
 
     private SampleView sampleView;
 

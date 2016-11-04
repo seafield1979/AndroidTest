@@ -20,11 +20,12 @@ public class SampleView extends View{
     private Paint paint = new Paint();
     private Path path = new Path();
     private int drawMode;
-    private Bitmap mBmp;
+    private Bitmap mBmp, mBmpImo;
 
     public SampleView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mBmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        mBmpImo = BitmapFactory.decodeResource(getResources(), R.drawable.imoni_s);
     }
 
     public void setDrawMode(int mode){
@@ -55,7 +56,8 @@ public class SampleView extends View{
                 drawImage(canvas);
                 break;
             case 6:
-                drawCanvasCopy(canvas);
+                testCliping(canvas);
+                break;
             default:
         }
     }
@@ -132,6 +134,18 @@ public class SampleView extends View{
     }
 
     /**
+     * 四角形を描画する
+     * @param canvas
+     */
+    private void myDrawRect(Canvas canvas, Paint paint, float x, float y, int width, int height, int color)
+    {
+        // 内部を塗りつぶし
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(color);
+        canvas.drawRect(x, y, x + width, y +height, paint);
+    }
+
+    /**
      * 円を描画する
      * @param canvas
      */
@@ -161,7 +175,7 @@ public class SampleView extends View{
         }
     }
 
-    private static void drawCircle(Canvas canvas, Paint paint, float x, float y, float radius, int color) {
+    private static void myDrawCircle(Canvas canvas, Paint paint, float x, float y, float radius, int color) {
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(color);
         canvas.drawCircle(x, y, radius, paint);
@@ -181,32 +195,54 @@ public class SampleView extends View{
         canvas.scale(1.5f, 1.5f);
         canvas.drawBitmap(mBmp, 100, 100, paint);
 
+        canvas.drawBitmap(mBmpImo, 0, 0, paint);
+
     }
 
     /**
-     * 自前のCanvasに描画する
+     * クリッピングテスト
      */
-    private void drawCanvasCopy(Canvas canvas) {
-        //保存用Bitmap準備
-        Bitmap image = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
-        Canvas myCanvas = new Canvas(image);
+    private void testCliping(Canvas canvas) {
+        int width, height;
 
-        drawCircle(myCanvas, paint, 100, 100, 100, Color.rgb(255,0,0));
+        canvas.save();
+
+        // クリッピングを設定
+        canvas.clipRect(50, 50, 400, 400);
+
+        myDrawCircle(canvas, paint, 150, 150, 200, Color.rgb(0,250,128));
+        myDrawCircle(canvas, paint, 50, 50, 100, Color.rgb(128,0,128));
+
+        canvas.restore();
+
+        // 複数のクリッピイング
+        canvas.save();
+
+        Path path = new Path();
+        path.addCircle(200+150, 200+50, 100, Path.Direction.CCW);
+        path.addCircle(200+50, 200+250, 100, Path.Direction.CCW);
+        path.addCircle(200+250, 200+250, 100, Path.Direction.CCW);
+        canvas.clipPath(path);
+
+        canvas.drawBitmap(mBmpImo, 0, 0, paint);
+
+        canvas.restore();
+
+        // 複数のクリッピイング2
+        canvas.save();
+
+        Path path2 = new Path();
+        width = 200;
+        height = 200;
+        path2.addRect( 100, 500, 100+width, 500+height, Path.Direction.CCW);
+        path2.addRect( 200, 600, 200+width, 600+height, Path.Direction.CCW);
+        canvas.clipPath(path2);
+
+        myDrawRect(canvas, paint, 0,0, 1000, 1000, Color.rgb(120, 50, 200));
+        myDrawCircle(canvas, paint, 250, 650, 100, Color.rgb(250, 250, 100));
+
+        canvas.restore();
 
 
-//        //新しいcanvasに保存用Bitmapをセット
-//            Canvas canvas = new Canvas(image);
-//            //canvasに対して描画
-//            try {
-//                    //出力ファイルを準備
-//                    FileOutputStream fos = new FileOutputStream(new File("sample.png"));
-//                    //PNG形式で出力
-//                    image.compress(CompressFormat.PNG, 100, fos);
-//                    fos.close();
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
     }
 }
