@@ -39,15 +39,11 @@ public class IconCircle extends IconBase {
             }
         }
 
-        // 線の種類
-        paint.setStyle(Paint.Style.STROKE);
-        // 線の太さ
-        paint.setStrokeWidth(10);
         // 色
         paint.setColor(color);
 
         // 塗りつぶし
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setStyle(Paint.Style.FILL);
 
         // x,yが円を囲む矩形の左上にくるように座標を調整
         canvas.drawCircle(pos.x+radius + toScreen.x, pos.y+radius + toScreen.y, radius, paint);

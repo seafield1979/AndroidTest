@@ -20,21 +20,23 @@ public class IconWindow {
         drag,               // アイコンのドラッグ中
         icon_moving,        // アイコンの一変更後の移動中
     }
-
-    private PointF pos = new PointF();
-    private Size size = new Size();
-    private RectF rect = new RectF();
-    private int bgColor;
-
-    private static final int RECT_ICON_NUM = 3;
-    private static final int CIRCLE_ICON_NUM = 3;
+    public static final String TAG = "IconWindow";
+    private static final int RECT_ICON_NUM = 10;
+    private static final int CIRCLE_ICON_NUM = 10;
 
     private static final int ICON_W = 200;
     private static final int ICON_H = 150;
 
     private static final int MOVING_TIME = 10;
     private static final int SCROLL_BAR_W = 100;
-    private boolean firstDraw = false;
+
+
+    // メンバ変数
+    private PointF pos = new PointF();
+    private Size size = new Size();
+    private RectF rect = new RectF();
+    private int bgColor;
+
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
 
@@ -42,11 +44,11 @@ public class IconWindow {
     private IconWindow[] windows;
 
     // スクロール用
-    private Size contentSize = new Size();  // 領域全体のサイズ
+    private Size contentSize = new Size();     // 領域全体のサイズ
     private PointF contentTop = new PointF();  // 画面に表示する領域の左上の座標
     MyScrollBar mScrollBar;
 
-    // アイコンを動かす仕組み
+    // ドラッグ中のアイコン
     private IconBase dragIcon;
 
     // アニメーション用
@@ -83,7 +85,7 @@ public class IconWindow {
     // 座標系は以下の３つある
     // 1.Screen座標系  画面上の左上原点
     // 2.Window座標系  ウィンドウの左上原点
-    // 3.Window2座標系  ウィンドウ内のスクロールを加味した座標系
+    // 3.Window2座標系  ウィンドウをスクロールして表示されている左上が原点
 
     // Screen座標系 -> Window2座標系
     public float toWin2X(float screenX) {
@@ -252,8 +254,6 @@ public class IconWindow {
         // スクロールバー
         mScrollBar.draw(canvas, paint);
 
-        // クリップ解除
-        canvas.restore();
 
         if (state == viewState.icon_moving) {
             boolean allFinish = true;
@@ -262,14 +262,16 @@ public class IconWindow {
                 if (!icon.move()) {
                     allFinish = false;
                 }
-                icon.draw(canvas, paint, getWin2ScreenPos(), null);
+                icon.draw(canvas, paint, getWin2ScreenPos(), rect);
             }
             if (allFinish) {
                 state = viewState.none;
-            } else {
-                invalidate = true;
+
             }
+            invalidate = true;
         }
+        // クリップ解除
+        canvas.restore();
 
         return invalidate;
     }
@@ -345,7 +347,6 @@ public class IconWindow {
                 i++;
             }
         }
-
         setContentSize(size.width, maxHeight);
     }
 
@@ -443,7 +444,6 @@ public class IconWindow {
 
         // 全てのWindowの全ての
         for (IconWindow window : windows) {
-
             // Windowの領域外ならスキップ
             if (!(window.rect.left <= vt.getX() && vt.getX() <= window.rect.right &&
                     window.rect.top <= vt.getY() && vt.getY() <= window.rect.bottom) )
@@ -451,19 +451,12 @@ public class IconWindow {
                 continue;
             }
 
-            float winX = 0, winY = 0;
             LinkedList<IconBase> srcIcons = this.icons;
             LinkedList<IconBase> dstIcons = window.icons;
 
             // スクリーン座標系からWindow座標系に変換
-            if (window == this) {
-                winX = toWin2X(vt.getX());
-                winY = toWin2Y(vt.getY());
-
-            } else {
-                winX = window.toWin2X(vt.getX());
-                winY = window.toWin2X(vt.getY());
-            }
+            float winX = window.toWin2X(vt.getX());
+            float winY = window.toWin2Y(vt.getY());
 
             for (IconBase icon : dstIcons) {
                 if (icon == dragIcon) continue;
@@ -656,9 +649,11 @@ public class IconWindow {
         // 再配置
         if (srcIcons != dstIcons) {
             // ドロップアイコンの座標系を変換
+            // アイコン1 Window -> アイコン2 Window
             dragIcon.setPos(dragIcon.pos.x + this.pos.x - window.pos.x,
                     dragIcon.pos.y + this.pos.y - window.pos.y);
 
+            // アイコン2 Window -> アイコン1 Window
             icon2.setPos(icon2.pos.x + window.pos.x - this.pos.x,
                     icon2.pos.y + window.pos.y - this.pos.y);
             window.sortRects(true);
