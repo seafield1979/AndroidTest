@@ -37,6 +37,9 @@ public class IconWindow {
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
 
+    // アイコン移動用
+    private IconWindow[] windows;
+
     // スクロール用
     private Size contentSize = new Size();  // 領域全体のサイズ
     private PointF contentTop = new PointF();  // 画面に表示する領域の左上の座標
@@ -59,6 +62,10 @@ public class IconWindow {
             updateRect();
         }
     }
+    public void setWindows(IconWindow[] windows) {
+        this.windows = windows;
+    }
+
     private void updateRect() {
         rect.left = pos.x;
         rect.right = pos.x + size.width;
@@ -85,10 +92,52 @@ public class IconWindow {
         return screenY + contentTop.y - pos.y;
     }
 
+    // Windows2座標系 -> Screen座標系
+    public float toScreenX(float win2X) {
+        return win2X + pos.x;
+    }
+    public float toScreenY(float win2Y) {
+        return win2Y + pos.y;
+    }
+
     // Window2座標系 -> Screen座標系に変換するための値
     // Window内のオブジェクトを描画する際にこの値を加算する
     public PointF getWin2ScreenPos() {
         return new PointF(pos.x - contentTop.x, pos.y - contentTop.y);
+    }
+
+    /**
+     * 指定タイプのアイコンを追加
+     * @param type
+     * @return
+     */
+    public IconBase addIcon(IconShape type) {
+        IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
+        icons.add(icon);
+        return icon;
+    }
+
+    /**
+     * すでに作成済みのアイコンを追加
+     * ※べつのWindowにアイコンを移動するのに使用する
+     * @param icon
+     * @return
+     */
+    public boolean addIcon(IconBase icon) {
+        // すでに追加されている場合は追加しない
+        if (!icons.contains(icon)) {
+            icons.add(icon);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * アイコンを削除
+     * @param icon
+     */
+    public void removeIcon(IconBase icon) {
+        icons.remove(icon);
     }
 
     /**
@@ -108,8 +157,7 @@ public class IconWindow {
 
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
-            IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
-            icons.add(icon);
+            IconBase icon = addIcon(IconShape.RECT);
             int color = 0;
             switch (i%3) {
                 case 0:
@@ -126,8 +174,7 @@ public class IconWindow {
         }
 
         for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-            IconBase icon = new IconCircle(0, 0, ICON_H);
-            icons.add(icon);
+            IconBase icon = addIcon(IconShape.CIRCLE);
             int color = 0;
             switch (i%3) {
                 case 0:
@@ -382,6 +429,11 @@ public class IconWindow {
         boolean isDroped = false;
         for (IconBase icon : icons) {
             if (icon == dragIcon) continue;
+
+            if (checkDropToWindows(vt)) {
+                isDroped = true;
+                break;
+            }
             if (icon.checkDrop(toWin2X(vt.getX()), toWin2Y(vt.getY()))) {
                 switch(icon.getShape()) {
                     case CIRCLE:
@@ -543,5 +595,33 @@ public class IconWindow {
             }
         }
         return done;
+    }
+
+    /**
+     * 他のWindowにアイコンをドロップしたかのチェック
+     * @return
+     */
+    private boolean checkDropToWindows(ViewTouch vt) {
+        for (IconWindow window : windows) {
+            if (window == this) continue;
+
+            if (window.rect.left <= vt.getX() && vt.getX() <= window.rect.right &&
+                    window.rect.top <= vt.getY() && vt.getY() <= window.rect.bottom )
+            {
+                // アイコンを移動(移動元から削除、移動先に追加)
+                window.addIcon(dragIcon);
+                this.removeIcon(dragIcon);
+
+                // 座標系変換(移動元Windowから移動先Window)
+                dragIcon.setPos(dragIcon.pos.x + this.pos.x - window.pos.x,
+                                dragIcon.pos.y + this.pos.y - window.pos.y);
+                dragIcon = null;
+
+                window.sortRects(true);
+                this.sortRects(true);
+                return true;
+            }
+        }
+        return false;
     }
 }

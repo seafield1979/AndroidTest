@@ -120,6 +120,9 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
             mWindows[1] = new IconWindow();
             mWindows[1].createWindow(0, (viewH - 200)/2, viewW, (viewH - 200)/2, Color.LTGRAY);
         }
+        for (IconWindow window : mWindows) {
+            window.setWindows(mWindows);
+        }
 
 
         if (resetSize) {
