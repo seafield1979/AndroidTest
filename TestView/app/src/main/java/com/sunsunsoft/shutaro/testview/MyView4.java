@@ -159,8 +159,8 @@ public class MyView4 extends View implements OnTouchListener {
         Collections.reverse(icons);
         for (IconBase icon : icons) {
             // 座標判定
-            if (icon.x <= x && x < icon.getRight() &&
-                    icon.y <= y && y < icon.getBottom())
+            if (icon.pos.x <= x && x < icon.getRight() &&
+                    icon.pos.y <= y && y < icon.getBottom())
             {
                 // タッチされたアイコンを一番上(リストの最後)に持ってくる
                 dragIcon = icon;

@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.Log;
-import android.util.Size;
 import android.view.MotionEvent;
 
 import static com.sunsunsoft.shutaro.testview.ViewSettings.drawIconId;
@@ -21,8 +20,8 @@ abstract public class IconBase implements AutoMovable {
     private static int count;
 
     public int id;
-    protected float x,y;
-    protected int width,height;
+    protected PointF pos = new PointF();
+    protected Size size = new Size();
 
     // 移動用
     protected boolean isMoving;
@@ -42,10 +41,8 @@ abstract public class IconBase implements AutoMovable {
     public IconBase(IconShape shape, float x, float y, int width, int height, int color) {
         this.id = count;
         this.shape = shape;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.setPos(x, y);
+        this.setSize(width, height);
         this.color = Color.rgb(0,0,0);
         count++;
     }
@@ -54,59 +51,58 @@ abstract public class IconBase implements AutoMovable {
     abstract public void draw(Canvas canvas, Paint paint, PointF top);
 
     public IconShape getShape() { return shape; }
+
+
     // 座標、サイズのGet/Set
     public float getX() {
-        return x;
+        return pos.x;
     }
     public void setX(float x) {
-        this.x = x;
+        pos.x = x;
     }
 
     public float getY() {
-        return y;
+        return pos.y;
     }
     public void setY(float y) {
-        this.y = y;
-    }
-
-    public float getRight() {
-        return x + width;
-    }
-    public float getBottom() {
-        return y + height;
+        pos.y = y;
     }
 
     public void setPos(float x, float y) {
-        this.x = x;
-        this.y = y;
+        pos.x = x;
+        pos.y = y;
+    }
+
+    public float getRight() {
+        return pos.x + size.width;
+    }
+    public float getBottom() {
+        return pos.y + size.height;
     }
 
     public int getWidth() {
-        return width;
+        return size.width;
     }
     public void setWidth(int w) {
-        width = w;
+        size.width = w;
     }
 
     public int getHeight() {
-        return height;
+        return size.height;
     }
     public void setHeight(int h) {
-        height = h;
+        size.height = h;
     }
 
-    public Size getSize() {
-        return new Size(width, height);
-    }
-    public void setSize(int w, int h) {
-        width = w;
-        height = h;
+    public void setSize(int width, int height) {
+        size.width = width;
+        size.height = height;
     }
 
     // 移動
     public void move(float moveX, float moveY) {
-        x += moveX;
-        y += moveY;
+        pos.x += moveX;
+        pos.y += moveY;
     }
 
     // 色
@@ -124,11 +120,11 @@ abstract public class IconBase implements AutoMovable {
      * @param frame  移動にかかるフレーム数
      */
     public void startMove(float dstX, float dstY, int frame) {
-        if (x == dstX && y == dstY) {
+        if (pos.x == dstX && pos.y == dstY) {
             return;
         }
-        srcX = x;
-        srcY = y;
+        srcX = pos.x;
+        srcY = pos.y;
         this.dstX = dstX;
         this.dstY = dstY;
         movingFrame = 0;
@@ -145,15 +141,15 @@ abstract public class IconBase implements AutoMovable {
         if (!isMoving) return true;
 
         float ratio = (float)movingFrame / (float)movingFrameMax;
-        x = srcX + ((dstX - srcX) * ratio);
-        y = srcY + ((dstY - srcY) * ratio);
+        pos.x = srcX + ((dstX - srcX) * ratio);
+        pos.y = srcY + ((dstY - srcY) * ratio);
 
 
         movingFrame++;
         if (movingFrame >= movingFrameMax) {
             isMoving = false;
-            x = dstX;
-            y = dstY;
+            pos.x = dstX;
+            pos.y = dstY;
             return true;
         }
         return false;
@@ -179,8 +175,8 @@ abstract public class IconBase implements AutoMovable {
      * @return
      */
     public boolean checkTouch(float tx, float ty) {
-        if (x <= tx && tx <= getRight() &&
-                y <= ty && ty <= getBottom() )
+        if (pos.x <= tx && tx <= getRight() &&
+                pos.y <= ty && ty <= getBottom() )
         {
             return true;
         }
@@ -194,8 +190,8 @@ abstract public class IconBase implements AutoMovable {
      * @return
      */
     public boolean checkClick(float clickX, float clickY) {
-        if (x <= clickX && clickX <= getRight() &&
-                y <= clickY && clickY <= getBottom() )
+        if (pos.x <= clickX && clickX <= getRight() &&
+                pos.y <= clickY && clickY <= getBottom() )
         {
             click();
             return true;
@@ -207,8 +203,8 @@ abstract public class IconBase implements AutoMovable {
      * ドロップをチェックする
      */
     public boolean checkDrop(float dropX, float dropY) {
-        if (x <= dropX && dropX <= getRight() &&
-                y <= dropY && dropY <= getBottom() )
+        if (pos.x <= dropX && dropX <= getRight() &&
+                pos.y <= dropY && dropY <= getBottom() )
         {
             return true;
         }
@@ -229,7 +225,7 @@ abstract public class IconBase implements AutoMovable {
         if (drawIconId) {
             paint.setColor(Color.WHITE);
             paint.setTextSize(30);
-            canvas.drawText("" + id, x+10, y+height-30, paint);
+            canvas.drawText("" + id, pos.x+10, pos.y + size.height - 30, paint);
         }
     }
 }

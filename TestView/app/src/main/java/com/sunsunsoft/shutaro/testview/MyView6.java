@@ -299,8 +299,8 @@ public class MyView6 extends View implements OnTouchListener {
         Collections.reverse(icons);
         for (IconBase icon : icons) {
             // 座標判定
-            if (icon.x <= vt.touchX() && vt.touchX() < icon.getRight() &&
-                    icon.y <= vt.touchY() && vt.touchY() < icon.getBottom())
+            if (icon.pos.x <= vt.touchX() && vt.touchX() < icon.getRight() &&
+                    icon.pos.y <= vt.touchY() && vt.touchY() < icon.getBottom())
             {
                 dragIcon = icon;
                 ret = true;

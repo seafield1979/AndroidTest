@@ -22,9 +22,9 @@ public class IconRect extends IconBase {
         draw(canvas, paint, null);
     }
 
-    public void draw(Canvas canvas,Paint paint, PointF top) {
-        if (top == null) {
-            top = new PointF(0, 0);
+    public void draw(Canvas canvas,Paint paint, PointF toScreen) {
+        if (toScreen == null) {
+            toScreen = new PointF(0, 0);
         }
 
         // 内部を塗りつぶし
@@ -32,13 +32,13 @@ public class IconRect extends IconBase {
         // 色
         paint.setColor(color);
 
-        float drawX = x - top.x;
-        float drawY = y - top.y;
+        float drawX = pos.x + toScreen.x;
+        float drawY = pos.y + toScreen.y;
 
         canvas.drawRect(drawX,
                 drawY,
-                drawX + width,
-                drawY + height,
+                drawX + size.width,
+                drawY + size.height,
                 paint);
 
         drawId(canvas, paint);

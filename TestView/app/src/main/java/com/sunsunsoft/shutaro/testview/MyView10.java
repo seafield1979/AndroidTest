@@ -102,7 +102,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
 
         if (mIconWin == null) {
             mIconWin = new IconWindow();
-            mIconWin.createWindow(viewW, viewH);
+            mIconWin.createWindow(viewW, viewH - 500);
         } else {
             mIconWin.setSize(viewW, viewH);
         }

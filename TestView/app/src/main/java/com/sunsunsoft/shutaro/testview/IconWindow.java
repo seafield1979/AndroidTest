@@ -47,6 +47,32 @@ public class IconWindow {
     private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
 
+    // Get/Set
+    public void setPos(float x, float y) {
+        pos.x = x;
+        pos.y = y;
+    }
+
+    // 座標系を変換する
+    // 座標系は以下の３つある
+    // 1.Screen座標系  画面上の左上原点
+    // 2.Window座標系  ウィンドウの左上原点
+    // 3.Window2座標系  ウィンドウ内のスクロールを加味した座標系
+
+    // Screen座標系 -> Window2座標系
+    public float toWin2X(float screenX) {
+        return screenX + contentTop.x - pos.x;
+    }
+    public float toWin2Y(float screenY) {
+        return screenY + contentTop.y - pos.y;
+    }
+
+    // Window2座標系 -> Screen座標系に変換するための値
+    // Window内のオブジェクトを描画する際にこの値を加算する
+    public PointF getWin2ScreenPos() {
+        return new PointF(pos.x - contentTop.x, pos.y - contentTop.y);
+    }
+
     public void createWindow(int width, int height) {
         size.width = width;
         size.height = height;
@@ -87,6 +113,7 @@ public class IconWindow {
             }
             icon.setColor(color);
         }
+        setPos(100,100);
         sortRects(false);
 
         mScrollBar = new MyScrollBar(ScrollBarType.Right, width, height, 50, contentSize.height);
@@ -111,16 +138,16 @@ public class IconWindow {
             case none:
                 for (IconBase icon : icons) {
                     if (icon == null) continue;
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, getWin2ScreenPos());
                 }
                 break;
             case drag:
                 for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, getWin2ScreenPos());
                 }
                 if (dragIcon != null) {
-                    dragIcon.draw(canvas, paint, contentTop);
+                    dragIcon.draw(canvas, paint, getWin2ScreenPos());
                 }
                 break;
             case icon_moving:
@@ -130,7 +157,7 @@ public class IconWindow {
                     if (!icon.move()) {
                         allFinish = false;
                     }
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, getWin2ScreenPos());
                 }
                 if (allFinish) {
                     state = viewState.none;
@@ -141,7 +168,7 @@ public class IconWindow {
         }
 
         // スクロールバー
-        mScrollBar.draw(canvas, paint);
+        mScrollBar.draw(canvas, paint, pos);
 
         return invalidate;
     }
@@ -204,7 +231,7 @@ public class IconWindow {
      */
     private boolean touchIcons(ViewTouch vt) {
         for (IconBase icon : icons) {
-            if (icon.checkTouch(vt.touchX(contentTop.x), vt.touchY(contentTop.y))) {
+            if (icon.checkTouch(toWin2X(vt.touchX()), toWin2Y(vt.touchY()))) {
                 return true;
             }
         }
@@ -219,7 +246,7 @@ public class IconWindow {
     private boolean clickIcons(ViewTouch vt) {
         // どのアイコンがクリックされたかを判定
         for (IconBase icon : icons) {
-            if (icon.checkClick(vt.touchX(contentTop.x), vt.touchY(contentTop.y))) {
+            if (icon.checkClick(toWin2X(vt.touchX()), toWin2Y(vt.touchY()))) {
                 return true;
             }
         }
@@ -245,7 +272,7 @@ public class IconWindow {
         Collections.reverse(icons);
         for (IconBase icon : icons) {
             // 座標判定
-            if (icon.checkTouch(vt.touchX(contentTop.x), vt.touchY(contentTop.y))) {
+            if (icon.checkTouch(toWin2X(vt.touchX()), toWin2Y(vt.touchY()))) {
                 dragIcon = icon;
                 ret = true;
                 break;
@@ -290,7 +317,7 @@ public class IconWindow {
         boolean isDroped = false;
         for (IconBase icon : icons) {
             if (icon == dragIcon) continue;
-            if (icon.checkDrop(vt.getX(contentTop.x), vt.getY(contentTop.y))) {
+            if (icon.checkDrop(toWin2X(vt.getX()), toWin2Y(vt.getY()))) {
                 switch(icon.getShape()) {
                     case CIRCLE:
                         // ドラッグ位置のアイコンと場所を交換する
@@ -331,8 +358,8 @@ public class IconWindow {
             // 最後のアイコンの後の空きスペースにドロップされた場合
             IconBase lastIcon = icons.getLast();
             if ((lastIcon.getY() <= vt.getY() && vt.getY() <= lastIcon.getBottom() &&
-                    lastIcon.getRight() <= vt.getX(contentTop.x)) ||
-                    (lastIcon.getBottom() <= vt.getY(contentTop.y)))
+                    lastIcon.getRight() <= toWin2X(vt.getX())) ||
+                    (lastIcon.getBottom() <= toWin2Y(vt.getY())))
             {
                 // ドラッグ中のアイコンをリストの最後に移動
                 icons.remove(dragIcon);

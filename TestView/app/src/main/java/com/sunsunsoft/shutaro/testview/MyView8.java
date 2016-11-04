@@ -168,7 +168,7 @@ public class MyView8 extends View implements OnTouchListener {
         }
 
         // スクロールバー
-        mScrollV.draw(canvas, paint);
+        mScrollV.draw(canvas, paint, new PointF());
     }
 
     /**

@@ -26,17 +26,17 @@ public class IconBmp extends IconBase {
         draw(canvas, paint, null);
     }
 
-    public void draw(Canvas canvas,Paint paint, PointF top) {
-        if (top == null) {
-            top = new PointF(0,0);
+    public void draw(Canvas canvas,Paint paint, PointF toScreen) {
+        if (toScreen == null) {
+            toScreen = new PointF(0,0);
         }
         if (bmp != null) {
             // そのままのサイズで描画
             //         canvas.drawBitmap(bmp, x, y, paint);
 
             // 領域の幅に合わせて伸縮
-            canvas.drawBitmap(bmp, new Rect(0,0,width, height),
-                    new Rect((int)(x - top.x), (int)(y - top.y), (int)x+width,(int)y+height),
+            canvas.drawBitmap(bmp, new Rect(0,0,size.width, size.height),
+                    new Rect((int)(pos.x + toScreen.x), (int)(pos.y + toScreen.y), (int)pos.x+size.width,(int)pos.y+size.height),
                     paint);
         }
         drawId(canvas, paint);

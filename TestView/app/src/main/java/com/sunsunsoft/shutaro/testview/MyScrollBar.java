@@ -161,30 +161,33 @@ public class MyScrollBar {
         barLength = (int)(this.bgLength * ((float)viewLen / (float)contentLen));
     }
 
-    public void draw(Canvas canvas, Paint paint) {
+    public void draw(Canvas canvas, Paint paint, PointF winPos) {
         paint.setStyle(Paint.Style.FILL);
 
         RectF bgRect = new RectF();
         RectF barRect = new RectF();
 
+        float baseX = x + winPos.x;
+        float baseY = y + winPos.y;
+
         if (isHorizontal()) {
-            bgRect.left = x;
-            bgRect.right = x + bgLength;
-            bgRect.top = y;
-            bgRect.bottom = y + bgWidth;
-            barRect.left = x + barPos;
-            barRect.top = y + 10;
-            barRect.right = x + barPos + barLength;
-            barRect.bottom = y + bgWidth - 10;
+            bgRect.left = baseX;
+            bgRect.right = baseX + bgLength;
+            bgRect.top = baseY;
+            bgRect.bottom = baseY + bgWidth;
+            barRect.left = baseX + barPos;
+            barRect.top = baseY + 10;
+            barRect.right = baseX + barPos + barLength;
+            barRect.bottom = baseY + bgWidth - 10;
         } else {
-            bgRect.left = x;
-            bgRect.top = y;
-            bgRect.right = x + bgWidth;
-            bgRect.bottom = y + bgLength;
-            barRect.left = x + 10;
-            barRect.top = y + barPos;
-            barRect.right = x + bgWidth - 10;
-            barRect.bottom = y + barPos + barLength;
+            bgRect.left = baseX;
+            bgRect.top = baseY;
+            bgRect.right = baseX + bgWidth;
+            bgRect.bottom = baseY + bgLength;
+            barRect.left = baseX + 10;
+            barRect.top = baseY + barPos;
+            barRect.right = baseX + bgWidth - 10;
+            barRect.bottom =baseY + barPos + barLength;
         }
 
         // 背景
@@ -204,7 +207,6 @@ public class MyScrollBar {
                 barRect.right,
                 barRect.bottom,
                 paint);
-
     }
 
 
