@@ -141,16 +141,16 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
             case none:
                 for (IconBase icon : icons) {
                     if (icon == null) continue;
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, contentTop, null);
                 }
                 break;
             case drag:
                 for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, contentTop, null);
                 }
                 if (dragIcon != null) {
-                    dragIcon.draw(canvas, paint, contentTop);
+                    dragIcon.draw(canvas, paint, contentTop, null);
                 }
                 break;
             case icon_moving:
@@ -160,7 +160,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
                     if (!icon.move()) {
                         allFinish = false;
                     }
-                    icon.draw(canvas, paint, contentTop);
+                    icon.draw(canvas, paint, contentTop, null);
                 }
                 if (allFinish) {
                     state = viewState.none;
