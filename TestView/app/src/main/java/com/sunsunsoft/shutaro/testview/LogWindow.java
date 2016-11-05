@@ -102,28 +102,26 @@ public class LogWindow extends Window {
      */
     public boolean touchEvent(ViewTouch vt) {
         if (!isShow) return false;
-        boolean done = false;
 
         // 範囲外なら除外
-        if (!(rect.contains(vt.touchX(), vt.touchY()))) {
+        if (!(rect.contains(vt.getX(), vt.getY()))) {
             return false;
         }
 
-        if (!done) {
-            switch (vt.type) {
-                case Moving:
-                    if (vt.isMoveStart()) {
-
-                    }
-                    pos.x += vt.moveX;
-                    pos.y += vt.moveY;
-                    done = true;
-                    break;
-                case MoveEnd:
-                    break;
-            }
+        switch (vt.type) {
+            case Click:
+                isShow = false;
+                break;
+            case Moving:
+                if (vt.isMoveStart()) {
+                }
+                pos.x += vt.moveX;
+                pos.y += vt.moveY;
+                updateRect();
+                break;
         }
-        return done;
+
+        return true;
     }
 
     /**
@@ -138,14 +136,16 @@ public class LogWindow extends Window {
         timer.scheduleAtFixedRate(new TimerTask(){
             @Override
             public void run() {
-                // UIスレッドの処理
-                ((Activity)context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        parentView.invalidate();
-                    }
-                });
-                isShow = false;
+                if (isShow) {
+                    // UIスレッドの処理
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parentView.invalidate();
+                        }
+                    });
+                    isShow = false;
+                }
                 timer.cancel();
             }
         }, showTime, showTime);

@@ -15,10 +15,18 @@ import android.widget.LinearLayout;
 
   */
 public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks{
+    enum WindowType {
+        Icon1,
+        Icon2,
+        Log
+    }
+
     public static final String TAG = "MyView10";
 
+    // Windows
+    private Window[] mWindows = new Window[WindowType.values().length];
     // IconWindow
-    private IconWindow[] mWindows = new IconWindow[2];
+    private IconWindow[] mIcons = new IconWindow[2];
 
     // MessageWindow
     private LogWindow mLogWin;
@@ -51,14 +59,14 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
     }
 
     public void updateWindowSize(int width, int height) {
-        for (IconWindow win : mWindows) {
+        for (IconWindow win : mIcons) {
             win.updateSize(width, height);
         }
         invalidate();
     }
 
     public void updateWindowPos(float x, float y){
-        for (IconWindow win : mWindows) {
+        for (IconWindow win : mIcons) {
             win.setPos(x, y, true);
         }
         invalidate();
@@ -70,8 +78,8 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
      * @param height
      */
     public void updateShow(int width, int height) {
-        mWindows[0].updateSize(width, height);
-        mWindows[1].setShow(false);
+        mIcons[0].updateSize(width, height);
+        mIcons[1].setShow(false);
         invalidate();
     }
 
@@ -81,20 +89,20 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
      * @param height
      */
     public void updateShow2(int width, int height) {
-        mWindows[0].setShow(true);
-        mWindows[0].updateSize(width, (height - 100)/2);
-        mWindows[1].setShow(true);
-        mWindows[1].updateSize(width, (height - 100)/2);
+        mIcons[0].setShow(true);
+        mIcons[0].updateSize(width, (height - 100)/2);
+        mIcons[1].setShow(true);
+        mIcons[1].updateSize(width, (height - 100)/2);
         invalidate();
     }
 
     public void moveTest1(){
-        mWindows[1].startMove(0, getHeight(), 15);
+        mIcons[1].startMove(0, getHeight(), 15);
         invalidate();
     }
 
     public void moveTest2(){
-        mWindows[1].startMove(0, (getHeight() - 100) / 2, 15);
+        mIcons[1].startMove(0, (getHeight() - 100) / 2, 15);
         invalidate();
     }
 
@@ -111,44 +119,6 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
     public MyView10(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.setOnTouchListener(this);
-    }
-
-    @Override
-    public void onDraw(Canvas canvas) {
-        // 背景塗りつぶし
-        canvas.drawColor(Color.WHITE);
-
-        // アンチエリアシング(境界のぼかし)
-        paint.setAntiAlias(true);
-
-        // アイコンWindow
-        // アクション
-        for (Window win : mWindows) {
-            if (win.doAction()) {
-                invalidate();
-            }
-        }
-
-        // 描画処理
-        for (Window win : mWindows) {
-            if (!win.isShow()) continue;
-            if (win.draw(canvas, paint)) {
-                invalidate();
-            }
-        }
-        for (IconWindow win : mWindows) {
-            if (!win.isShow()) continue;
-            win.drawDragIcon(canvas, paint);
-        }
-
-            // メニューバー
-        if (mMenuBar.doAction()) {
-            invalidate();
-        }
-
-        mMenuBar.draw(canvas, paint);
-
-        mLogWin.draw(canvas, paint);
     }
 
     /**
@@ -168,24 +138,28 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
             mMenuBar.setShow(false);
         }
 
-        if (mWindows[0] == null) {
-            mWindows[0] = new IconWindow();
-            mWindows[0].createWindow(0, 0, viewW, (viewH - 100)/2, Color.WHITE);
-            mWindows[0].setWindows(mWindows);
-        }
-        if (mWindows[1] == null) {
-            mWindows[1] = new IconWindow();
-            mWindows[1].createWindow(0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
-            mWindows[1].setWindows(mWindows);
+        // IconWindow
+        if (mIcons[0] == null) {
+            mIcons[0] = new IconWindow();
+            mIcons[0].createWindow(0, 0, viewW, (viewH - 100)/2, Color.WHITE);
+            mIcons[0].setWindows(mIcons);
+            mWindows[WindowType.Icon1.ordinal()] = mIcons[0];
         }
 
-        // メッセージ
+        if (mIcons[1] == null) {
+            mIcons[1] = new IconWindow();
+            mIcons[1].createWindow(0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
+            mIcons[1].setWindows(mIcons);
+            mWindows[WindowType.Icon2.ordinal()] = mIcons[1];
+        }
+
+        // LogWindow
         if (mLogWin == null) {
             mLogWin = LogWindow.createInstance(getContext(), this,
                     viewW / 2, viewH,
                     Color.argb(128,0,0,0));
+            mWindows[WindowType.Log.ordinal()] = mLogWin;
         }
-
 
         if (resetSize) {
             int width = MeasureSpec.EXACTLY | newWidth;
@@ -196,6 +170,42 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         }
     }
 
+    @Override
+    public void onDraw(Canvas canvas) {
+        // 背景塗りつぶし
+        canvas.drawColor(Color.WHITE);
+
+        // アンチエリアシング(境界のぼかし)
+        paint.setAntiAlias(true);
+
+        // アイコンWindow
+        // アクション(手前から順に処理する)
+        for (int i=mWindows.length - 1; i >= 0; i--) {
+            Window win = mWindows[i];
+            if (win.doAction()) {
+                invalidate();
+            }
+        }
+
+        // 描画処理
+        for (Window win : mWindows) {
+            if (!win.isShow()) continue;
+            if (win.draw(canvas, paint)) {
+                invalidate();
+            }
+        }
+        for (IconWindow win : mIcons) {
+            if (!win.isShow()) continue;
+            win.drawDragIcon(canvas, paint);
+        }
+
+        // メニューバー
+        if (mMenuBar.doAction()) {
+            invalidate();
+        }
+
+        mMenuBar.draw(canvas, paint);
+    }
 
     /**
      * タッチイベント処理
@@ -239,7 +249,9 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
      * @return
      */
     private boolean WindoTouchEvent(ViewTouch vt) {
-        for (Window win : mWindows) {
+        // 手前から順に処理する
+        for (int i=mWindows.length - 1; i >= 0; i--) {
+            Window win = mWindows[i];
             if (!win.isShow()) continue;
 
             if (win.touchEvent(vt)) {
