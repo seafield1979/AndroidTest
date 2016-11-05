@@ -14,7 +14,7 @@ import java.util.List;
  * アイコンのリストを表示するWindow
  */
 
-public class IconWindow {
+public class IconWindow implements AutoMovable{
     enum viewState {
         none,
         drag,               // アイコンのドラッグ中
@@ -32,6 +32,7 @@ public class IconWindow {
 
 
     // メンバ変数
+    private boolean isShow = true;
     private PointF pos = new PointF();
     private Size size = new Size();
     private RectF rect = new RectF();
@@ -39,6 +40,13 @@ public class IconWindow {
 
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
+
+    // Window移動用
+    protected boolean isMoving;
+    protected int movingFrame;
+    protected int movingFrameMax;
+    protected PointF srcPos = new PointF();
+    protected PointF dstPos = new PointF();
 
     // アイコン移動用
     private IconWindow[] windows;
@@ -56,8 +64,15 @@ public class IconWindow {
 
     private LinkedList<IconBase> icons = new LinkedList<IconBase>();
 
-
     // Get/Set
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setShow(boolean show) {
+        isShow = show;
+    }
+
     public void setPos(float x, float y, boolean update) {
         pos.x = x;
         pos.y = y;
@@ -78,6 +93,19 @@ public class IconWindow {
     private void setSize(int width, int height) {
         size.width = width;
         size.height = height;
+    }
+
+    public PointF getContentTop() {
+        return contentTop;
+    }
+
+    public void setContentTop(PointF contentTop) {
+        this.contentTop = contentTop;
+    }
+
+    public void setContentTop(float x, float y) {
+        contentTop.x = x;
+        contentTop.y = y;
     }
 
 
@@ -224,12 +252,28 @@ public class IconWindow {
     }
 
     /**
+     * 毎フレーム行う処理
+     * @return true:描画を行う
+     */
+    public boolean doAction() {
+        if (!isMoving) return false;
+        // 移動処理
+        if (isMoving) {
+            if (move()) {
+                isMoving = false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 描画処理
      * @param canvas
      * @param paint
      * @return trueなら描画継続
      */
     public boolean draw(Canvas canvas, Paint paint) {
+        if (!isShow) return false;
 
         boolean invalidate = false;
 
@@ -238,7 +282,8 @@ public class IconWindow {
         canvas.clipRect(rect);
 
         // 背景色
-        canvas.drawColor(bgColor);
+        paint.setColor(bgColor);
+        canvas.drawRect(rect, paint);
 
         switch (state) {
             case none:
@@ -304,6 +349,9 @@ public class IconWindow {
     public void updateSize(int width, int height) {
         setSize(width, height);
         updateRect();
+
+        // スクロールをクリア
+        setContentTop(0, 0);
 
         // アイコンの整列
         sortRects(false);
@@ -568,6 +616,7 @@ public class IconWindow {
      * @return trueならViewを再描画
      */
     public boolean touchEvent(ViewTouch vt) {
+        if (!isShow) return false;
         if (state == viewState.icon_moving) return false;
         boolean done = false;
 
@@ -694,4 +743,48 @@ public class IconWindow {
         sortRects(true);
     }
 
+    /**
+     * 自動移動開始
+     * @param dstX  目的位置x
+     * @param dstY  目的位置y
+     * @param frame  移動にかかるフレーム数
+     */
+    public void startMove(float dstX, float dstY, int frame) {
+        if (pos.x == dstX && pos.y == dstY) {
+            return;
+        }
+        srcPos.x = pos.x;
+        srcPos.y = pos.y;
+        dstPos.x = dstX;
+        dstPos.y = dstY;
+        movingFrame = 0;
+        movingFrameMax = frame;
+        isMoving = true;
+    }
+
+    /**
+     * 移動
+     * 移動開始位置、終了位置、経過フレームから現在位置を計算する
+     * @return 移動完了したらtrue
+     */
+    public boolean move() {
+        if (!isMoving) return true;
+
+        boolean ret = false;
+
+        float ratio = (float)movingFrame / (float)movingFrameMax;
+        pos.x = srcPos.x + ((dstPos.x - srcPos.x) * ratio);
+        pos.y = srcPos.y + ((dstPos.y - srcPos.y) * ratio);
+
+        movingFrame++;
+        if (movingFrame >= movingFrameMax) {
+            isMoving = false;
+            pos.x = dstPos.x;
+            pos.y = dstPos.y;
+
+            ret = true;
+        }
+        updateRect();
+        return ret;
+    }
 }

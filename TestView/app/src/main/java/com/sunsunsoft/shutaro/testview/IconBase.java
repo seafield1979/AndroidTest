@@ -1,15 +1,11 @@
 package com.sunsunsoft.shutaro.testview;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import static com.sunsunsoft.shutaro.testview.ViewSettings.drawIconId;
 
@@ -29,8 +25,8 @@ abstract public class IconBase implements AutoMovable {
     protected boolean isMoving;
     protected int movingFrame;
     protected int movingFrameMax;
-    protected float srcX, srcY;
-    protected float dstX, dstY;
+    protected PointF srcPos = new PointF();
+    protected PointF dstPos = new PointF();
 
     protected IconShape shape;
 
@@ -143,10 +139,10 @@ abstract public class IconBase implements AutoMovable {
         if (pos.x == dstX && pos.y == dstY) {
             return;
         }
-        srcX = pos.x;
-        srcY = pos.y;
-        this.dstX = dstX;
-        this.dstY = dstY;
+        srcPos.x = pos.x;
+        srcPos.y = pos.y;
+        dstPos.x = dstX;
+        dstPos.y = dstY;
         movingFrame = 0;
         movingFrameMax = frame;
         isMoving = true;
@@ -161,15 +157,15 @@ abstract public class IconBase implements AutoMovable {
         if (!isMoving) return true;
 
         float ratio = (float)movingFrame / (float)movingFrameMax;
-        pos.x = srcX + ((dstX - srcX) * ratio);
-        pos.y = srcY + ((dstY - srcY) * ratio);
+        pos.x = srcPos.x + ((dstPos.x - srcPos.x) * ratio);
+        pos.y = srcPos.y + ((dstPos.y - srcPos.y) * ratio);
 
 
         movingFrame++;
         if (movingFrame >= movingFrameMax) {
             isMoving = false;
-            pos.x = dstX;
-            pos.y = dstY;
+            pos.x = dstPos.x;
+            pos.y = dstPos.y;
             return true;
         }
         return false;

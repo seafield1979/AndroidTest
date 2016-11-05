@@ -18,7 +18,12 @@ import android.widget.LinearLayout;
 public class MyFragment10 extends Fragment implements View.OnClickListener, View.OnTouchListener {
     private final static String BACKGROUND_COLOR = "background_color";
     private MyView10 myView;
-    private Button button;
+    private static final int[] buttonIds = {
+            R.id.button,
+            R.id.button2,
+            R.id.button3,
+            R.id.button4
+    };
 
     public static MyFragment10 newInstance(@ColorRes int IdRes) {
         MyFragment10 frag = new MyFragment10();
@@ -42,8 +47,9 @@ public class MyFragment10 extends Fragment implements View.OnClickListener, View
 
         myView = (MyView10)view.findViewById(R.id.myView10);
 
-        button = (Button)view.findViewById(R.id.button);
-        button.setOnClickListener(this);
+        for (int id : buttonIds) {
+            ((Button) view.findViewById(id)).setOnClickListener(this);
+        }
 
         return view;
     }
@@ -51,7 +57,16 @@ public class MyFragment10 extends Fragment implements View.OnClickListener, View
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                myView.updateWindowPos(100,100);
+                myView.updateShow(myView.getWidth(),myView.getHeight() - 200);
+                break;
+            case R.id.button2:
+                myView.updateShow2(myView.getWidth(),myView.getHeight() - 200);
+                break;
+            case R.id.button3:
+                myView.moveTest1();
+                break;
+            case R.id.button4:
+                myView.moveTest2();
                 break;
         }
     }

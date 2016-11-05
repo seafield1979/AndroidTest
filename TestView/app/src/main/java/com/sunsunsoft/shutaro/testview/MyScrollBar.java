@@ -119,6 +119,12 @@ public class MyScrollBar {
      * @param viewHeight
      */
     public void updateSize(int viewWidth, int viewHeight) {
+        if (isVertical()) {
+            viewLen = viewHeight;
+        } else {
+            viewLen = viewWidth;
+        }
+
         switch (type) {
             case Top:
                 x = 0;

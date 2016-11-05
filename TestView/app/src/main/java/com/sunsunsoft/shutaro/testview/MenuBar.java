@@ -26,17 +26,29 @@ public class MenuBar {
     private static final int MARGIN_TOP = 15;
     public static final int TOP_MENU_MAX = TopMenu.TopMenuMax.ordinal();
 
+
+    private boolean isShow = true;
     private PointF pos = new PointF();
-    private int width, height;
+    private Size size = new Size();
     private View mParentView;
     private MenuItemCallbacks mCallbackClass;
     MenuItemTop[] topItems = new MenuItemTop[TOP_MENU_MAX];
 
+
+    // Get/Set
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setShow(boolean show) {
+        isShow = show;
+    }
+
     public MenuBar(View parentView, MenuItemCallbacks callbackClass, int viewW, int viewH) {
         pos.x = 0;
         pos.y = viewH - MENU_BAR_H - 100;
-        width = viewW;
-        height = MENU_BAR_H;
+        size.width = viewW;
+        size.height = MENU_BAR_H;
         mParentView = parentView;
         mCallbackClass = callbackClass;
     }
@@ -126,6 +138,8 @@ public class MenuBar {
      * @param paint
      */
     public void draw(Canvas canvas, Paint paint) {
+        if (!isShow) return;
+
         // bg
         // 内部を塗りつぶし
         paint.setStyle(Paint.Style.FILL);
@@ -134,8 +148,8 @@ public class MenuBar {
 
         canvas.drawRect(pos.x,
                 pos.y,
-                pos.x + width,
-                pos.y + height,
+                pos.x + size.width,
+                pos.y + size.height,
                 paint);
 
 
@@ -153,7 +167,7 @@ public class MenuBar {
      * @return true:処理中 / false:完了
      */
     public boolean doAction() {
-        MyLog.print("MenuBar", "doAction");
+        if (!isShow) return false;
 
         boolean allFinished = true;
         for (MenuItemTop item : topItems) {
@@ -177,6 +191,8 @@ public class MenuBar {
      * メニューバー以下の項目(メニューの子要素も含めて全て)のクリック判定
      */
     public boolean touchEvent(ViewTouch vt) {
+        if (!isShow) return false;
+
         boolean done = false;
         float clickX = vt.touchX() - pos.x;
         float clickY = vt.touchY() - pos.y;
@@ -199,8 +215,8 @@ public class MenuBar {
 
         // メニューバーの領域をクリックしていたら、メニュー以外がクリックされるのを防ぐためにtrueを返す
         if (!done) {
-            if (0 <= clickX && clickX <= width &&
-                    0 <= clickY && clickY <= height)
+            if (0 <= clickX && clickX <= size.width &&
+                    0 <= clickY && clickY <= size.height)
             {
                 return true;
             }

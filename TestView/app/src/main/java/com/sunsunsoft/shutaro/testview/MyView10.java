@@ -61,6 +61,41 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         invalidate();
     }
 
+    /**
+     * IconWindowを１つだけ表示
+     * @param width
+     * @param height
+     */
+    public void updateShow(int width, int height) {
+        mWindows[0].updateSize(width, height);
+        mWindows[1].setShow(false);
+        invalidate();
+    }
+
+    /**
+     * IconWindowを２つ表示
+     * @param width
+     * @param height
+     */
+    public void updateShow2(int width, int height) {
+        mWindows[0].setShow(true);
+        mWindows[0].updateSize(width, (height - 100)/2);
+        mWindows[1].setShow(true);
+        mWindows[1].updateSize(width, (height - 100)/2);
+        invalidate();
+    }
+
+    public void moveTest1(){
+        mWindows[1].startMove(0, getHeight(), 15);
+        invalidate();
+    }
+
+    public void moveTest2(){
+        mWindows[1].startMove(0, (getHeight() - 200) / 2, 15);
+        invalidate();
+    }
+
+
     public MyView10(Context context) {
         this(context, null);
     }
@@ -79,12 +114,22 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         paint.setAntiAlias(true);
 
         // アイコンWindow
+        // アクション
         for (IconWindow win : mWindows) {
+            if (win.doAction()) {
+                invalidate();
+            }
+        }
+
+        // 描画処理
+        for (IconWindow win : mWindows) {
+            if (!win.isShow()) continue;
             if (win.draw(canvas, paint)) {
                 invalidate();
             }
         }
         for (IconWindow win : mWindows) {
+            if (!win.isShow()) continue;
             win.drawDragIcon(canvas, paint);
         }
 
@@ -110,15 +155,16 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         if (mMenuBar == null) {
             mMenuBar = new MenuBar(this, this, viewW, viewH);
             mMenuBar.initMenuBar();
+            mMenuBar.setShow(false);
         }
 
         if (mWindows[0] == null) {
             mWindows[0] = new IconWindow();
-            mWindows[0].createWindow(0, 0, viewW, (viewH - 200)/2, Color.WHITE);
+            mWindows[0].createWindow(0, 0, viewW, (viewH - 100)/2, Color.WHITE);
         }
         if (mWindows[1] == null) {
             mWindows[1] = new IconWindow();
-            mWindows[1].createWindow(0, (viewH - 200)/2, viewW, (viewH - 200)/2, Color.LTGRAY);
+            mWindows[1].createWindow(0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
         }
         for (IconWindow window : mWindows) {
             window.setWindows(mWindows);
@@ -171,8 +217,15 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         return ret;
     }
 
+    /**
+     * 各Windowのタッチ処理を変更する
+     * @param vt
+     * @return
+     */
     private boolean IconWindoTouchEvent(ViewTouch vt) {
         for (IconWindow win : mWindows) {
+            if (!win.isShow()) continue;
+
             if (win.touchEvent(vt)) {
                 return true;
             }
