@@ -18,6 +18,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
     enum WindowType {
         Icon1,
         Icon2,
+        MenuBar,
         Log
     }
 
@@ -131,13 +132,6 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         int viewW = MeasureSpec.getSize(widthMeasureSpec);
         int viewH = MeasureSpec.getSize(heightMeasureSpec);
 
-        // メニューバー
-        if (mMenuBar == null) {
-            mMenuBar = new MenuBar(this, this, viewW, viewH);
-            mMenuBar.initMenuBar();
-            mMenuBar.setShow(false);
-        }
-
         // IconWindow
         if (mIcons[0] == null) {
             mIcons[0] = new IconWindow();
@@ -151,6 +145,11 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
             mIcons[1].createWindow(0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
             mIcons[1].setWindows(mIcons);
             mWindows[WindowType.Icon2.ordinal()] = mIcons[1];
+        }
+        // メニューバー
+        if (mMenuBar == null) {
+            mMenuBar = MenuBar.createInstance(this, this, viewW, viewH, Color.BLACK);
+            mWindows[WindowType.MenuBar.ordinal()] = mMenuBar;
         }
 
         // LogWindow
@@ -198,13 +197,6 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
             if (!win.isShow()) continue;
             win.drawDragIcon(canvas, paint);
         }
-
-        // メニューバー
-        if (mMenuBar.doAction()) {
-            invalidate();
-        }
-
-        mMenuBar.draw(canvas, paint);
     }
 
     /**
@@ -217,11 +209,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         boolean ret = true;
 
         viewTouch.checkTouchType(e);
-
-        if (mMenuBar.touchEvent(viewTouch)) {
-            invalidate();
-        }
-        else if (WindoTouchEvent(viewTouch)) {
+        if (WindoTouchEvent(viewTouch)) {
             invalidate();
         }
 

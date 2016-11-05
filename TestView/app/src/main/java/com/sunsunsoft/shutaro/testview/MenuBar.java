@@ -1,5 +1,6 @@
 package com.sunsunsoft.shutaro.testview;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -19,7 +20,7 @@ enum TopMenu {
  * メニューバー
  * メニューに表示する項目を管理する
  */
-public class MenuBar {
+public class MenuBar extends Window {
     private static final int MENU_BAR_H = 150;
     private static final int MARGIN_L = 30;
     private static final int MARGIN_LR = 50;
@@ -28,8 +29,6 @@ public class MenuBar {
 
 
     private boolean isShow = true;
-    private PointF pos = new PointF();
-    private Size size = new Size();
     private View mParentView;
     private MenuItemCallbacks mCallbackClass;
     MenuItemTop[] topItems = new MenuItemTop[TOP_MENU_MAX];
@@ -44,11 +43,18 @@ public class MenuBar {
         isShow = show;
     }
 
-    public MenuBar(View parentView, MenuItemCallbacks callbackClass, int viewW, int viewH) {
-        pos.x = 0;
-        pos.y = viewH - MENU_BAR_H - 100;
-        size.width = viewW;
-        size.height = MENU_BAR_H;
+    public static MenuBar createInstance(View parentView, MenuItemCallbacks callbackClass, int width, int height, int bgColor)
+    {
+        MenuBar instance = new MenuBar(parentView, callbackClass);
+        instance.createWindow(0, height - MENU_BAR_H - 100, width, MENU_BAR_H, bgColor);
+        instance.mParentView = parentView;
+        instance.mCallbackClass = callbackClass;
+        instance.initMenuBar();
+        return instance;
+    }
+
+
+    public MenuBar(View parentView, MenuItemCallbacks callbackClass) {
         mParentView = parentView;
         mCallbackClass = callbackClass;
     }
@@ -56,7 +62,7 @@ public class MenuBar {
     /**
      * メニューバーを初期化
      */
-    public void initMenuBar() {
+    private void initMenuBar() {
         // トップ要素
         addTopMenuItem(TopMenu.Add, MenuItemId.AddTop, R.drawable.hogeman);
         addTopMenuItem(TopMenu.Sort, MenuItemId.SortTop, R.drawable.hogeman);
@@ -89,7 +95,6 @@ public class MenuBar {
         item.setCallbacks(mCallbackClass);
         addItem(topId, item);
     }
-
 
     /**
      * メニューの子要素を追加する
@@ -137,8 +142,8 @@ public class MenuBar {
      * @param canvas
      * @param paint
      */
-    public void draw(Canvas canvas, Paint paint) {
-        if (!isShow) return;
+    public boolean draw(Canvas canvas, Paint paint) {
+        if (!isShow) return false;
 
         // bg
         // 内部を塗りつぶし
@@ -158,6 +163,7 @@ public class MenuBar {
                 item.draw(canvas, paint, pos);
             }
         }
+        return false;
     }
 
     /**

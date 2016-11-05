@@ -214,7 +214,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
 
         // メニューバー
         if (mMenuBar == null) {
-            initMenuBar(viewW, viewH);
+            mMenuBar = MenuBar.createInstance(this, this, viewW, viewH, Color.BLACK);
         }
 
         // スクロールバー
@@ -287,14 +287,8 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
     /**
      * メニューバーを初期化
      */
-    private void initMenuBar(int viewW, int viewH) {
-        mMenuBar = new MenuBar(this, this, viewW, viewH);
-
+    private void initMenuBar() {
         // トップ要素
-        int bmpId = R.drawable.hogeman;
-        MenuItemId retId = MenuItemId.AddBook;
-        TopMenu topId = TopMenu.Add;
-
         addTopMenuItem(TopMenu.Add, MenuItemId.AddTop, R.drawable.hogeman);
         addTopMenuItem(TopMenu.Sort, MenuItemId.SortTop, R.drawable.hogeman);
         addTopMenuItem(TopMenu.ListType, MenuItemId.ListTypeTop, R.drawable.hogeman);
