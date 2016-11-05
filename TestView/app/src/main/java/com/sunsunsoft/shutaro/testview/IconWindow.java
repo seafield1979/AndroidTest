@@ -84,23 +84,30 @@ public class IconWindow {
     // 座標系を変換する
     // 座標系は以下の３つある
     // 1.Screen座標系  画面上の左上原点
-    // 2.Window座標系  ウィンドウの左上原点
-    // 3.Window2座標系  ウィンドウをスクロールして表示されている左上が原点
+    // 2.Window座標系  ウィンドウ左上原点 + スクロールして表示されている左上が原点
 
-    // Screen座標系 -> Window2座標系
-    public float toWin2X(float screenX) {
+    // Screen座標系 -> Window座標系
+    public float toWinX(float screenX) {
         return screenX + contentTop.x - pos.x;
     }
-    public float toWin2Y(float screenY) {
+    public float toWinY(float screenY) {
         return screenY + contentTop.y - pos.y;
     }
 
-    // Windows2座標系 -> Screen座標系
-    public float toScreenX(float win2X) {
-        return win2X + pos.x;
+    // Windows座標系 -> Screen座標系
+    public float toScreenX(float winX) {
+        return winX - contentTop.x + pos.x;
     }
-    public float toScreenY(float win2Y) {
-        return win2Y + pos.y;
+    public float toScreenY(float winY) {
+        return winY - contentTop.y + pos.y;
+    }
+
+    // Window1の座標系から Window2の座標系に変換
+    public float win1ToWin2X(float win1X, IconWindow win1, IconWindow win2) {
+        return win1X + win1.pos.x - win1.contentTop.x - win2.pos.x + win2.contentTop.x;
+    }
+    public float win1ToWin2Y(float win1Y, IconWindow win1, IconWindow win2) {
+        return win1Y + win1.pos.y - win1.contentTop.y - win2.pos.y + win2.contentTop.y;
     }
 
     // Window2座標系 -> Screen座標系に変換するための値
@@ -169,6 +176,9 @@ public class IconWindow {
 
         updateRect();
 
+        mScrollBar = new MyScrollBar(ScrollBarType.Right, ScrollBarInOut.In, this.pos, width, height, SCROLL_BAR_W, contentSize.height);
+        mScrollBar.setBgColor(Color.rgb(128,128,128));
+
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
             IconBase icon = addIcon(IconShape.RECT);
@@ -206,9 +216,6 @@ public class IconWindow {
 
         sortRects(false);
 
-        mScrollBar = new MyScrollBar(ScrollBarType.Right, ScrollBarInOut.In, this.pos, width, height, SCROLL_BAR_W, contentSize.height);
-        mScrollBar.updateContent(contentSize);
-        mScrollBar.setBgColor(Color.rgb(128,128,128));
     }
 
     public void setContentSize(int width, int height) {
@@ -244,9 +251,6 @@ public class IconWindow {
                 for (IconBase icon : icons) {
                     if (icon == null || icon == dragIcon) continue;
                     icon.draw(canvas, paint, getWin2ScreenPos(), rect);
-                }
-                if (dragIcon != null) {
-                    dragIcon.draw(canvas, paint, getWin2ScreenPos(), rect);
                 }
                 break;
         }
@@ -348,6 +352,8 @@ public class IconWindow {
             }
         }
         setContentSize(size.width, maxHeight);
+
+        mScrollBar.updateContent(contentSize);
     }
 
     /**
@@ -357,7 +363,7 @@ public class IconWindow {
      */
     private boolean touchIcons(ViewTouch vt) {
         for (IconBase icon : icons) {
-            if (icon.checkTouch(toWin2X(vt.touchX()), toWin2Y(vt.touchY()))) {
+            if (icon.checkTouch(toWinX(vt.touchX()), toWinY(vt.touchY()))) {
                 return true;
             }
         }
@@ -372,7 +378,7 @@ public class IconWindow {
     private boolean clickIcons(ViewTouch vt) {
         // どのアイコンがクリックされたかを判定
         for (IconBase icon : icons) {
-            if (icon.checkClick(toWin2X(vt.touchX()), toWin2Y(vt.touchY()))) {
+            if (icon.checkClick(toWinX(vt.touchX()), toWinY(vt.touchY()))) {
                 return true;
             }
         }
@@ -398,7 +404,7 @@ public class IconWindow {
         Collections.reverse(icons);
         for (IconBase icon : icons) {
             // 座標判定
-            if (icon.checkTouch(toWin2X(vt.touchX()), toWin2Y(vt.touchY()))) {
+            if (icon.checkTouch(toWinX(vt.touchX()), toWinY(vt.touchY()))) {
                 dragIcon = icon;
                 ret = true;
                 break;
@@ -419,6 +425,7 @@ public class IconWindow {
         boolean ret = false;
         if (dragIcon != null) {
             dragIcon.move((int)vt.moveX, (int)vt.moveY);
+            MyLog.print(TAG, "dragIcon:" + dragIcon.pos.x + " " + dragIcon.pos.y);
             ret = true;
         }
 
@@ -455,8 +462,8 @@ public class IconWindow {
             LinkedList<IconBase> dstIcons = window.icons;
 
             // スクリーン座標系からWindow座標系に変換
-            float winX = window.toWin2X(vt.getX());
-            float winY = window.toWin2Y(vt.getY());
+            float winX = window.toWinX(vt.getX());
+            float winY = window.toWinY(vt.getY());
 
             for (IconBase icon : dstIcons) {
                 if (icon == dragIcon) continue;
@@ -489,6 +496,7 @@ public class IconWindow {
                             lastIcon.getRight() <= winX) ||
                             (lastIcon.getBottom() <= winY))
                     {
+
                         // ドラッグ中のアイコンをリストの最後に移動
                         srcIcons.remove(dragIcon);
                         dstIcons.add(dragIcon);
@@ -502,8 +510,7 @@ public class IconWindow {
                 // 再配置
                 if (srcIcons != dstIcons) {
                     // 座標系変換(移動元Windowから移動先Window)
-                    dragIcon.setPos(dragIcon.pos.x + this.pos.x - window.pos.x,
-                            dragIcon.pos.y + this.pos.y - window.pos.y);
+                    dragIcon.setPos(win1ToWin2X(dragIcon.pos.x, this, window), win1ToWin2Y(dragIcon.pos.y, this, window));
 
                     window.sortRects(true);
                 }
