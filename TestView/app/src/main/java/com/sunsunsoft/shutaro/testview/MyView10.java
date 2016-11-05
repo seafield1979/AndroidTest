@@ -20,6 +20,9 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
     // IconWindow
     private IconWindow[] mWindows = new IconWindow[2];
 
+    // MessageWindow
+    private LogWindow mLogWin;
+
     // メニューバー
     private MenuBar mMenuBar;
 
@@ -95,6 +98,11 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         invalidate();
     }
 
+    public void showText() {
+        mLogWin.addMessage("hoge", Color.WHITE);
+        invalidate();
+    }
+
 
     public MyView10(Context context) {
         this(context, null);
@@ -139,6 +147,8 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         }
 
         mMenuBar.draw(canvas, paint);
+
+        mLogWin.draw(canvas, paint);
     }
 
     /**
@@ -161,13 +171,19 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         if (mWindows[0] == null) {
             mWindows[0] = new IconWindow();
             mWindows[0].createWindow(0, 0, viewW, (viewH - 100)/2, Color.WHITE);
+            mWindows[0].setWindows(mWindows);
         }
         if (mWindows[1] == null) {
             mWindows[1] = new IconWindow();
             mWindows[1].createWindow(0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
+            mWindows[1].setWindows(mWindows);
         }
-        for (IconWindow window : mWindows) {
-            window.setWindows(mWindows);
+
+        // メッセージ
+        if (mLogWin == null) {
+            mLogWin = LogWindow.createInstance(getContext(), this,
+                    viewW / 2, viewH,
+                    Color.argb(128,0,0,0));
         }
 
 
@@ -195,7 +211,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
         if (mMenuBar.touchEvent(viewTouch)) {
             invalidate();
         }
-        else if (IconWindoTouchEvent(viewTouch)) {
+        else if (WindoTouchEvent(viewTouch)) {
             invalidate();
         }
 
@@ -222,7 +238,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
      * @param vt
      * @return
      */
-    private boolean IconWindoTouchEvent(ViewTouch vt) {
+    private boolean WindoTouchEvent(ViewTouch vt) {
         for (Window win : mWindows) {
             if (!win.isShow()) continue;
 

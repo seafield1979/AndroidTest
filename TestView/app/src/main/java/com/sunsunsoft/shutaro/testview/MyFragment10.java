@@ -22,7 +22,8 @@ public class MyFragment10 extends Fragment implements View.OnClickListener, View
             R.id.button,
             R.id.button2,
             R.id.button3,
-            R.id.button4
+            R.id.button4,
+            R.id.button5
     };
 
     public static MyFragment10 newInstance(@ColorRes int IdRes) {
@@ -67,6 +68,9 @@ public class MyFragment10 extends Fragment implements View.OnClickListener, View
                 break;
             case R.id.button4:
                 myView.moveTest2();
+                break;
+            case R.id.button5:
+                myView.showText();
                 break;
         }
     }

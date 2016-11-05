@@ -386,9 +386,7 @@ public class IconWindow extends Window implements AutoMovable{
         // 全てのWindowの全ての
         for (IconWindow window : windows) {
             // Windowの領域外ならスキップ
-            if (!(window.rect.left <= vt.getX() && vt.getX() <= window.rect.right &&
-                    window.rect.top <= vt.getY() && vt.getY() <= window.rect.bottom) )
-            {
+            if (!(window.rect.contains(vt.getX(),vt.getY()))){
                 continue;
             }
 
@@ -430,10 +428,10 @@ public class IconWindow extends Window implements AutoMovable{
                             lastIcon.getRight() <= winX) ||
                             (lastIcon.getBottom() <= winY))
                     {
-
                         // ドラッグ中のアイコンをリストの最後に移動
                         srcIcons.remove(dragIcon);
                         dstIcons.add(dragIcon);
+                        isDroped = true;
                     }
                 } else {
                     // ドラッグ中のアイコンをリストの最後に移動
@@ -444,7 +442,9 @@ public class IconWindow extends Window implements AutoMovable{
                 // 再配置
                 if (srcIcons != dstIcons) {
                     // 座標系変換(移動元Windowから移動先Window)
-                    dragIcon.setPos(win1ToWin2X(dragIcon.pos.x, this, window), win1ToWin2Y(dragIcon.pos.y, this, window));
+                    if (isDroped) {
+                        dragIcon.setPos(win1ToWin2X(dragIcon.pos.x, this, window), win1ToWin2Y(dragIcon.pos.y, this, window));
+                    }
 
                     window.sortRects(true);
                 }
@@ -478,9 +478,7 @@ public class IconWindow extends Window implements AutoMovable{
         }
 
         // 範囲外なら除外
-        if (vt.touchX() < rect.left || rect.right < vt.touchX() ||
-                vt.touchY() < rect.top || rect.bottom < vt.touchY())
-        {
+        if (!(rect.contains(vt.touchX(), vt.touchY()))) {
             return false;
         }
 
