@@ -91,7 +91,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
     }
 
     public void moveTest2(){
-        mWindows[1].startMove(0, (getHeight() - 200) / 2, 15);
+        mWindows[1].startMove(0, (getHeight() - 100) / 2, 15);
         invalidate();
     }
 
@@ -115,14 +115,14 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
 
         // アイコンWindow
         // アクション
-        for (IconWindow win : mWindows) {
+        for (Window win : mWindows) {
             if (win.doAction()) {
                 invalidate();
             }
         }
 
         // 描画処理
-        for (IconWindow win : mWindows) {
+        for (Window win : mWindows) {
             if (!win.isShow()) continue;
             if (win.draw(canvas, paint)) {
                 invalidate();
@@ -223,7 +223,7 @@ public class MyView10 extends View implements OnTouchListener, MenuItemCallbacks
      * @return
      */
     private boolean IconWindoTouchEvent(ViewTouch vt) {
-        for (IconWindow win : mWindows) {
+        for (Window win : mWindows) {
             if (!win.isShow()) continue;
 
             if (win.touchEvent(vt)) {
