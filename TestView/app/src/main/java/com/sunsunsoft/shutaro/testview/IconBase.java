@@ -12,12 +12,13 @@ import static com.sunsunsoft.shutaro.testview.ViewSettings.drawIconId;
 /**
  * ViewのonDrawで描画するアイコンの情報
  */
-abstract public class IconBase implements AutoMovable {
+abstract public class IconBase implements AutoMovable, Animatable {
 
-    private static final String TAG = "MyIcon";
+    private static final String TAG = "IconBase";
     private static int count;
 
     public int id;
+    protected IconWindow parentWindow;
     protected PointF pos = new PointF();
     protected Size size = new Size();
 
@@ -28,15 +29,23 @@ abstract public class IconBase implements AutoMovable {
     protected PointF srcPos = new PointF();
     protected PointF dstPos = new PointF();
 
+    // アニメーション用
+    public static final int ANIME_FRAME = 20;
+    protected boolean isAnimating;
+    protected int animeFrame;
+    protected int animeFrameMax;
+
     protected IconShape shape;
 
     protected int color;
 
-    public IconBase(IconShape shape, float x, float y, int width, int height) {
-        this(shape, x,y,width,height, Color.rgb(0,0,0));
+    public IconBase(IconWindow parentWindow,IconShape shape, float x, float y, int width, int height) {
+        this(parentWindow, shape, x,y,width,height, Color.rgb(0,0,0));
     }
 
-    public IconBase(IconShape shape, float x, float y, int width, int height, int color) {
+    public IconBase(IconWindow parentWindow, IconShape shape, float x, float y, int width, int
+            height, int color) {
+        this.parentWindow = parentWindow;
         this.id = count;
         this.shape = shape;
         this.setPos(x, y);
@@ -47,24 +56,6 @@ abstract public class IconBase implements AutoMovable {
 
     abstract public boolean draw(Canvas canvas, Paint paint);
     abstract public boolean draw(Canvas canvas, Paint paint, PointF top, RectF clipRect);
-
-    /**
-     * クリッピング
-     * オブジェクトが親Windowの範囲内にあるかどうかを判定する
-     * @param iconRect
-     * @param clipRect
-     * @return true: 範囲外(描画しない) / false:範囲内
-     */
-    public boolean isClip(RectF iconRect, RectF clipRect) {
-        if (iconRect.right < clipRect.left ||
-                iconRect.left > clipRect.right ||
-                iconRect.bottom < clipRect.top ||
-                iconRect.top > clipRect.bottom )
-        {
-            return true;
-        }
-        return false;
-    }
 
     public IconShape getShape() { return shape; }
 
@@ -113,6 +104,24 @@ abstract public class IconBase implements AutoMovable {
     public void setSize(int width, int height) {
         size.width = width;
         size.height = height;
+    }
+
+    /**
+     * クリッピング
+     * オブジェクトが親Windowの範囲内にあるかどうかを判定する
+     * @param iconRect
+     * @param clipRect
+     * @return true: 範囲外(描画しない) / false:範囲内
+     */
+    public static boolean isClip(RectF iconRect, RectF clipRect) {
+        if (iconRect.right < clipRect.left ||
+                iconRect.left > clipRect.right ||
+                iconRect.bottom < clipRect.top ||
+                iconRect.top > clipRect.bottom )
+        {
+            return true;
+        }
+        return false;
     }
 
     // 移動
@@ -173,6 +182,7 @@ abstract public class IconBase implements AutoMovable {
 
     public void click() {
         Log.v(TAG, "click");
+        startAnim();
     }
     public void longClick() {
         Log.v(TAG, "long click");
@@ -239,5 +249,33 @@ abstract public class IconBase implements AutoMovable {
             paint.setTextSize(30);
             canvas.drawText("" + id, pos.x+10, pos.y + size.height - 30, paint);
         }
+    }
+
+    /**
+     * アニメーション開始
+     */
+    public void startAnim() {
+        isAnimating = true;
+        animeFrame = 0;
+        animeFrameMax = ANIME_FRAME;
+        if (parentWindow != null) {
+            parentWindow.setAnimating(true);
+        }
+    }
+
+    /**
+     * アニメーション処理
+     * といいつつフレームのカウンタを増やしているだけ
+     * @return true:アニメーション中
+     */
+    public boolean animate() {
+        if (!isAnimating) return false;
+        if (animeFrame >= animeFrameMax) {
+            isAnimating = false;
+            return false;
+        }
+
+        animeFrame++;
+        return true;
     }
 }

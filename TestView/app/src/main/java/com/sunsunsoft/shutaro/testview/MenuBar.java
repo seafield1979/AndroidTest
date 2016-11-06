@@ -28,11 +28,10 @@ public class MenuBar extends Window {
     public static final int TOP_MENU_MAX = TopMenu.TopMenuMax.ordinal();
 
 
-    private boolean isShow = true;
     private View mParentView;
     private MenuItemCallbacks mCallbackClass;
     MenuItemTop[] topItems = new MenuItemTop[TOP_MENU_MAX];
-
+    MenuItem[] items = new MenuItem[MenuItemId.values().length];
 
     // Get/Set
     public boolean isShow() {
@@ -52,7 +51,6 @@ public class MenuBar extends Window {
         instance.initMenuBar();
         return instance;
     }
-
 
     public MenuBar(View parentView, MenuItemCallbacks callbackClass) {
         mParentView = parentView;
@@ -94,6 +92,8 @@ public class MenuBar extends Window {
         MenuItemTop item = new MenuItemTop(menuId, bmp);
         item.setCallbacks(mCallbackClass);
         addItem(topId, item);
+
+        items[menuId.ordinal()] = item;
     }
 
     /**
@@ -107,6 +107,8 @@ public class MenuBar extends Window {
         MenuItemChild item = new MenuItemChild(menuId, bmp);
         item.setCallbacks(mCallbackClass);
         addChildItem(topId, item);
+
+        items[menuId.ordinal()] = item;
     }
 
     /**
@@ -227,7 +229,6 @@ public class MenuBar extends Window {
                 return true;
             }
         }
-
         return done;
     }
 
@@ -244,4 +245,15 @@ public class MenuBar extends Window {
         }
     }
 
+    /**
+     * メニュー項目の座標をスクリーン座標で取得する
+     */
+    public PointF getItemPos(MenuItemId itemId) {
+        MenuItem item = items[itemId.ordinal()];
+        if (item == null) {
+            return new PointF();
+        }
+        PointF itemPos = item.getPos();
+        return new PointF(toScreenX(itemPos.x), toScreenY(itemPos.y));
+    }
 }

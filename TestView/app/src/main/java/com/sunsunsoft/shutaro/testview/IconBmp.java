@@ -17,8 +17,8 @@ public class IconBmp extends IconBase {
 
     private Bitmap bmp;
 
-    public IconBmp(int x, int y, int width, int height, Bitmap bmp) {
-        super(IconShape.IMAGE, x, y, width, height);
+    public IconBmp(IconWindow parent, int x, int y, int width, int height, Bitmap bmp) {
+        super(parent, IconShape.IMAGE, x, y, width, height);
 
         this.bmp = bmp;
     }

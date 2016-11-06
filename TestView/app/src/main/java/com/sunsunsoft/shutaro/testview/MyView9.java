@@ -112,7 +112,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
 
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
-            IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
+            IconBase icon = new IconRect(null, 0, 0, ICON_W, ICON_H);
             icons.add(icon);
             int color = 0;
             switch (i%3) {
@@ -130,7 +130,7 @@ public class MyView9 extends View implements OnTouchListener, MenuItemCallbacks{
         }
 
         for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-            IconBase icon = new IconCircle(0, 0, ICON_H);
+            IconBase icon = new IconCircle(null, 0, 0, ICON_H);
             icons.add(icon);
             int color = 0;
             switch (i%3) {

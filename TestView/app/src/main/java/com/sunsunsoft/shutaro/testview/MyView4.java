@@ -59,7 +59,7 @@ public class MyView4 extends View implements OnTouchListener {
         this.setOnTouchListener(this);
 
         for (int i=0; i<ICON_NUM; i++) {
-            IconBase icon = new IconRect(0, 0, ICON_W, ICON_H);
+            IconBase icon = new IconRect(null, 0, 0, ICON_W, ICON_H);
             icons.add(icon);
             int color = 0;
             switch (i%3) {

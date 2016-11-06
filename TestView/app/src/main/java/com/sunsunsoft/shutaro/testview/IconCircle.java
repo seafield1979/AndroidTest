@@ -14,8 +14,8 @@ import android.graphics.RectF;
 public class IconCircle extends IconBase {
     protected int radius;
 
-    public IconCircle(int x, int y, int width) {
-        super(IconShape.CIRCLE, x,y,width,width);
+    public IconCircle(IconWindow parent, int x, int y, int width) {
+        super(parent, IconShape.CIRCLE, x,y,width,width);
 
         color = Color.rgb(0,255,255);
         this.radius = width / 2;
@@ -40,7 +40,13 @@ public class IconCircle extends IconBase {
         }
 
         // 色
-        paint.setColor(color);
+        if (isAnimating) {
+            double v1 = ((double)animeFrame / (double)animeFrameMax) * 180;
+            int alpha = (int)((1.0 -  Math.sin(v1 * RAD)) * 255);
+            paint.setColor((alpha << 24) | (color & 0xffffff));
+        } else {
+            paint.setColor(color);
+        }
 
         // 塗りつぶし
         paint.setStyle(Paint.Style.FILL);

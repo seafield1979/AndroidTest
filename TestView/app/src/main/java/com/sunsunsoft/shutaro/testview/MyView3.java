@@ -44,13 +44,13 @@ public class MyView3 extends View implements View.OnClickListener, View.OnTouchL
         for (int i=0; i<ICON_NUM; i++) {
             switch(i % 3) {
                 case 0:
-                    icons[i] = new IconRect(0, 0, ICON_W, ICON_H);
+                    icons[i] = new IconRect(null, 0, 0, ICON_W, ICON_H);
                     break;
                 case 1:
-                    icons[i] = new IconCircle(0, 0, ICON_H/2);
+                    icons[i] = new IconCircle(null, 0, 0, ICON_H/2);
                     break;
                 case 2:
-                    icons[i] = new IconBmp(0, 0, ICON_W, ICON_H, bmp);
+                    icons[i] = new IconBmp(null, 0, 0, ICON_W, ICON_H, bmp);
                     break;
             }
         }

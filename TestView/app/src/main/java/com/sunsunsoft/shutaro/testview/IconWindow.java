@@ -18,6 +18,12 @@ public class IconWindow extends Window implements AutoMovable{
         drag,               // アイコンのドラッグ中
         icon_moving,        // アイコンの一変更後の移動中
     }
+    // アイコンの挿入位置
+    enum AddPos {
+        Top,
+        Tail
+    }
+
     public static final String TAG = "IconWindow";
     private static final int RECT_ICON_NUM = 10;
     private static final int CIRCLE_ICON_NUM = 10;
@@ -32,7 +38,8 @@ public class IconWindow extends Window implements AutoMovable{
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
 
-    // アイコン移動用
+    // 他のIconWindow
+    // ドラッグで他のWindowにアイコンを移動するのに使用する
     private IconWindow[] windows;
 
     // ドラッグ中のアイコン
@@ -42,30 +49,46 @@ public class IconWindow extends Window implements AutoMovable{
     private viewState state = viewState.none;
 
     private LinkedList<IconBase> icons = new LinkedList<IconBase>();
+    // Iconのアニメーション中
+    private boolean isAnimating;
 
     // Get/Set
     public void setWindows(IconWindow[] windows) {
         this.windows = windows;
     }
 
+    public boolean isAnimating() {
+        return isAnimating;
+    }
+
+    public void setAnimating(boolean animating) {
+        isAnimating = animating;
+    }
+
     /**
      * 指定タイプのアイコンを追加
      * @param type
+     * @param addPos
      * @return
      */
-    public IconBase addIcon(IconShape type) {
+    public IconBase addIcon(IconShape type, AddPos addPos) {
 
         IconBase icon = null;
         switch (type) {
             case RECT:
-                icon = new IconRect(0, 0, ICON_W, ICON_H);
+                icon = new IconRect(this, 0, 0, ICON_W, ICON_H);
                 break;
             case CIRCLE:
             default:
-                icon = new IconCircle(0, 0, ICON_H);
+                icon = new IconCircle(this, 0, 0, ICON_H);
                 break;
         }
-        icons.add(icon);
+
+        if (addPos == AddPos.Top) {
+            icons.push(icon);
+        } else {
+            icons.add(icon);
+        }
 
         return icon;
     }
@@ -106,7 +129,7 @@ public class IconWindow extends Window implements AutoMovable{
 
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
-            IconBase icon = addIcon(IconShape.RECT);
+            IconBase icon = addIcon(IconShape.RECT, AddPos.Tail);
             int color = 0;
             switch (i%3) {
                 case 0:
@@ -123,7 +146,7 @@ public class IconWindow extends Window implements AutoMovable{
         }
 
         for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-            IconBase icon = addIcon(IconShape.CIRCLE);
+            IconBase icon = addIcon(IconShape.CIRCLE, AddPos.Tail);
             int color = 0;
             switch (i%3) {
                 case 0:
@@ -147,14 +170,30 @@ public class IconWindow extends Window implements AutoMovable{
      * @return true:描画を行う
      */
     public boolean doAction() {
-        if (!isMoving) return false;
-        // 移動処理
+        boolean isDraw = false;
         if (isMoving) {
-            if (move()) {
-                isMoving = false;
+            // 移動処理
+            if (isMoving) {
+                if (move()) {
+                    isMoving = false;
+                } else {
+                    isDraw = true;
+                }
             }
         }
-        return true;
+        if (isAnimating) {
+            boolean allFinished = true;
+            for (IconBase icon : icons) {
+                if (icon.animate()) {
+                    isDraw = true;
+                    allFinished = false;
+                }
+            }
+            if (allFinished) {
+                isAnimating = false;
+            }
+        }
+        return isDraw;
     }
 
     /**

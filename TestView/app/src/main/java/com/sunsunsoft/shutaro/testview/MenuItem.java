@@ -27,11 +27,10 @@ enum MenuItemId {
  * メニューに表示する項目
  * アイコンを表示してタップされたらIDを返すぐらいの機能しか持たない
  */
-abstract public class MenuItem{
+abstract public class MenuItem implements Animatable{
     public static final int ITEM_W = 120;
     public static final int ITEM_H = 120;
     public static final int ANIME_FRAME = 15;
-    public static final double RAD = 3.1415 / 180.0;
 
     protected PointF pos = new PointF();
 
@@ -67,7 +66,7 @@ abstract public class MenuItem{
     }
 
     public void draw(Canvas canvas, Paint paint, PointF parentPos) {
-        // 内部を塗りつぶし
+        // スタイル(内部を塗りつぶし)
         paint.setStyle(Paint.Style.FILL);
         // 色
         paint.setColor(0);
@@ -76,14 +75,9 @@ abstract public class MenuItem{
         drawPos.x = pos.x + parentPos.x;
         drawPos.y = pos.y + parentPos.y;
 
-//        canvas.drawRect(drawPos.x,
-//                drawPos.y,
-//                drawPos.x + ITEM_W,
-//                drawPos.y + ITEM_H,
-//                paint);
-
         if (icon != null) {
-            // 領域の幅に合わせて伸縮
+            // アニメーション処理
+            // フラッシュする
             if (isAnimating) {
                 double v1 = ((double)animeFrame / (double)animeFrameMax) * 180;
                 int alpha = (int)((1.0 -  Math.sin(v1 * RAD)) * 255);
@@ -92,12 +86,16 @@ abstract public class MenuItem{
                 paint.setColor(0xff000000);
             }
 
+            // 領域の幅に合わせて伸縮
             canvas.drawBitmap(icon, new Rect(0,0,icon.getWidth(), icon.getHeight()),
                     new Rect((int)drawPos.x, (int)drawPos.y, (int)drawPos.x + ITEM_W,(int)drawPos.y + ITEM_H),
                     paint);
         }
     }
 
+    /**
+     * アニメーション開始
+     */
     public void startAnim() {
         isAnimating = true;
         animeFrame = 0;
