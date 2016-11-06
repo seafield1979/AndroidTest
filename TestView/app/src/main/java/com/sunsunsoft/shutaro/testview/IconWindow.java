@@ -1,8 +1,11 @@
 package com.sunsunsoft.shutaro.testview;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.view.View;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,6 +41,8 @@ public class IconWindow extends Window implements AutoMovable{
     private int skipFrame = 3;  // n回に1回描画
     private int skipCount;
 
+    private View mParentView;
+
     // 他のIconWindow
     // ドラッグで他のWindowにアイコンを移動するのに使用する
     private IconWindow[] windows;
@@ -55,6 +60,10 @@ public class IconWindow extends Window implements AutoMovable{
     // Get/Set
     public void setWindows(IconWindow[] windows) {
         this.windows = windows;
+    }
+
+    public void setmParentView(View mParentView) {
+        this.mParentView = mParentView;
     }
 
     public boolean isAnimating() {
@@ -79,9 +88,13 @@ public class IconWindow extends Window implements AutoMovable{
                 icon = new IconRect(this, 0, 0, ICON_W, ICON_H);
                 break;
             case CIRCLE:
-            default:
                 icon = new IconCircle(this, 0, 0, ICON_H);
                 break;
+            case IMAGE: {
+                Bitmap bmp = BitmapFactory.decodeResource(mParentView.getResources(), R.drawable
+                        .hogeman);
+                icon = new IconBmp(this, 0, 0, ICON_W, ICON_H, bmp);
+            }
         }
 
         if (addPos == AddPos.Top) {
@@ -124,8 +137,10 @@ public class IconWindow extends Window implements AutoMovable{
      * @param width
      * @param height
      */
-    public void createWindow(float x, float y, int width, int height, int bgColor) {
+    public void createWindow(View parent, float x, float y, int width, int height, int bgColor) {
         super.createWindow(x, y, width, height, bgColor);
+
+        mParentView = parent;
 
         // アイコンを追加
         for (int i=0; i<RECT_ICON_NUM; i++) {
@@ -160,6 +175,9 @@ public class IconWindow extends Window implements AutoMovable{
                     break;
             }
             icon.setColor(color);
+        }
+        for (int i=0; i<CIRCLE_ICON_NUM; i++) {
+            IconBase icon = addIcon(IconShape.IMAGE, AddPos.Tail);
         }
 
         sortRects(false);
@@ -446,10 +464,9 @@ public class IconWindow extends Window implements AutoMovable{
                             changeIcons(srcIcons, dstIcons, dragIcon, icon, window);
                             break;
                         case RECT:
+                        case IMAGE:
                             // ドラッグ位置にアイコンを挿入する
                             insertIcons(srcIcons, dstIcons, dragIcon, icon, window);
-                            break;
-                        case IMAGE:
                             break;
                     }
                     isDroped = true;

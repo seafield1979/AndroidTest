@@ -1,7 +1,7 @@
 package com.sunsunsoft.shutaro.testview;
 
 /**
- * Created by shutaro on 2016/10/22.
+ * アイコンの形
  */
 
 public enum IconShape {

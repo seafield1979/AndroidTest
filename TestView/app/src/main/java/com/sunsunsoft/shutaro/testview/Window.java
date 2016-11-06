@@ -178,13 +178,15 @@ abstract public class Window implements AutoMovable {
     /**
      * Viewをスクロールする処理
      * Viewの空きスペースをドラッグすると表示領域をスクロールすることができる
-     * @param tv
+     * @param vt
      * @return
      */
-    protected boolean scrollView(ViewTouch tv) {
+    protected boolean scrollView(ViewTouch vt) {
+        if (vt.type != TouchType.Moving) return false;
+
         // タッチの移動とスクロール方向は逆
-        float moveX = tv.moveX * (-1);
-        float moveY = tv.moveY * (-1);
+        float moveX = vt.moveX * (-1);
+        float moveY = vt.moveY * (-1);
 
         // 横
         if (size.width < contentSize.width) {

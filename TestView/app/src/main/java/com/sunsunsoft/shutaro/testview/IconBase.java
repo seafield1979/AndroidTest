@@ -39,12 +39,8 @@ abstract public class IconBase implements AutoMovable, Animatable {
 
     protected int color;
 
-    public IconBase(IconWindow parentWindow,IconShape shape, float x, float y, int width, int height) {
-        this(parentWindow, shape, x,y,width,height, Color.rgb(0,0,0));
-    }
-
     public IconBase(IconWindow parentWindow, IconShape shape, float x, float y, int width, int
-            height, int color) {
+            height) {
         this.parentWindow = parentWindow;
         this.id = count;
         this.shape = shape;

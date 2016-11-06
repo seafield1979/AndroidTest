@@ -136,14 +136,14 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
         // IconWindow
         if (mIcons[0] == null) {
             mIcons[0] = new IconWindow();
-            mIcons[0].createWindow(0, 0, viewW, (viewH - 100)/2, Color.WHITE);
+            mIcons[0].createWindow(this, 0, 0, viewW, (viewH - 100)/2, Color.WHITE);
             mIcons[0].setWindows(mIcons);
             mWindows[WindowType.Icon1.ordinal()] = mIcons[0];
         }
 
         if (mIcons[1] == null) {
             mIcons[1] = new IconWindow();
-            mIcons[1].createWindow(0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
+            mIcons[1].createWindow(this, 0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
             mIcons[1].setWindows(mIcons);
             mWindows[WindowType.Icon2.ordinal()] = mIcons[1];
         }

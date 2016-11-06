@@ -8,7 +8,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 
 /**
- * Created by shutaro on 2016/10/22.
+ * 円形のアイコン
  */
 
 public class IconCircle extends IconBase {

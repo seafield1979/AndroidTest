@@ -9,7 +9,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 /**
- * Created by shutaro on 2016/10/22.
+ * 四角形のアイコン
  */
 
 public class IconRect extends IconBase {
@@ -34,6 +34,8 @@ public class IconRect extends IconBase {
         float drawY = pos.y + toScreen.y;
         RectF rect = new RectF(drawX, drawY, drawX + size.width, drawY + size.height);
 
+        // クリッピング処理
+        // 表示領域外なら描画しない
         if (clipRect != null) {
             if (rect.contains(clipRect)) {
                 return false;
