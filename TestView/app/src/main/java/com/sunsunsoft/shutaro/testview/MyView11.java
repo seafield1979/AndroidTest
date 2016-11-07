@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -134,18 +135,32 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
         int viewH = MeasureSpec.getSize(heightMeasureSpec);
 
         // IconWindow
+        PointF pos1, pos2;
+        Size size1, size2;
+        if (viewW <= viewH) {
+            pos1 = new PointF(0, 0);
+            size1 = new Size(viewW, (viewH - 100)/2);
+            pos2 = new PointF(0, (viewH - 100)/2);
+            size2 = new Size(viewW, (viewH - 100)/2);
+        } else {
+            pos1 = new PointF(0, 0);
+            size1 = new Size(viewW / 2, viewH);
+            pos2 = new PointF(viewW / 2, 0);
+            size2 = new Size(viewW / 2, viewH);
+        }
+
         if (mIconWindows[0] == null) {
-            mIconWindows[0] = IconWindow.createInstance(this, this, 0, 0, viewW, (viewH - 100)/2, Color.WHITE);
+            mIconWindows[0] = IconWindow.createInstance(this, this, pos1.x, pos1.y, size1.width, size1.height, Color.WHITE);
             mIconWindows[0].setWindows(mIconWindows);
             mWindows[WindowType.Icon1.ordinal()] = mIconWindows[0];
         }
 
         if (mIconWindows[1] == null) {
-            mIconWindows[1] = IconWindow.createInstance(this, this, 0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
+            mIconWindows[1] = IconWindow.createInstance(this, this, pos2.x, pos2.y, size2.width, size2.height, Color.LTGRAY);
             mIconWindows[1].setWindows(mIconWindows);
             mWindows[WindowType.Icon2.ordinal()] = mIconWindows[1];
         }
-        // メニューバー
+        // MenuBar
         if (mMenuBar == null) {
             mMenuBar = MenuBar.createInstance(this, this, viewW, viewH, Color.BLACK);
             mWindows[WindowType.MenuBar.ordinal()] = mMenuBar;

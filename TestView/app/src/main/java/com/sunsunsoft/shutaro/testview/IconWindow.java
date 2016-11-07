@@ -56,6 +56,7 @@ public class IconWindow extends Window implements AutoMovable{
 
     // ドラッグ中のアイコン
     private IconBase dragIcon;
+    private IconBase dragEndIcon;
     // ドロップ中のアイコン
     private IconBase dropIcon;
 
@@ -273,6 +274,10 @@ public class IconWindow extends Window implements AutoMovable{
         // クリップ解除
         canvas.restore();
 
+        if (MyDebug.DRAW_ICON_BLOCK_RECT) {
+            mIconManager.getBlockManager().draw(canvas, paint, getWin2ScreenPos());
+        }
+
         return invalidate;
     }
 
@@ -282,16 +287,26 @@ public class IconWindow extends Window implements AutoMovable{
      * @param paint
      */
     public void drawDragIcon(Canvas canvas, Paint paint) {
-        if (dragIcon == null) return;
-
-        // ドラッグアイコンは２つのWindowをまたいで表示されるのでクリップ外で描画
-        if (state == viewState.drag) {
-            dragIcon.draw(canvas, paint, getWin2ScreenPos(), null);
-            return;
+        if (dragIcon != null) {
+            // ドラッグアイコンは２つのWindowをまたいで表示されるのでクリップ外で描画
+            if (state == viewState.drag) {
+                dragIcon.draw(canvas, paint, getWin2ScreenPos(), null);
+                return;
+            }
+        }
+        // dragIconが元の位置に戻る際にクリッピングで見えなくなるので最前面に描画する
+        if (dragEndIcon != null) {
+            if (state == viewState.icon_moving) {
+                MyLog.print(TAG, "dragEndIcon:" + dragEndIcon.pos.x + " " + dragEndIcon.pos.y);
+                dragEndIcon.draw(canvas, paint, getWin2ScreenPos(), null);
+                return;
+            }
         }
     }
 
     /**
+     * Windowのサイズを更新する
+     * Windowのサイズを更新する
      * Windowのサイズを更新する
      * サイズ変更に合わせて中のアイコンを再配置する
      * @param width
@@ -445,9 +460,6 @@ public class IconWindow extends Window implements AutoMovable{
             dragIcon.move((int)vt.moveX, (int)vt.moveY);
             ret = true;
 
-            // ドラッグ中のアイコンが別のアイコンの上にあるかをチェック
-            Point dragPos = new Point((int)toWinX(vt.getX()), (int) toWinY(vt.getY()));
-
             boolean isDone = false;
 
             // 現在のドロップフラグをクリア
@@ -456,6 +468,9 @@ public class IconWindow extends Window implements AutoMovable{
             }
 
             for (IconWindow window : windows) {
+                // ドラッグ中のアイコンが別のアイコンの上にあるかをチェック
+                Point dragPos = new Point((int)window.toWinX(vt.getX()), (int) window.toWinY(vt.getY()));
+
                 IconManager manager = window.getIconManager();
                 if (manager == null) continue;
 
@@ -465,17 +480,6 @@ public class IconWindow extends Window implements AutoMovable{
                     dropIcon = icon;
                     dropIcon.isDroping = true;
                 }
-//                List<IconBase> icons = window.getIcons();
-//                if (icons == null) continue;
-//                for (IconBase icon : icons) {
-//                    if (icon == dragIcon) continue;
-//                    if (icon.getRect().contains(dragX, dragY)) {
-//                        isDone = true;
-//                        dropIcon = icon;
-//                        dropIcon.isDroping = true;
-//                        break;
-//                    }
-//                }
                 if (isDone) break;
             }
         }
@@ -515,6 +519,8 @@ public class IconWindow extends Window implements AutoMovable{
             LinkedList<IconBase> srcIcons = getIcons();
             LinkedList<IconBase> dstIcons = window.getIcons();
 
+            if (dstIcons == null) continue;
+
             // スクリーン座標系からWindow座標系に変換
             float winX = window.toWinX(vt.getX());
             float winY = window.toWinY(vt.getY());
@@ -550,15 +556,14 @@ public class IconWindow extends Window implements AutoMovable{
             }
 
             // その他の場所にドロップされた場合
-            if (!isDroped) {
-                // 最後のアイコンの後の空きスペースにドロップされた場合
+            if (!isDroped && dstIcons != null ) {
                 if (dstIcons.size() > 0) {
                     IconBase lastIcon = dstIcons.getLast();
                     if ((lastIcon.getY() <= winY &&
                             winY <= lastIcon.getBottom() &&
                             lastIcon.getRight() <= winX) ||
-                            (lastIcon.getBottom() <= winY))
-                    {
+                            (lastIcon.getBottom() <= winY)) {
+                        // 最後のアイコンの後の空きスペースにドロップされた場合
                         // ドラッグ中のアイコンをリストの最後に移動
                         srcIcons.remove(dragIcon);
                         dstIcons.add(dragIcon);
@@ -569,24 +574,22 @@ public class IconWindow extends Window implements AutoMovable{
                     srcIcons.remove(dragIcon);
                     dstIcons.add(dragIcon);
                 }
-
-                // 再配置
-                if (srcIcons != dstIcons) {
-                    // 座標系変換(移動元Windowから移動先Window)
-                    if (isDroped) {
-                        dragIcon.setPos(win1ToWin2X(dragIcon.pos.x, this, window), win1ToWin2Y(dragIcon.pos.y, this, window));
-                    }
-
-                    window.sortRects(true);
+            }
+            // 再配置
+            if (srcIcons != dstIcons) {
+                // 座標系変換(移動元Windowから移動先Window)
+                if (isDroped) {
+                    dragIcon.setPos(win1ToWin2X(dragIcon.pos.x, this, window), win1ToWin2Y(dragIcon.pos.y, this, window));
                 }
-                this.sortRects(true);
-
-                isDroped = true;
+                window.sortRects(true);
             }
             if (isDroped) break;
         }
+        this.sortRects(true);
 
+        dragEndIcon = dragIcon;
         dragIcon = null;
+
         return isDroped;
     }
 

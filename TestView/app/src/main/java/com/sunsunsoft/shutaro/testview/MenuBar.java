@@ -12,8 +12,7 @@ import android.view.View;
 enum TopMenu {
     Add,            // 追加
     Sort,           // 並び替え
-    ListType,        // リストの表示方法
-    TopMenuMax
+    ListType        // リストの表示方法
 }
 
 /**
@@ -25,7 +24,7 @@ public class MenuBar extends Window {
     private static final int MARGIN_L = 30;
     private static final int MARGIN_LR = 50;
     private static final int MARGIN_TOP = 15;
-    public static final int TOP_MENU_MAX = TopMenu.TopMenuMax.ordinal();
+    public static final int TOP_MENU_MAX = TopMenu.values().length;
 
 
     private View mParentView;
@@ -45,7 +44,7 @@ public class MenuBar extends Window {
     public static MenuBar createInstance(View parentView, MenuItemCallbacks callbackClass, int width, int height, int bgColor)
     {
         MenuBar instance = new MenuBar(parentView, callbackClass);
-        instance.createWindow(0, height - MENU_BAR_H - 100, width, MENU_BAR_H, bgColor);
+        instance.createWindow(0, height - MENU_BAR_H, width, MENU_BAR_H, bgColor);
         instance.mParentView = parentView;
         instance.mCallbackClass = callbackClass;
         instance.initMenuBar();
@@ -79,6 +78,12 @@ public class MenuBar extends Window {
         addChildMenuItem(TopMenu.ListType, MenuItemId.ListType1, R.drawable.hogeman);
         addChildMenuItem(TopMenu.ListType, MenuItemId.ListType2, R.drawable.hogeman);
         addChildMenuItem(TopMenu.ListType, MenuItemId.ListType3, R.drawable.hogeman);
+
+        updateBGSize();
+    }
+
+    private void updateBGSize() {
+        size.width = MARGIN_L + TOP_MENU_MAX * (MenuItem.ITEM_W + MARGIN_LR);
     }
 
     /**

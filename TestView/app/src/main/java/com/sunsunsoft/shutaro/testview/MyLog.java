@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class MyLog {
     // タグ毎のON/OFF情報をMap(Dictionary)で持つ
     private static HashMap<String,Boolean> enables = new HashMap<>();
+    private static HashMap<String,Integer> counters = new HashMap<>();
 
     // タグのON/OFFを設定する
     public static void setEnable(String tag, boolean enable) {
@@ -34,5 +35,24 @@ public class MyLog {
         } else {
             Log.v(tag, msg);
         }
+    }
+
+    /**
+     * カウントする
+     * start - count ... - end
+     */
+    public static void startCount(String tag) {
+        counters.put(tag, 0);
+    }
+    public static void count(String tag) {
+        Integer count = counters.get(tag);
+        if (count == null) {
+            count = 0;
+        }
+        count = count + 1;
+        counters.put(tag, count);
+    }
+    public static void endCount(String tag) {
+        Log.d(tag, "count:" + counters.get(tag));
     }
 }

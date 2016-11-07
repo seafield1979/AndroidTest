@@ -1,6 +1,10 @@
 package com.sunsunsoft.shutaro.testview;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
 
 import java.util.LinkedList;
@@ -74,12 +78,15 @@ public class IconsBlockManager {
      * @return
      */
     public IconBase getOverlapedIcon(Point pos, IconBase exceptIcon) {
+        MyLog.startCount(TAG);
         for (IconsBlock block : blockList) {
             IconBase icon = block.getOverlapedIcon(pos, exceptIcon);
             if (icon != null) {
+                MyLog.endCount(TAG);
                 return icon;
             }
         }
+        MyLog.endCount(TAG);
         return null;
     }
 
@@ -87,7 +94,22 @@ public class IconsBlockManager {
         // debug
         for (IconsBlock block : blockList) {
             Rect _rect = block.getRect();
-            MyLog.print(TAG, "L:" + _rect.left + " R:" + _rect.right + " U:" + _rect.top + " D:" + _rect.bottom);
+            MyLog.print(TAG, "count:" + block.getIcons().size() + " L:" + _rect.left + " R:" + _rect
+                    .right +
+                    " " +
+                    "U:" +
+                    _rect.top + " D:" + _rect.bottom);
+        }
+    }
+
+    /**
+     * IconsBlockの矩形を描画 for Debug
+     * @param canvas
+     * @param paint
+     */
+    public void draw(Canvas canvas, Paint paint, PointF toScreenPos) {
+        for (IconsBlock block : blockList) {
+            block.draw(canvas, paint, toScreenPos);
         }
     }
 }
@@ -96,15 +118,19 @@ public class IconsBlockManager {
  * １ブロックのクラス
  */
 class IconsBlock {
-    public static final String TAG = "IconsBlock";
     private static final int BLOCK_ICON_MAX = 8;
 
     private LinkedList<IconBase> icons = new LinkedList<>();
     private Rect rect = new Rect();
+    private int color = MyColor.BLACK;
 
     // Get/Set
     public Rect getRect() {
         return rect;
+    }
+
+    public LinkedList<IconBase> getIcons() {
+        return icons;
     }
 
     /**
@@ -124,6 +150,8 @@ class IconsBlock {
      * ブロックの矩形を更新
      */
     public void updateRect() {
+        rect.left = 1000000;
+        rect.top = 1000000;
         for (IconBase icon : icons) {
             if (icon.pos.x < rect.left) {
                 rect.left = (int)icon.pos.x;
@@ -148,14 +176,29 @@ class IconsBlock {
      * @return null:重なるアイコンなし
      */
     public IconBase getOverlapedIcon(Point pos, IconBase exceptIcon) {
+//        MyLog.count(IconsBlockManager.TAG);
         if (rect.contains(pos.x, pos.y)) {
             for (IconBase icon : icons) {
                 if (icon == exceptIcon) continue;
+                MyLog.count(IconsBlockManager.TAG);
                 if (icon.getRect().contains(pos.x, pos.y)) {
                     return icon;
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * 矩形を描画(for Debug)
+     * @param canvas
+     * @param paint
+     */
+    public void draw(Canvas canvas, Paint paint, PointF toScreenPos) {
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(2);
+        paint.setColor(color);
+        canvas.drawRect(rect.left + toScreenPos.x, rect.top + toScreenPos.y,
+                rect.right + toScreenPos.x, rect.bottom + toScreenPos.y,  paint);
     }
 }

@@ -52,7 +52,6 @@ public class IconRect extends IconBase {
         paint.setStyle(Paint.Style.FILL);
         // 色
         if (isDroping) {
-            // 内部を塗りつぶし
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(2);
             paint.setColor(Color.BLACK);

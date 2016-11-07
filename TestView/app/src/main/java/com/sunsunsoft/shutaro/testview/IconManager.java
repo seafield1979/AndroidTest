@@ -40,6 +40,10 @@ public class IconManager {
         return mParentWindow;
     }
 
+    public IconsBlockManager getBlockManager() {
+        return mBlockManager;
+    }
+
     public static IconManager createInstance(View parentView, IconWindow parentWindow) {
         IconManager instance = new IconManager();
         instance.mParentView = parentView;
