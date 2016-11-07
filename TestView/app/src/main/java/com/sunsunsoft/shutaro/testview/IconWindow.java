@@ -1,7 +1,5 @@
 package com.sunsunsoft.shutaro.testview;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -33,6 +31,7 @@ public class IconWindow extends Window implements AutoMovable{
     public static final String TAG = "IconWindow";
     private static final int RECT_ICON_NUM = 10;
     private static final int CIRCLE_ICON_NUM = 10;
+    private static final int BOX_ICON_NUM = 10;
 
     private static final int ICON_W = 200;
     private static final int ICON_H = 150;
@@ -46,6 +45,7 @@ public class IconWindow extends Window implements AutoMovable{
     // メンバ変数
     private WindowType type;
     private View mParentView;
+    private IconCallbacks mIconCallbacks;
     private IconManager mIconManager;
 
     // 他のIconWindow
@@ -75,6 +75,9 @@ public class IconWindow extends Window implements AutoMovable{
     public IconManager getIconManager() {
         return mIconManager;
     }
+    public void setIconManager(IconManager mIconManager) {
+        this.mIconManager = mIconManager;
+    }
 
     public LinkedList<IconBase> getIcons() {
         if (mIconManager == null) return null;
@@ -85,7 +88,7 @@ public class IconWindow extends Window implements AutoMovable{
         this.windows = windows;
     }
 
-    public void setmParentView(View mParentView) {
+    public void setParentView(View mParentView) {
         this.mParentView = mParentView;
     }
 
@@ -97,12 +100,16 @@ public class IconWindow extends Window implements AutoMovable{
         isAnimating = animating;
     }
 
+    public IconCallbacks getIconCallbacks() {
+        return mIconCallbacks;
+    }
+
     /**
      * インスタンスを生成する
      * Homeタイプが２つできないように自動でHome、Subのタイプ分けがされる
      * @return
      */
-    public static IconWindow createInstance(View parent, float x, float y, int width, int height, int bgColor) {
+    public static IconWindow createInstance(View parent, IconCallbacks iconCallbacks, float x, float y, int width, int height, int bgColor) {
         IconWindow instance = new IconWindow();
         if (!createdHome) {
             createdHome = true;
@@ -111,6 +118,7 @@ public class IconWindow extends Window implements AutoMovable{
         } else {
             instance.type = WindowType.Sub;
         }
+        instance.mIconCallbacks = iconCallbacks;
         instance.createWindow(parent, x, y, width, height, bgColor);
         return instance;
     }
@@ -164,8 +172,8 @@ public class IconWindow extends Window implements AutoMovable{
                 }
                 icon.setColor(color);
             }
-            for (int i = 0; i < CIRCLE_ICON_NUM; i++) {
-                IconBase icon = mIconManager.addIcon(IconShape.IMAGE, AddPos.Tail);
+            for (int i = 0; i < BOX_ICON_NUM; i++) {
+                IconBase icon = mIconManager.addIcon(IconShape.BOX, AddPos.Tail);
             }
         }
 
@@ -340,6 +348,8 @@ public class IconWindow extends Window implements AutoMovable{
         setContentSize(size.width, maxHeight);
 
         mScrollBar.updateContent(contentSize);
+
+        mParentView.invalidate();
     }
 
     /**

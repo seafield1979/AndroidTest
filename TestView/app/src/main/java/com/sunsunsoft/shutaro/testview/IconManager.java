@@ -57,8 +57,13 @@ public class IconManager {
             case IMAGE: {
                 Bitmap bmp = BitmapFactory.decodeResource(mParentView.getResources(), R.drawable.hogeman);
                 icon = new IconBmp(mParentWindow, bmp);
+                break;
             }
+            case BOX:
+                icon = new IconBox(mParentView, mParentWindow);
+                break;
         }
+        if (icon == null) return null;
 
         if (addPos == AddPos.Top) {
             icons.push(icon);

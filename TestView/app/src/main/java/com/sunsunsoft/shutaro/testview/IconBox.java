@@ -5,27 +5,41 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.view.View;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 子要素を持つことができるIcon
  */
 
 public class IconBox extends IconBase {
-
+    public static final int ICON_W = 150;
     public static final int DUMMY_ICON_NUM = 10;
 
-    private IconManager iconManager;
+    private View mParentView;
+    private IconManager mIconManager;
 
-    public IconBox(IconWindow parent, int x, int y, int width, int height) {
-        super(parent, IconShape.BOX, x,y,width,height);
+    // Get/Set
+    public IconManager getIconManager() {
+        return mIconManager;
+    }
+    public List<IconBase> getIcons() {
+        return mIconManager.getIcons();
+    }
 
-        color = Color.rgb(0,255,255);
+    public IconBox(View parentView, IconWindow parentWindow) {
+        super(parentWindow, IconShape.BOX, 0, 0, ICON_W, ICON_W);
+        mParentView = parentView;
+
+        color = MyColor.getRandomColor();
 
         // ダミーで子要素を追加
+        mIconManager = IconManager.createInstance(parentView, parentWindow);
         for (int i=0; i<DUMMY_ICON_NUM; i++) {
-            iconManager.addIcon(IconShape.RECT, AddPos.Tail);
+            IconBase icon = mIconManager.addIcon(IconShape.RECT, AddPos.Tail);
+            icon.setColor(color);
         }
     }
 
@@ -80,7 +94,6 @@ public class IconBox extends IconBase {
     @Override
     public void moving() {
         super.moving();
-
     }
 
     @Override

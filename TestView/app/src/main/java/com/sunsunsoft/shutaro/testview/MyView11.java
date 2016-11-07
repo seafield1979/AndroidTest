@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
  * メニューバー、サブViewのサンプル
 
  */
-public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks{
+public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks, IconCallbacks{
     enum WindowType {
         Icon1,
         Icon2,
@@ -28,7 +28,7 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
     // Windows
     private Window[] mWindows = new Window[WindowType.values().length];
     // IconWindow
-    private IconWindow[] mIcons = new IconWindow[2];
+    private IconWindow[] mIconWindows = new IconWindow[2];
 
     // MessageWindow
     private LogWindow mLogWin;
@@ -61,14 +61,14 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
     }
 
     public void updateWindowSize(int width, int height) {
-        for (IconWindow win : mIcons) {
+        for (IconWindow win : mIconWindows) {
             win.updateSize(width, height);
         }
         invalidate();
     }
 
     public void updateWindowPos(float x, float y){
-        for (IconWindow win : mIcons) {
+        for (IconWindow win : mIconWindows) {
             win.setPos(x, y, true);
         }
         invalidate();
@@ -80,8 +80,8 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
      * @param height
      */
     public void updateShow(int width, int height) {
-        mIcons[0].updateSize(width, height);
-        mIcons[1].setShow(false);
+        mIconWindows[0].updateSize(width, height);
+        mIconWindows[1].setShow(false);
         invalidate();
     }
 
@@ -91,20 +91,20 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
      * @param height
      */
     public void updateShow2(int width, int height) {
-        mIcons[0].setShow(true);
-        mIcons[0].updateSize(width, (height - 100)/2);
-        mIcons[1].setShow(true);
-        mIcons[1].updateSize(width, (height - 100)/2);
+        mIconWindows[0].setShow(true);
+        mIconWindows[0].updateSize(width, (height - 100)/2);
+        mIconWindows[1].setShow(true);
+        mIconWindows[1].updateSize(width, (height - 100)/2);
         invalidate();
     }
 
     public void moveTest1(){
-        mIcons[1].startMove(0, getHeight(), 15);
+        mIconWindows[1].startMove(0, getHeight(), 15);
         invalidate();
     }
 
     public void moveTest2(){
-        mIcons[1].startMove(0, (getHeight() - 100) / 2, 15);
+        mIconWindows[1].startMove(0, (getHeight() - 100) / 2, 15);
         invalidate();
     }
 
@@ -134,16 +134,16 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
         int viewH = MeasureSpec.getSize(heightMeasureSpec);
 
         // IconWindow
-        if (mIcons[0] == null) {
-            mIcons[0] = IconWindow.createInstance(this, 0, 0, viewW, (viewH - 100)/2, Color.WHITE);
-            mIcons[0].setWindows(mIcons);
-            mWindows[WindowType.Icon1.ordinal()] = mIcons[0];
+        if (mIconWindows[0] == null) {
+            mIconWindows[0] = IconWindow.createInstance(this, this, 0, 0, viewW, (viewH - 100)/2, Color.WHITE);
+            mIconWindows[0].setWindows(mIconWindows);
+            mWindows[WindowType.Icon1.ordinal()] = mIconWindows[0];
         }
 
-        if (mIcons[1] == null) {
-            mIcons[1] = IconWindow.createInstance(this, 0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
-            mIcons[1].setWindows(mIcons);
-            mWindows[WindowType.Icon2.ordinal()] = mIcons[1];
+        if (mIconWindows[1] == null) {
+            mIconWindows[1] = IconWindow.createInstance(this, this, 0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
+            mIconWindows[1].setWindows(mIconWindows);
+            mWindows[WindowType.Icon2.ordinal()] = mIconWindows[1];
         }
         // メニューバー
         if (mMenuBar == null) {
@@ -192,7 +192,7 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
                 invalidate();
             }
         }
-        for (IconWindow win : mIcons) {
+        for (IconWindow win : mIconWindows) {
             if (!win.isShow()) continue;
             win.drawDragIcon(canvas, paint);
         }
@@ -255,16 +255,19 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
      * @param menuItemId
      */
     private void addIcon(int windowId, IconShape shape, MenuItemId menuItemId) {
-        IconWindow iconWindow = mIcons[windowId];
+        IconWindow iconWindow = mIconWindows[windowId];
         IconManager manager = iconWindow.getIconManager();
         IconBase icon = manager.addIcon(shape, AddPos.Top);
 
         // アイコンの初期座標は追加メニューアイコンの位置
         PointF menuPos = mMenuBar.getItemPos(menuItemId);
         icon.setPos(iconWindow.toWinX(menuPos.x), iconWindow.toWinY(menuPos.y));
-        mIcons[windowId].sortRects(true);
+        mIconWindows[windowId].sortRects(true);
     }
 
+    /**
+     * MenuItemCallbacks
+     */
     /**
      * メニューアイテムをタップした時のコールバック
      */
@@ -303,4 +306,35 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
     public void callback2() {
         MyLog.print(TAG, "menu item moved");
     }
+
+    /**
+     * IconCallbacks
+     */
+    public void clickIcon(IconBase icon) {
+        MyLog.print(TAG, "clickIcon");
+        switch(icon.shape) {
+            case CIRCLE:
+                break;
+            case RECT:
+                break;
+            case BOX: {
+                // 配下のアイコンをSubWindowに表示する
+                if (icon instanceof IconBox) {
+                    IconBox box = (IconBox)icon;
+                    mIconWindows[1].setIconManager(box.getIconManager());
+                    mIconWindows[1].sortRects(false);
+                }
+            }
+                break;
+            case IMAGE:
+                break;
+        }
+    }
+    public void longClickIcon(IconBase icon) {
+        MyLog.print(TAG, "longClickIcon");
+    }
+    public void dropToIcon(IconBase icon) {
+        MyLog.print(TAG, "dropToIcon");
+    }
+
 }

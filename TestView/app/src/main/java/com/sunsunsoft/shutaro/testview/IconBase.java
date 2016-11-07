@@ -19,6 +19,8 @@ abstract public class IconBase implements AutoMovable, Animatable {
 
     public int id;
     protected IconWindow parentWindow;
+    private IconCallbacks mCallbacks;
+
     protected PointF pos = new PointF();
     protected Size size = new Size();
 
@@ -40,8 +42,10 @@ abstract public class IconBase implements AutoMovable, Animatable {
     protected int color;
 
     public IconBase(IconWindow parentWindow, IconShape shape, float x, float y, int width, int
-            height) {
+            height)
+    {
         this.parentWindow = parentWindow;
+        this.mCallbacks = parentWindow.getIconCallbacks();
         this.id = count;
         this.shape = shape;
         this.setPos(x, y);
@@ -179,15 +183,24 @@ abstract public class IconBase implements AutoMovable, Animatable {
     public void click() {
         Log.v(TAG, "click");
         startAnim();
+        if (mCallbacks != null) {
+            mCallbacks.clickIcon(this);
+        }
     }
     public void longClick() {
         Log.v(TAG, "long click");
+        if (mCallbacks != null) {
+            mCallbacks.longClickIcon(this);
+        }
     }
     public void moving() {
         Log.v(TAG, "moving");
     }
     public void drop() {
         Log.v(TAG, "drop");
+        if (mCallbacks != null) {
+            mCallbacks.dropToIcon(this);
+        }
     }
 
     /**
