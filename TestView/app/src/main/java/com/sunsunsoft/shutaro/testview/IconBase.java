@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 
@@ -36,6 +37,9 @@ abstract public class IconBase implements AutoMovable, Animatable {
     protected boolean isAnimating;
     protected int animeFrame;
     protected int animeFrameMax;
+
+    // ドラッグ中のアイコンが上にある状態
+    protected boolean isDroping;
 
     protected IconShape shape;
 
@@ -105,24 +109,7 @@ abstract public class IconBase implements AutoMovable, Animatable {
         size.width = width;
         size.height = height;
     }
-
-    /**
-     * クリッピング
-     * オブジェクトが親Windowの範囲内にあるかどうかを判定する
-     * @param iconRect
-     * @param clipRect
-     * @return true: 範囲外(描画しない) / false:範囲内
-     */
-    public static boolean isClip(RectF iconRect, RectF clipRect) {
-        if (iconRect.right < clipRect.left ||
-                iconRect.left > clipRect.right ||
-                iconRect.bottom < clipRect.top ||
-                iconRect.top > clipRect.bottom )
-        {
-            return true;
-        }
-        return false;
-    }
+    public Rect getRect() { return new Rect((int)pos.x, (int)pos.y, (int)pos.x + size.width, (int)pos.y + size.height);}
 
     // 移動
     public void move(float moveX, float moveY) {

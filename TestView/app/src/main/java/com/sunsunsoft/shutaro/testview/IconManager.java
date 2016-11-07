@@ -30,6 +30,10 @@ public class IconManager {
         this.icons = icons;
     }
 
+    public IconWindow getParentWindow() {
+        return mParentWindow;
+    }
+
     public static IconManager createInstance(View parentView, IconWindow parentWindow) {
         IconManager instance = new IconManager();
         instance.mParentView = parentView;

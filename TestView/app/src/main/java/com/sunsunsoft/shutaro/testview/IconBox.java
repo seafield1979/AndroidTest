@@ -21,12 +21,23 @@ public class IconBox extends IconBase {
     private View mParentView;
     private IconManager mIconManager;
 
+    // ボックスの中身を表示しているウィンドウ
+    private IconWindow subWindow;
+
     // Get/Set
     public IconManager getIconManager() {
         return mIconManager;
     }
     public List<IconBase> getIcons() {
         return mIconManager.getIcons();
+    }
+
+    public IconWindow getSubWindow() {
+        return subWindow;
+    }
+
+    public void setSubWindow(IconWindow subWindow) {
+        this.subWindow = subWindow;
     }
 
     public IconBox(View parentView, IconWindow parentWindow) {
@@ -68,7 +79,12 @@ public class IconBox extends IconBase {
         // 内部を塗りつぶし
         paint.setStyle(Paint.Style.FILL);
         // 色
-        if (isAnimating) {
+        if (isDroping) {
+            // 内部を塗りつぶし
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(2);
+            paint.setColor(Color.BLACK);
+        } else if (isAnimating) {
             double v1 = ((double)animeFrame / (double)animeFrameMax) * 180;
             int alpha = (int)((1.0 -  Math.sin(v1 * RAD)) * 255);
             paint.setColor((alpha << 24) | (color & 0xffffff));
@@ -99,6 +115,5 @@ public class IconBox extends IconBase {
     @Override
     public void drop() {
         super.drop();
-
     }
 }

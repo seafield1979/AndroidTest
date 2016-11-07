@@ -323,6 +323,7 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
                     IconBox box = (IconBox)icon;
                     mIconWindows[1].setIconManager(box.getIconManager());
                     mIconWindows[1].sortRects(false);
+                    box.setSubWindow(mIconWindows[1]);
                 }
             }
                 break;

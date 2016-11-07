@@ -51,7 +51,12 @@ public class IconRect extends IconBase {
         // 内部を塗りつぶし
         paint.setStyle(Paint.Style.FILL);
         // 色
-        if (isAnimating) {
+        if (isDroping) {
+            // 内部を塗りつぶし
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(2);
+            paint.setColor(Color.BLACK);
+        } else if (isAnimating) {
             double v1 = ((double)animeFrame / (double)animeFrameMax) * 180;
             int alpha = (int)((1.0 -  Math.sin(v1 * RAD)) * 255);
             paint.setColor((alpha << 24) | (color & 0xffffff));

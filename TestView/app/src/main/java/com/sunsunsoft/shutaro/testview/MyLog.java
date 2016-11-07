@@ -22,7 +22,7 @@ public class MyLog {
         setEnable("MyView9", false);
         setEnable("MenuBar", false);
         setEnable(MyScrollBar.TAG, false);
-        setEnable(IconWindow.TAG, false);
+        setEnable(IconWindow.TAG, true);
     }
 
     // ログ出力

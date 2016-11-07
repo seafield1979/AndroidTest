@@ -40,13 +40,20 @@ public class IconCircle extends IconBase {
         float y = pos.y + toScreen.y;
         RectF rect = new RectF(x, y, x + radius * 2, y + radius * 2);
         if (clipRect != null) {
-            if (isClip(rect, clipRect)) {
+            if (!MyRect.isOverlapping(rect, clipRect)) {
                 return false;
             }
         }
 
-        // 色
-        if (isAnimating) {
+        // 内部を塗りつぶし
+        paint.setStyle(Paint.Style.FILL);
+
+        if (isDroping) {
+            // 外枠のみ
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(2);
+            paint.setColor(Color.BLACK);
+        } else if (isAnimating) {
             double v1 = ((double)animeFrame / (double)animeFrameMax) * 180;
             int alpha = (int)((1.0 -  Math.sin(v1 * RAD)) * 255);
             paint.setColor((alpha << 24) | (color & 0xffffff));
