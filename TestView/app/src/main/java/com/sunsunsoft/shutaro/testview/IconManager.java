@@ -2,6 +2,8 @@ package com.sunsunsoft.shutaro.testview;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -14,12 +16,16 @@ enum AddPos {
 
 /**
  * IconWindowに表示するアイコンを管理するクラス
+ *
+ * Rect判定の高速化のためにいくつかのアイコンをまとめたブロックのRectを作成し、個々のアイコンのRect判定前に
+ * ブロックのRectと判定を行う
  */
 public class IconManager {
 
     private View mParentView;
     private IconWindow mParentWindow;
     private LinkedList<IconBase> icons;
+    private IconsBlockManager mBlockManager;
 
     // Get/Set
     public LinkedList<IconBase> getIcons() {
@@ -39,6 +45,7 @@ public class IconManager {
         instance.mParentView = parentView;
         instance.mParentWindow = parentWindow;
         instance.icons = new LinkedList<>();
+        instance.mBlockManager = IconsBlockManager.createInstance(instance.icons);
         return instance;
     }
 
@@ -101,4 +108,22 @@ public class IconManager {
         icons.remove(icon);
     }
 
+
+    /**
+     * アイコンを内包するRectを求める
+     * アイコンの座標確定時に呼ぶ
+     */
+    public void updateBlockRect() {
+        mBlockManager.update();
+    }
+
+    /**
+     * 指定座標下にあるアイコンを取得する
+     * @param pos
+     * @param exceptIcon
+     * @return
+     */
+    public IconBase getOverlappedIcon(Point pos, IconBase exceptIcon) {
+        return mBlockManager.getOverlapedIcon(pos, exceptIcon);
+    }
 }

@@ -61,9 +61,6 @@ public class IconCircle extends IconBase {
             paint.setColor(color);
         }
 
-        // 塗りつぶし
-        paint.setStyle(Paint.Style.FILL);
-
         // x,yが円を囲む矩形の左上にくるように座標を調整
         canvas.drawCircle(pos.x+radius + toScreen.x, pos.y+radius + toScreen.y, radius, paint);
 

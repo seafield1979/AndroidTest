@@ -3,6 +3,7 @@ package com.sunsunsoft.shutaro.testview;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.view.View;
 
@@ -265,7 +266,7 @@ public class IconWindow extends Window implements AutoMovable{
             }
             if (allFinish) {
                 state = viewState.none;
-
+                IconsPosFixed();
             }
             invalidate = true;
         }
@@ -347,12 +348,21 @@ public class IconWindow extends Window implements AutoMovable{
                 icon.setPos(x, y);
                 i++;
             }
+            IconsPosFixed();
         }
         setContentSize(size.width, maxHeight);
 
         mScrollBar.updateContent(contentSize);
 
         mParentView.invalidate();
+    }
+
+    /**
+     * アイコンの座標が確定
+     * アイコンの再配置完了時(アニメーションありの場合はそれが終わったタイミング)
+     */
+    private void IconsPosFixed() {
+        mIconManager.updateBlockRect();
     }
 
     /**
@@ -436,8 +446,7 @@ public class IconWindow extends Window implements AutoMovable{
             ret = true;
 
             // ドラッグ中のアイコンが別のアイコンの上にあるかをチェック
-            int dragX = (int) toWinX(vt.getX());
-            int dragY = (int) toWinY(vt.getY());
+            Point dragPos = new Point((int)toWinX(vt.getX()), (int) toWinY(vt.getY()));
 
             boolean isDone = false;
 
@@ -447,17 +456,26 @@ public class IconWindow extends Window implements AutoMovable{
             }
 
             for (IconWindow window : windows) {
-                List<IconBase> icons = window.getIcons();
-                if (icons == null) continue;
-                for (IconBase icon : icons) {
-                    if (icon == dragIcon) continue;
-                    if (icon.getRect().contains(dragX, dragY)) {
-                        isDone = true;
-                        dropIcon = icon;
-                        dropIcon.isDroping = true;
-                        break;
-                    }
+                IconManager manager = window.getIconManager();
+                if (manager == null) continue;
+
+                IconBase icon = manager.getOverlappedIcon(dragPos, dragIcon);
+                if (icon != null) {
+                    isDone = true;
+                    dropIcon = icon;
+                    dropIcon.isDroping = true;
                 }
+//                List<IconBase> icons = window.getIcons();
+//                if (icons == null) continue;
+//                for (IconBase icon : icons) {
+//                    if (icon == dragIcon) continue;
+//                    if (icon.getRect().contains(dragX, dragY)) {
+//                        isDone = true;
+//                        dropIcon = icon;
+//                        dropIcon.isDroping = true;
+//                        break;
+//                    }
+//                }
                 if (isDone) break;
             }
         }
