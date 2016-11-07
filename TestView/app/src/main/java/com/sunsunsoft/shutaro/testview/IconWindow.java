@@ -21,10 +21,13 @@ public class IconWindow extends Window implements AutoMovable{
         drag,               // アイコンのドラッグ中
         icon_moving,        // アイコンの一変更後の移動中
     }
-    // アイコンの挿入位置
-    enum AddPos {
-        Top,
-        Tail
+
+    // アイコンウィンドウのメイン、サブ
+    // ホームはトップのウィンドウ
+    // サブはトップウィンドウ以下のBoxアイコンを開いた時のウィンドウ
+    enum WindowType {
+        Home,
+        Sub
     }
 
     public static final String TAG = "IconWindow";
@@ -36,12 +39,14 @@ public class IconWindow extends Window implements AutoMovable{
 
     private static final int MOVING_TIME = 10;
 
+    // ホームWindowを作成したかどうか
+    // ホームWindowは１つしか存在できないため、最初のインスタンスはホーム、それ以降はサブになる
+    private static boolean createdHome;
 
     // メンバ変数
-    private int skipFrame = 3;  // n回に1回描画
-    private int skipCount;
-
+    private WindowType type;
     private View mParentView;
+    private IconManager mIconManager;
 
     // 他のIconWindow
     // ドラッグで他のWindowにアイコンを移動するのに使用する
@@ -53,11 +58,29 @@ public class IconWindow extends Window implements AutoMovable{
     // アニメーション用
     private viewState state = viewState.none;
 
-    private LinkedList<IconBase> icons = new LinkedList<IconBase>();
     // Iconのアニメーション中
     private boolean isAnimating;
 
+    private int skipFrame = 3;  // n回に1回描画
+    private int skipCount;
+
     // Get/Set
+    public WindowType getType() {
+        return type;
+    }
+
+    public void setType(WindowType type) {
+        this.type = type;
+    }
+    public IconManager getIconManager() {
+        return mIconManager;
+    }
+
+    public LinkedList<IconBase> getIcons() {
+        if (mIconManager == null) return null;
+        return mIconManager.getIcons();
+    }
+
     public void setWindows(IconWindow[] windows) {
         this.windows = windows;
     }
@@ -75,58 +98,21 @@ public class IconWindow extends Window implements AutoMovable{
     }
 
     /**
-     * 指定タイプのアイコンを追加
-     * @param type
-     * @param addPos
+     * インスタンスを生成する
+     * Homeタイプが２つできないように自動でHome、Subのタイプ分けがされる
      * @return
      */
-    public IconBase addIcon(IconShape type, AddPos addPos) {
-
-        IconBase icon = null;
-        switch (type) {
-            case RECT:
-                icon = new IconRect(this, 0, 0, ICON_W, ICON_H);
-                break;
-            case CIRCLE:
-                icon = new IconCircle(this, 0, 0, ICON_H);
-                break;
-            case IMAGE: {
-                Bitmap bmp = BitmapFactory.decodeResource(mParentView.getResources(), R.drawable
-                        .hogeman);
-                icon = new IconBmp(this, 0, 0, ICON_W, ICON_H, bmp);
-            }
-        }
-
-        if (addPos == AddPos.Top) {
-            icons.push(icon);
+    public static IconWindow createInstance(View parent, float x, float y, int width, int height, int bgColor) {
+        IconWindow instance = new IconWindow();
+        if (!createdHome) {
+            createdHome = true;
+            instance.type = WindowType.Home;
+            instance.mIconManager = IconManager.createInstance(parent, instance);
         } else {
-            icons.add(icon);
+            instance.type = WindowType.Sub;
         }
-
-        return icon;
-    }
-
-    /**
-     * すでに作成済みのアイコンを追加
-     * ※べつのWindowにアイコンを移動するのに使用する
-     * @param icon
-     * @return
-     */
-    public boolean addIcon(IconBase icon) {
-        // すでに追加されている場合は追加しない
-        if (!icons.contains(icon)) {
-            icons.add(icon);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * アイコンを削除
-     * @param icon
-     */
-    public void removeIcon(IconBase icon) {
-        icons.remove(icon);
+        instance.createWindow(parent, x, y, width, height, bgColor);
+        return instance;
     }
 
     /**
@@ -143,41 +129,44 @@ public class IconWindow extends Window implements AutoMovable{
         mParentView = parent;
 
         // アイコンを追加
-        for (int i=0; i<RECT_ICON_NUM; i++) {
-            IconBase icon = addIcon(IconShape.RECT, AddPos.Tail);
-            int color = 0;
-            switch (i%3) {
-                case 0:
-                    color = Color.rgb(255,0,0);
-                    break;
-                case 1:
-                    color = Color.rgb(0,255,0);
-                    break;
-                case 2:
-                    color = Color.rgb(0,0,255);
-                    break;
-            }
-            icon.setColor(color);
-        }
+        if (type == WindowType.Home) {
+            for (int i = 0; i < RECT_ICON_NUM; i++) {
 
-        for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-            IconBase icon = addIcon(IconShape.CIRCLE, AddPos.Tail);
-            int color = 0;
-            switch (i%3) {
-                case 0:
-                    color = Color.rgb(255,0,0);
-                    break;
-                case 1:
-                    color = Color.rgb(0,255,0);
-                    break;
-                case 2:
-                    color = Color.rgb(0,0,255);
-                    break;
+                IconBase icon = mIconManager.addIcon(IconShape.RECT, AddPos.Tail);
+                int color = 0;
+                switch (i % 3) {
+                    case 0:
+                        color = Color.rgb(255, 0, 0);
+                        break;
+                    case 1:
+                        color = Color.rgb(0, 255, 0);
+                        break;
+                    case 2:
+                        color = Color.rgb(0, 0, 255);
+                        break;
+                }
+                icon.setColor(color);
             }
-            icon.setColor(color);
-        }
-        for (int i=0; i<CIRCLE_ICON_NUM; i++) {
-            IconBase icon = addIcon(IconShape.IMAGE, AddPos.Tail);
+
+            for (int i = 0; i < CIRCLE_ICON_NUM; i++) {
+                IconBase icon = mIconManager.addIcon(IconShape.CIRCLE, AddPos.Tail);
+                int color = 0;
+                switch (i % 3) {
+                    case 0:
+                        color = Color.rgb(255, 0, 0);
+                        break;
+                    case 1:
+                        color = Color.rgb(0, 255, 0);
+                        break;
+                    case 2:
+                        color = Color.rgb(0, 0, 255);
+                        break;
+                }
+                icon.setColor(color);
+            }
+            for (int i = 0; i < CIRCLE_ICON_NUM; i++) {
+                IconBase icon = mIconManager.addIcon(IconShape.IMAGE, AddPos.Tail);
+            }
         }
 
         sortRects(false);
@@ -201,6 +190,7 @@ public class IconWindow extends Window implements AutoMovable{
         }
         if (isAnimating) {
             boolean allFinished = true;
+            List<IconBase> icons = getIcons();
             for (IconBase icon : icons) {
                 if (icon.animate()) {
                     isDraw = true;
@@ -222,6 +212,8 @@ public class IconWindow extends Window implements AutoMovable{
      */
     public boolean draw(Canvas canvas, Paint paint) {
         if (!isShow) return false;
+        List<IconBase> icons = getIcons();
+        if (icons == null) return false;
 
         boolean invalidate = false;
 
@@ -309,6 +301,9 @@ public class IconWindow extends Window implements AutoMovable{
      * Viewのサイズが確定した時点で呼び出す
      */
     public void sortRects(boolean animate) {
+        List<IconBase> icons = getIcons();
+        if (icons == null) return;
+
         int column = size.width / (ICON_W + 20);
         if (column <= 0) {
             return;
@@ -353,6 +348,9 @@ public class IconWindow extends Window implements AutoMovable{
      * @return
      */
     private boolean touchIcons(ViewTouch vt) {
+        List<IconBase> icons = getIcons();
+        if (icons == null) return false;
+
         for (IconBase icon : icons) {
             if (icon.checkTouch(toWinX(vt.touchX()), toWinY(vt.touchY()))) {
                 return true;
@@ -367,6 +365,9 @@ public class IconWindow extends Window implements AutoMovable{
      * @return アイコンがクリックされたらtrue
      */
     private boolean clickIcons(ViewTouch vt) {
+        List<IconBase> icons = getIcons();
+        if (icons == null) return false;
+
         // どのアイコンがクリックされたかを判定
         for (IconBase icon : icons) {
             if (icon.checkClick(toWinX(vt.touchX()), toWinY(vt.touchY()))) {
@@ -389,6 +390,9 @@ public class IconWindow extends Window implements AutoMovable{
      * @param vt
      */
     private boolean dragStart(ViewTouch vt) {
+        List<IconBase> icons = getIcons();
+        if (icons == null) return false;
+
         // タッチされたアイコンを選択する
         // 一番上のアイコンからタッチ判定したいのでリストを逆順（一番手前から）で参照する
         boolean ret = false;
@@ -447,8 +451,8 @@ public class IconWindow extends Window implements AutoMovable{
                 continue;
             }
 
-            LinkedList<IconBase> srcIcons = this.icons;
-            LinkedList<IconBase> dstIcons = window.icons;
+            LinkedList<IconBase> srcIcons = getIcons();
+            LinkedList<IconBase> dstIcons = window.getIcons();
 
             // スクリーン座標系からWindow座標系に変換
             float winX = window.toWinX(vt.getX());

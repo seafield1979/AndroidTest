@@ -3,36 +3,39 @@ package com.sunsunsoft.shutaro.testview;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
+import java.util.LinkedList;
+
 /**
- * 四角形のアイコン
+ * 子要素を持つことができるIcon
  */
 
-public class IconRect extends IconBase {
-    private static final int ICON_W = 200;
-    private static final int ICON_H = 150;
+public class IconBox extends IconBase {
 
-    public IconRect(IconWindow parent) {
-        this(parent, 0, 0, ICON_W, ICON_H);
-    }
+    public static final int DUMMY_ICON_NUM = 10;
 
-    public IconRect(IconWindow parent, int x, int y, int width, int height) {
-        super(parent, IconShape.RECT, x,y,width,height);
+    private IconManager iconManager;
+
+    public IconBox(IconWindow parent, int x, int y, int width, int height) {
+        super(parent, IconShape.BOX, x,y,width,height);
 
         color = Color.rgb(0,255,255);
+
+        // ダミーで子要素を追加
+        for (int i=0; i<DUMMY_ICON_NUM; i++) {
+            iconManager.addIcon(IconShape.RECT, AddPos.Tail);
+        }
     }
 
-    public boolean draw(Canvas canvas,Paint paint)
+    public boolean draw(Canvas canvas, Paint paint)
     {
         return draw(canvas, paint, null, null);
     }
 
 
-    public boolean draw(Canvas canvas,Paint paint, PointF toScreen, RectF clipRect) {
+    public boolean draw(Canvas canvas, Paint paint, PointF toScreen, RectF clipRect) {
         if (toScreen == null) {
             toScreen = new PointF(0, 0);
         }
@@ -77,6 +80,12 @@ public class IconRect extends IconBase {
     @Override
     public void moving() {
         super.moving();
+
+    }
+
+    @Override
+    public void drop() {
+        super.drop();
 
     }
 }

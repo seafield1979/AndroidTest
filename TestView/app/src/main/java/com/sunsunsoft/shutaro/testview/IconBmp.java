@@ -14,9 +14,14 @@ import android.graphics.RectF;
  */
 
 public class IconBmp extends IconBase {
+    private static final int ICON_W = 150;
 
     private Bitmap bmp;
 
+
+    public IconBmp(IconWindow parent, Bitmap bmp) {
+        this(parent, 0, 0, ICON_W, ICON_W, bmp);
+    }
     public IconBmp(IconWindow parent, int x, int y, int width, int height, Bitmap bmp) {
         super(parent, IconShape.IMAGE, x, y, width, height);
 

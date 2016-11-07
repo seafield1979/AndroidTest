@@ -135,15 +135,13 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
 
         // IconWindow
         if (mIcons[0] == null) {
-            mIcons[0] = new IconWindow();
-            mIcons[0].createWindow(this, 0, 0, viewW, (viewH - 100)/2, Color.WHITE);
+            mIcons[0] = IconWindow.createInstance(this, 0, 0, viewW, (viewH - 100)/2, Color.WHITE);
             mIcons[0].setWindows(mIcons);
             mWindows[WindowType.Icon1.ordinal()] = mIcons[0];
         }
 
         if (mIcons[1] == null) {
-            mIcons[1] = new IconWindow();
-            mIcons[1].createWindow(this, 0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
+            mIcons[1] = IconWindow.createInstance(this, 0, (viewH - 100)/2, viewW, (viewH - 100)/2, Color.LTGRAY);
             mIcons[1].setWindows(mIcons);
             mWindows[WindowType.Icon2.ordinal()] = mIcons[1];
         }
@@ -258,7 +256,8 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
      */
     private void addIcon(int windowId, IconShape shape, MenuItemId menuItemId) {
         IconWindow iconWindow = mIcons[windowId];
-        IconBase icon = iconWindow.addIcon(shape, IconWindow.AddPos.Top);
+        IconManager manager = iconWindow.getIconManager();
+        IconBase icon = manager.addIcon(shape, AddPos.Top);
 
         // アイコンの初期座標は追加メニューアイコンの位置
         PointF menuPos = mMenuBar.getItemPos(menuItemId);

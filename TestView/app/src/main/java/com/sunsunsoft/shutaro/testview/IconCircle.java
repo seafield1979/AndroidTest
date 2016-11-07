@@ -12,7 +12,13 @@ import android.graphics.RectF;
  */
 
 public class IconCircle extends IconBase {
+    private static final int ICON_W = 150;
+
     protected int radius;
+
+    public IconCircle(IconWindow parent) {
+        this(parent, 0, 0, ICON_W);
+    }
 
     public IconCircle(IconWindow parent, int x, int y, int width) {
         super(parent, IconShape.CIRCLE, x,y,width,width);

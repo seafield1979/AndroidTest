@@ -7,5 +7,6 @@ package com.sunsunsoft.shutaro.testview;
 public enum IconShape {
     RECT,
     CIRCLE,
-    IMAGE
+    IMAGE,
+    BOX
 }
