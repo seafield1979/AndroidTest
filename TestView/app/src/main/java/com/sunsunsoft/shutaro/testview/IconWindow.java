@@ -40,10 +40,6 @@ public class IconWindow extends Window implements AutoMovable{
 
     private static final int MOVING_TIME = 10;
 
-    // ホームWindowを作成したかどうか
-    // ホームWindowは１つしか存在できないため、最初のインスタンスはホーム、それ以降はサブになる
-    private static boolean createdHome;
-
     // メンバ変数
     private WindowType type;
     private View mParentView;
@@ -114,10 +110,9 @@ public class IconWindow extends Window implements AutoMovable{
      * Homeタイプが２つできないように自動でHome、Subのタイプ分けがされる
      * @return
      */
-    public static IconWindow createInstance(View parent, IconCallbacks iconCallbacks, float x, float y, int width, int height, int bgColor) {
+    public static IconWindow createInstance(View parent, IconCallbacks iconCallbacks, boolean isHome, float x, float y, int width, int height, int bgColor) {
         IconWindow instance = new IconWindow();
-        if (!createdHome) {
-            createdHome = true;
+        if (isHome) {
             instance.type = WindowType.Home;
             instance.mIconManager = IconManager.createInstance(parent, instance);
         } else {

@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
  * 今までViewがアイコンのWindowを管理していたが、２つに増やすためにIconWindowクラスを作成する
  */
 public class MyFragment11 extends Fragment implements View.OnTouchListener {
+    public static final String FRAMGMENT_NAME = MyFragment11.class.getName();
     private final static String BACKGROUND_COLOR = "background_color";
     private MyView11 myView;
 
@@ -46,6 +47,11 @@ public class MyFragment11 extends Fragment implements View.OnTouchListener {
 
     public boolean onTouch(View v, MotionEvent e) {
         return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     //TouchEventCallbacks

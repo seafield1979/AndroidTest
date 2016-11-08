@@ -46,6 +46,7 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
 
     private Paint paint = new Paint();
 
+    private boolean isFirst = true;
     // get/set
 
     /**
@@ -124,6 +125,50 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
         this.setOnTouchListener(this);
     }
 
+    private void initWindows(int width, int height) {
+        MyLog.print(TAG, "w:" + width + " h:" + height);
+
+        // IconWindow
+        PointF pos1, pos2;
+        Size size1, size2;
+        if (width <= height) {
+            pos1 = new PointF(0, 0);
+            size1 = new Size(width, height/2);
+            pos2 = new PointF(0, height/2);
+            size2 = new Size(width, height/2);
+        } else {
+            pos1 = new PointF(0, 0);
+            size1 = new Size(width / 2, height);
+            pos2 = new PointF(width / 2, 0);
+            size2 = new Size(width / 2, height);
+        }
+
+        if (mIconWindows[0] == null) {
+            mIconWindows[0] = IconWindow.createInstance(this, this, true, pos1.x, pos1.y, size1.width, size1.height, Color.WHITE);
+            mIconWindows[0].setWindows(mIconWindows);
+            mWindows[WindowType.Icon1.ordinal()] = mIconWindows[0];
+        }
+
+        if (mIconWindows[1] == null) {
+            mIconWindows[1] = IconWindow.createInstance(this, this, false, pos2.x, pos2.y, size2.width, size2.height, Color.LTGRAY);
+            mIconWindows[1].setWindows(mIconWindows);
+            mWindows[WindowType.Icon2.ordinal()] = mIconWindows[1];
+        }
+        // MenuBar
+        if (mMenuBar == null) {
+            mMenuBar = MenuBar.createInstance(this, this, width, height, Color.BLACK);
+            mWindows[WindowType.MenuBar.ordinal()] = mMenuBar;
+        }
+
+        // LogWindow
+        if (mLogWin == null) {
+            mLogWin = LogWindow.createInstance(getContext(), this,
+                    width / 2, height,
+                    Color.argb(128,0,0,0));
+            mWindows[WindowType.Log.ordinal()] = mLogWin;
+        }
+    }
+
     /**
      * Viewのサイズを指定する
      * @param widthMeasureSpec
@@ -133,46 +178,6 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int viewW = MeasureSpec.getSize(widthMeasureSpec);
         int viewH = MeasureSpec.getSize(heightMeasureSpec);
-
-        // IconWindow
-        PointF pos1, pos2;
-        Size size1, size2;
-        if (viewW <= viewH) {
-            pos1 = new PointF(0, 0);
-            size1 = new Size(viewW, (viewH - 100)/2);
-            pos2 = new PointF(0, (viewH - 100)/2);
-            size2 = new Size(viewW, (viewH - 100)/2);
-        } else {
-            pos1 = new PointF(0, 0);
-            size1 = new Size(viewW / 2, viewH);
-            pos2 = new PointF(viewW / 2, 0);
-            size2 = new Size(viewW / 2, viewH);
-        }
-
-        if (mIconWindows[0] == null) {
-            mIconWindows[0] = IconWindow.createInstance(this, this, pos1.x, pos1.y, size1.width, size1.height, Color.WHITE);
-            mIconWindows[0].setWindows(mIconWindows);
-            mWindows[WindowType.Icon1.ordinal()] = mIconWindows[0];
-        }
-
-        if (mIconWindows[1] == null) {
-            mIconWindows[1] = IconWindow.createInstance(this, this, pos2.x, pos2.y, size2.width, size2.height, Color.LTGRAY);
-            mIconWindows[1].setWindows(mIconWindows);
-            mWindows[WindowType.Icon2.ordinal()] = mIconWindows[1];
-        }
-        // MenuBar
-        if (mMenuBar == null) {
-            mMenuBar = MenuBar.createInstance(this, this, viewW, viewH, Color.BLACK);
-            mWindows[WindowType.MenuBar.ordinal()] = mMenuBar;
-        }
-
-        // LogWindow
-        if (mLogWin == null) {
-            mLogWin = LogWindow.createInstance(getContext(), this,
-                    viewW / 2, viewH,
-                    Color.argb(128,0,0,0));
-            mWindows[WindowType.Log.ordinal()] = mLogWin;
-        }
 
         if (resetSize) {
             int width = MeasureSpec.EXACTLY | newWidth;
@@ -185,6 +190,11 @@ public class MyView11 extends View implements OnTouchListener, MenuItemCallbacks
 
     @Override
     public void onDraw(Canvas canvas) {
+        if (isFirst) {
+            isFirst = false;
+            initWindows(getWidth(), getHeight());
+        }
+
         // 背景塗りつぶし
         canvas.drawColor(Color.WHITE);
 
