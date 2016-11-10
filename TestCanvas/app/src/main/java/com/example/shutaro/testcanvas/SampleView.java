@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
@@ -17,10 +18,14 @@ import java.util.Random;
  * Created by shutaro on 2016/09/30.
  */
 public class SampleView extends View{
+    // ラジアン角度
+    public static final double RAD = 3.1415 / 180.0;
+
     private Paint paint = new Paint();
     private Path path = new Path();
     private int drawMode;
     private Bitmap mBmp, mBmpImo;
+    private Random rnd = new Random();
 
     public SampleView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,11 +58,15 @@ public class SampleView extends View{
                 drawCircles(canvas);
                 break;
             case 5:
-                drawImage(canvas);
+                drawTriangle(canvas);
                 break;
             case 6:
+                drawImage(canvas);
+                break;
+            case 7:
                 testCliping(canvas);
                 break;
+
             default:
         }
     }
@@ -67,6 +76,8 @@ public class SampleView extends View{
      * @param canvas
      */
     private void testDrawText(Canvas canvas) {
+        String text = "Hello!";
+
         // テキストのサイズを設定
         paint.setTextSize(80);
         // アンチエリアシング(境界のぼかし)
@@ -74,12 +85,12 @@ public class SampleView extends View{
         // 色を設定
         paint.setColor(Color.rgb(255,0,0));
 
-        canvas.drawText("Hello!", 50, 100, paint);
+        canvas.drawText(text, 50, 100, paint);
 
         // 斜体
         paint.setTextSkewX(-0.25f);
         paint.setColor(Color.rgb(0,255,0));
-        canvas.drawText("Hello!", 50, 200, paint);
+        canvas.drawText(text, 50, 200, paint);
 
         // 太字
         paint.setTextSkewX(0);
@@ -87,7 +98,22 @@ public class SampleView extends View{
         paint.setFakeBoldText(true);
 
         paint.setColor(Color.rgb(0,0,255));
-        canvas.drawText("Hello!", 50, 300, paint);
+        canvas.drawText(text, 50, 300, paint);
+
+
+        // センタリング(わかりやすいようにラインも描画)
+        float centerX = getWidth() / 2;
+        float centerY = getHeight() / 2;
+
+        myDrawLine(canvas, paint, centerX, 0, centerX, getHeight(), 2, Color.BLUE);
+        myDrawLine(canvas, paint, 0, centerY, getWidth(), centerY, 2, Color.BLUE);
+
+        Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+
+        float textWidth = paint.measureText( text);
+        float baseX = centerX - textWidth / 2;
+        float baseY = centerY - (fontMetrics.ascent + fontMetrics.descent) / 2;
+        canvas.drawText( text, baseX, baseY, paint);
     }
 
 
@@ -110,6 +136,15 @@ public class SampleView extends View{
         path.lineTo(200, 300);
         paint.setColor(Color.rgb(0,100,255));
         canvas.drawPath(path, paint);
+    }
+
+    public void myDrawLine(Canvas canvas, Paint paint, float x1, float y1, float x2, float y2, int width, int color) {
+        // 線の種類
+        paint.setStyle(Paint.Style.STROKE);
+        // 線の太さ
+        paint.setStrokeWidth(width);
+        // 線
+        canvas.drawLine(x1, y1, x2, y2, paint);
     }
 
     /**
@@ -150,9 +185,6 @@ public class SampleView extends View{
      * @param canvas
      */
     private void drawCircles(Canvas canvas) {
-        //Randomクラスのインスタンス化
-        Random rnd = new Random();
-
         // アンチエリアシング(境界のぼかし)
         paint.setAntiAlias(true);
         // 線の種類
@@ -180,6 +212,49 @@ public class SampleView extends View{
         paint.setColor(color);
         canvas.drawCircle(x, y, radius, paint);
     }
+
+    /**
+     * 三角形を描画する
+     */
+    private void drawTriangle(Canvas canvas) {
+
+        for (int i=0; i<30; i++) {
+            Point center = new Point( 100 + rnd.nextInt(getWidth()),
+                                    100 + rnd.nextInt(getHeight()));
+            int radius = 50 + rnd.nextInt(500);
+            myDrawTriangle(canvas, paint, center, radius, Color.rgb(rnd.nextInt(255),rnd.nextInt(255), rnd.nextInt(255)));
+        }
+    }
+
+    private void myDrawTriangle(Canvas canvas, Paint paint, Point center, int radius, int color) {
+        // 中心から半径の位置にある３点で三角形を描画する
+        Point p1, p2, p3;
+        float baseAngle = 180 + rnd.nextInt(360);
+        float angle = baseAngle + 90;
+        p1 = new Point((int)(Math.cos(angle * RAD) * (float)radius),
+                (int)(Math.sin(angle * RAD) * (float)radius));
+
+        angle = baseAngle + 210;
+        p2 = new Point((int)(Math.cos(angle * RAD) * (float)radius),
+                (int)(Math.sin(angle * RAD) * (float)radius));
+
+        angle = baseAngle + 330;
+        p3 = new Point((int)(Math.cos(angle * RAD) * (float)radius),
+                (int)(Math.sin(angle * RAD) * (float)radius));
+
+        Path path = new Path();
+        path.moveTo(p1.x + center.x, p1.y + center.y);
+        path.lineTo(p2.x + center.x, p2.y + center.y);
+        path.lineTo(p3.x + center.x, p3.y + center.y);
+        path.lineTo(p1.x + center.x, p1.y + center.y);
+        path.close();
+
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(color);
+        canvas.drawPath(path, paint);
+    }
+
+
 
     /**
      * 画像を描画する

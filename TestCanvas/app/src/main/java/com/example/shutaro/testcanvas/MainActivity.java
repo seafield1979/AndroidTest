@@ -28,6 +28,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 R.id.button4,
                 R.id.button5,
                 R.id.button6,
+                R.id.button7,
+                R.id.button8,
+                R.id.button9,
+                R.id.button10,
+                R.id.button11,
+                R.id.button12,
                 R.id.button_capture,
                 R.id.button_screen
     };
@@ -68,6 +74,24 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 break;
             case R.id.button6:
                 sampleView.setDrawMode(6);
+                break;
+            case R.id.button7:
+                sampleView.setDrawMode(7);
+                break;
+            case R.id.button8:
+                sampleView.setDrawMode(8);
+                break;
+            case R.id.button9:
+                sampleView.setDrawMode(9);
+                break;
+            case R.id.button10:
+                sampleView.setDrawMode(10);
+                break;
+            case R.id.button11:
+                sampleView.setDrawMode(11);
+                break;
+            case R.id.button12:
+                sampleView.setDrawMode(12);
                 break;
             case R.id.button_capture:
                 // 指定のViewをスクリーンショット
