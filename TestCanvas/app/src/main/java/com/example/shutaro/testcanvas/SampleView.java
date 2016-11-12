@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
@@ -152,20 +154,41 @@ public class SampleView extends View{
      * @param canvas
      */
     private void drawRects(Canvas canvas) {
+
+        float x,y;
+        float width = 200;
+        float height = 200;
         // アンチエリアシング(境界のぼかし)
         paint.setAntiAlias(true);
-        // 線の種類
-        paint.setStyle(Paint.Style.STROKE);
-        // 線の太さ
-        paint.setStrokeWidth(10);
-        // 色
-        paint.setColor(Color.rgb(255,0,0));
-        canvas.drawRect(50, 50, 300, 300, paint);
 
-        // 内部を塗りつぶし
+        // 四角形 枠
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(10);
+        paint.setColor(Color.rgb(255,0,0));
+        x = 50;
+        y = 50;
+        canvas.drawRect(x, y, x + width, y + height, paint);
+
+        // 四角形 塗りつぶし
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         paint.setColor(Color.rgb(0,180,0));
-        canvas.drawRect(50, 350, 500, 500, paint);
+        x = 50;
+        y = 350;
+        canvas.drawRect(x, y, x + width, y + height, paint);
+
+        // 角丸四角形 枠
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.rgb(200,50,200));
+        x = 350;
+        y = 50;
+        canvas.drawRoundRect(x, y, x + width, y + height, 20, 20, paint);
+
+        // 角丸四角形　塗りつぶし
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.rgb(200,50,200));
+        x = 350;
+        y = 350;
+        canvas.drawRoundRect(x, y, x + width, y + height, 20, 20, paint);
     }
 
     /**

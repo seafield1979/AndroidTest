@@ -15,9 +15,10 @@ import android.view.SurfaceView;
  */
 
 public class MySurfaceView3  extends SurfaceView implements Runnable,SurfaceHolder.Callback {
-    static final long FPS = 30;
+    static final long FPS = 60;
     static final long FRAME_TIME = 1000 / FPS;
     static final int RECT_R = 100;
+    static final int IMAGE_W = 100;
     static final int SPEED = 5;
 
     SurfaceHolder surfaceHolder;
@@ -82,8 +83,8 @@ public class MySurfaceView3  extends SurfaceView implements Runnable,SurfaceHold
         while(thread != null){
             // 移動処理。画面の端で跳ね返る
             cx += speed_x;
-            if (cx >= screen_width) {
-                cx = screen_width - 1;
+            if (cx + IMAGE_W >= screen_width) {
+                cx = screen_width - IMAGE_W;
                 speed_x *= -1;
             } else if ( cx < 0 ) {
                 cx = 0;
@@ -91,8 +92,8 @@ public class MySurfaceView3  extends SurfaceView implements Runnable,SurfaceHold
             }
 
             cy += speed_y;
-            if (cy >= screen_height) {
-                cy = screen_height - 1;
+            if (cy + IMAGE_W >= screen_height) {
+                cy = screen_height - IMAGE_W;
                 speed_y *= -1;
             } else if ( cy < 0 ) {
                 cy = 0;
