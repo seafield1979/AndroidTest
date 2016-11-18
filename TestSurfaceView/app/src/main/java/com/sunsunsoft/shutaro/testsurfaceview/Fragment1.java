@@ -14,7 +14,8 @@ import android.widget.LinearLayout;
  */
 public class Fragment1 extends Fragment {
     public static final String FRAMGMENT_NAME = Fragment1.class.getName();
-    public static final int mode = 2;
+
+    public static final int mode = 3;
 
     public Fragment1() {
 
@@ -30,12 +31,22 @@ public class Fragment1 extends Fragment {
 
         // SurfaceViewを生成
         // 画面に表示
-        if (mode == 1) {
-            MySurfaceView surfaceView = new MySurfaceView(getContext());
-            viewContainer.addView(surfaceView);
-        } else {
-            MySurfaceView2 surfaceView = new MySurfaceView2(getContext());
-            viewContainer.addView(surfaceView);
+        switch(mode) {
+            case 1: {
+                MySurfaceView surfaceView = new MySurfaceView(getContext());
+                viewContainer.addView(surfaceView);
+            }
+                break;
+            case 2: {
+                MySurfaceView2 surfaceView = new MySurfaceView2(getContext());
+                viewContainer.addView(surfaceView);
+            }
+                break;
+            case 3: {
+                MySurfaceView3 surfaceView = new MySurfaceView3(getContext());
+                viewContainer.addView(surfaceView);
+            }
+                break;
         }
         return view;
     }

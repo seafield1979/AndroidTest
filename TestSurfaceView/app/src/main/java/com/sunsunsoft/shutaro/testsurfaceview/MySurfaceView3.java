@@ -13,13 +13,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 /**
- * SurfaceViewのテスト
- *
- * 指定のFPSで画面を更新する
- * 60FPSなら1秒間60回画面を更新。１フレームの処理時間は 1000 / 60 = 16.6ms
+ * ダブルバッファでちらつきを防止する
  */
 
-public class MySurfaceView  extends SurfaceView implements Runnable,SurfaceHolder.Callback {
+public class MySurfaceView3  extends SurfaceView implements Runnable,SurfaceHolder.Callback {
     static final long FPS = 60;
     static final int RECT_R = 100;
     static final int IMAGE_W = 100;
@@ -28,15 +25,16 @@ public class MySurfaceView  extends SurfaceView implements Runnable,SurfaceHolde
     SurfaceHolder surfaceHolder;
     Thread thread;
 
+    Bitmap mOffScreen;
     Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hogeman);
     int cx = RECT_R, cy = RECT_R;
     int speed_x = SPEED, speed_y = SPEED;
     int screen_width, screen_height;
 
-    public MySurfaceView(Context context) {
+    public MySurfaceView3(Context context) {
         this(context, null);
     }
-    public MySurfaceView(Context context, AttributeSet attr) {
+    public MySurfaceView3(Context context, AttributeSet attr) {
         super(context);
 
         surfaceHolder = getHolder();
@@ -48,6 +46,11 @@ public class MySurfaceView  extends SurfaceView implements Runnable,SurfaceHolde
     public void surfaceCreated(SurfaceHolder holder) {
         thread = new Thread(this);
         thread.start();
+
+        // オフスクリーン用のBitmapを生成する
+        mOffScreen = Bitmap.createBitmap(getWidth(), getHeight(),
+                Bitmap.Config.ARGB_8888);
+
         Log.i("myLog", "surfaceCreated");
     }
 
@@ -68,6 +71,10 @@ public class MySurfaceView  extends SurfaceView implements Runnable,SurfaceHolde
     public void surfaceDestroyed(SurfaceHolder holder) {
         thread = null;
         Log.i("myLog", "surfaceDestroyed");
+
+        // Bitmapを解放する
+        if (mOffScreen != null)
+            mOffScreen.recycle();
     }
 
     @Override
@@ -85,7 +92,16 @@ public class MySurfaceView  extends SurfaceView implements Runnable,SurfaceHolde
                     loopCount++;
                     canvas = surfaceHolder.lockCanvas();
 
-                    myDraw(canvas);
+                    // オフスクリーンバッファに描画する
+                    if (mOffScreen != null) {
+                        // オフスクリーンバッファを生成する
+                        Canvas offScreen = new Canvas(mOffScreen);
+
+                        myDraw(offScreen);
+                    }
+
+                    // オフスクリーンバッファを描画する
+                    canvas.drawBitmap(mOffScreen, 0, 0, null);
 
                     surfaceHolder.unlockCanvasAndPost(canvas);
 

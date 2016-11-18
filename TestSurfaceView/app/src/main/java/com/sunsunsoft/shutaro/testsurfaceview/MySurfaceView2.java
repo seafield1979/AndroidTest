@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -33,8 +34,10 @@ public class MySurfaceView2  extends SurfaceView implements Runnable,SurfaceHold
     int speed_x = SPEED, speed_y = SPEED;
     int screen_width, screen_height;
 
-
     public MySurfaceView2(Context context) {
+        this(context, null);
+    }
+    public MySurfaceView2(Context context, AttributeSet attr) {
         super(context);
 
         surfaceHolder = getHolder();

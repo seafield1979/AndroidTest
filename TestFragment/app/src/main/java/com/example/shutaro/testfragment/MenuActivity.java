@@ -46,8 +46,8 @@ public class MenuActivity extends AppCompatActivity implements MyDialogFragment.
         switch (view.getId()) {
             case R.id.button:
             {
-                Intent i = new Intent(getApplicationContext(),MainActivity.class);
-                startActivity(i);
+//                Intent i = new Intent(getApplicationContext(),MainActivity.class);
+//                startActivity(i);
             }
                 break;
             case R.id.button2:

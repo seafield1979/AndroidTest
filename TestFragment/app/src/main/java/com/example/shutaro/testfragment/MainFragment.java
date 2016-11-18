@@ -8,9 +8,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,7 +24,8 @@ import android.widget.TextView;
  * インスタンスはcreateInstanceで行う。createInstanceメソッドの引数がそのままFragmentの引数として使用される。
  * ライフサイクルメソッドのログを出力。これで起動、バックグラウンドに移動した時などのイベント呼び出しを確認できる。
  */
-public class MainFragment extends Fragment implements OnClickListener, MyDialogFragment.OnOkClickListener{
+public class MainFragment extends Fragment implements OnClickListener, MyDialogFragment
+        .OnOkClickListener, OnKeyListener{
     public static final String TAG = "MainFragment";
     public static final String FRAMGMENT_NAME = MainFragment.class.getName();
     private final static String KEY_NAME = "key_name";
@@ -81,6 +84,9 @@ public class MainFragment extends Fragment implements OnClickListener, MyDialogF
         Log.i(TAG, "onCreateView 1");
 
         View view = inflater.inflate(R.layout.fragment1, container, false);
+
+        view.setOnKeyListener(this);
+        view.setFocusableInTouchMode(true);
 
         Log.d(TAG, "onCreateView 2");
         return view;
@@ -181,5 +187,15 @@ public class MainFragment extends Fragment implements OnClickListener, MyDialogF
             String retStr = args.getString(MyDialogFragment.KEY_RET);
             textView.append(retStr);
         }
+    }
+
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // ここにバックキーで動かすコードを入れる
+            return true;
+        }
+        return false;
     }
 }

@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.support.annotation.CheckResult;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -18,7 +20,7 @@ import android.widget.TextView;
  *
  *
  */
-public class BasicFragment extends Fragment implements OnClickListener{
+public class BasicFragment extends Fragment implements OnClickListener, OnKeyListener{
     public static final String FRAMGMENT_NAME = MainFragment.class.getName();
     private static final String TAG = FRAMGMENT_NAME;
     private final static String KEY_NAME = "key_name";
@@ -41,6 +43,7 @@ public class BasicFragment extends Fragment implements OnClickListener{
         args.putString(KEY_NAME, name);
         args.putInt(KEY_BACKGROUND, color);
         fragment.setArguments(args);
+
 
         return fragment;
     }
@@ -65,7 +68,12 @@ public class BasicFragment extends Fragment implements OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_basic, container, false);
+        View view = inflater.inflate(R.layout.fragment_basic, container, false);
+
+        view.setOnKeyListener(this);
+        view.setFocusableInTouchMode(true);
+
+        return view;
     }
 
     /**
@@ -93,4 +101,14 @@ public class BasicFragment extends Fragment implements OnClickListener{
                 break;
         }
     }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // ここにバックキーで動かすコードを入れる
+            return true;
+        }
+        return false;
+    }
+
 }

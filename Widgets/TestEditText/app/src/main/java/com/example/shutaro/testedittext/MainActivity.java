@@ -1,32 +1,27 @@
 package com.example.shutaro.testedittext;
 
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AutoCompleteTextView autoComplete;
-
-    // サジェストの候補
-    static final String[] COUNTRIES = new String[] {
-            "Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
-            "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina",
-            "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan",
-            "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // サジェストのテキストを設定する
-        autoComplete = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
+        if (savedInstanceState == null) {
+            // Fragmentを生成し、setArgumentsで先ほどのbundleをセットする
+            Fragment1 fragment = new Fragment1();
+//            Fragment2 fragment = new Fragment2();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout
-                .simple_dropdown_item_1line, COUNTRIES);
-        autoComplete.setAdapter(adapter);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            // コンテナにMainFragmentを格納
+            transaction.add(R.id.fragment_container, fragment, Fragment2.FRAMGMENT_NAME);
+            // 画面に表示
+            transaction.commit();
+        }
     }
 }

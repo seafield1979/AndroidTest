@@ -11,6 +11,9 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -79,6 +82,7 @@ public class SampleView extends View{
      */
     private void testDrawText(Canvas canvas) {
         String text = "Hello!";
+        float y = 50;
 
         // テキストのサイズを設定
         paint.setTextSize(80);
@@ -87,12 +91,14 @@ public class SampleView extends View{
         // 色を設定
         paint.setColor(Color.rgb(255,0,0));
 
-        canvas.drawText(text, 50, 100, paint);
+        canvas.drawText(text, 50, y, paint);
+        y += 100;
 
         // 斜体
         paint.setTextSkewX(-0.25f);
         paint.setColor(Color.rgb(0,255,0));
-        canvas.drawText(text, 50, 200, paint);
+        canvas.drawText(text, 50, y, paint);
+        y += 100;
 
         // 太字
         paint.setTextSkewX(0);
@@ -100,8 +106,8 @@ public class SampleView extends View{
         paint.setFakeBoldText(true);
 
         paint.setColor(Color.rgb(0,0,255));
-        canvas.drawText(text, 50, 300, paint);
-
+        canvas.drawText(text, 50, y, paint);
+        y += 100;
 
         // センタリング(わかりやすいようにラインも描画)
         float centerX = getWidth() / 2;
@@ -116,6 +122,22 @@ public class SampleView extends View{
         float baseX = centerX - textWidth / 2;
         float baseY = centerY - (fontMetrics.ascent + fontMetrics.descent) / 2;
         canvas.drawText( text, baseX, baseY, paint);
+
+        // 複数行
+        // 改行ができるようにTextPaintとStaticLayoutを使用する
+        TextPaint textPaint = new TextPaint();
+        textPaint.setTextSize(70);
+
+        StaticLayout mTextLayout = new StaticLayout("aaa\nbbb\nccc", textPaint,
+                canvas.getWidth(), Layout.Alignment.ALIGN_NORMAL,
+                1.0f, 0.0f, false);
+
+        canvas.save();
+        canvas.translate(100, y);
+
+        ///テキストの描画位置の指定
+        mTextLayout.draw(canvas);
+        canvas.restore();
     }
 
 
