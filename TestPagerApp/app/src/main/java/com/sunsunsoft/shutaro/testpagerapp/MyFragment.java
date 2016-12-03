@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.view.View.OnTouchListener;
 
-public class MyFragment extends Fragment implements OnTouchListener {
+public class MyFragment extends Fragment {
     private final static String BACKGROUND_COLOR = "background_color";
 
     public static MyFragment newInstance(@ColorRes int IdRes) {
@@ -45,8 +45,16 @@ public class MyFragment extends Fragment implements OnTouchListener {
      * @param e
      * @return
      */
-    public boolean onTouch(View v, MotionEvent e) {
-        return true;
-    }
+//    public boolean onTouch(View v, MotionEvent e) {
+//
+//        switch(e.getAction()) {
+//            case MotionEvent.ACTION_MOVE:
+//
+//
+//            break;
+//        }
+//
+//        return true;
+//    }
 
 }

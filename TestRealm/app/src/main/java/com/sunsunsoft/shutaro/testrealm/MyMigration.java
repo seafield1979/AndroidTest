@@ -8,7 +8,7 @@ import io.realm.RealmSchema;
  * Created by shutaro on 2016/10/27.
  */
 
-public class UserMigration implements RealmMigration {
+public class MyMigration implements RealmMigration {
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
 

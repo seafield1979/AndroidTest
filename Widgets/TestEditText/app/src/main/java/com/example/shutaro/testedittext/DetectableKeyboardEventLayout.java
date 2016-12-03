@@ -7,8 +7,9 @@ package com.example.shutaro.testedittext;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-public class DetectableKeyboardEventLayout extends LinearLayout {
+public class DetectableKeyboardEventLayout extends RelativeLayout {
     public interface KeyboardListener {
         void onKeyboardShown();
         void onKeyboardHidden();

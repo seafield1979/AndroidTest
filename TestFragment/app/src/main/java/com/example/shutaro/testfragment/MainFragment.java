@@ -181,7 +181,6 @@ public class MainFragment extends Fragment implements OnClickListener, MyDialogF
 
     // コールバックされるメソッド
     // OnOkClickListener インターフェース
-    @Override
     public void onOkClicked(Bundle args) {
         if (args != null) {
             String retStr = args.getString(MyDialogFragment.KEY_RET);

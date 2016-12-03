@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView.OnItemClickListener;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -27,6 +28,7 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
     enum TestMode {
         Select,
         SelectAll,
+        SelectTest,
         SelectSorted,
         Add1,
         Add2,
@@ -43,7 +45,6 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
     TextView textView;
     Button button;
     ListView listView;
-    UserDAO mModel;
 
     Random mRand = new Random();
 
@@ -82,9 +83,6 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
 
         textView = (TextView)view.findViewById(R.id.textView);
 
-        // DAOオブジェクト
-        mModel = new UserDAO(getActivity());
-
         return view;
     }
 
@@ -111,22 +109,26 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
     private void testQuery(TestMode mode) {
 
         switch (mode) {
-            case Select:
-                mModel.select1(10);
+            case Select: {
+                User user = RealmManager.getUserDao().selectOne(10);
+                if (user != null) {
+                    textView.setText("");
+                    textView.append("name:" + user.getName() + " age:" + user.getAge() + "\n");
+                }
+            }
                 break;
             case SelectAll: {
-                textView.setText("");
-                User[] results = mModel.selectAll();
-                if (results != null) {
-                    for (User user : results) {
-                        textView.append("name:" + user.getName() + " age:" + user.getAge() + "\n");
-                    }
-                }
+                selectAll();
+            }
+                break;
+            case SelectTest: {
+                List<User> users = RealmManager.getUserDao().selectTest();
+                showUsers(users);
             }
                 break;
             case SelectSorted: {
                 textView.setText("");
-                User[] results = mModel.selectSorted();
+                List<User> results = RealmManager.getUserDao().selectSorted();
                 if (results != null) {
                     for (User user : results) {
                         textView.append("name:" + user.getName() + " age:" + user.getAge() + "\n");
@@ -135,9 +137,13 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
             }
                 break;
             case Add1:
-                mModel.add1("hoge", 1);
+                // １つ追加
+                int value = mRand.nextInt(1000);
+                RealmManager.getUserDao().addOne("hoge" + value, value);
+                selectAll();
                 break;
             case Add2: {
+                // 複数追加
                 LinkedList<User> userList = new LinkedList();
                 User user;
                 for (int i=0; i<10; i++) {
@@ -147,39 +153,67 @@ public class MyFragment extends Fragment implements OnTouchListener, OnClickList
                     user.setAge(rand);
                     userList.add(user);
                 }
-                mModel.add2(userList);
+                RealmManager.getUserDao().addList(userList);
+                selectAll();
             }
                 break;
             case Insert1: {
+                // １つ挿入
                 int rand = mRand.nextInt(100);
-                mModel.insertOne(0, "insert" + rand, rand);
+                RealmManager.getUserDao().insertOne(0, "insert" + rand, rand);
             }
                 break;
             case Update: {
-                User user = mModel.selectOne();
+                // １つ更新
+                User user = RealmManager.getUserDao().selectOne();
                 if (user != null) {
-                    mModel.updateOne(user.getId(), user.getName(), 101);
+                    RealmManager.getUserDao().updateOne(user.getId(), user.getName(), 101);
                 }
+                selectAll();
             }
                 break;
             case Update2: {
-                User user = mModel.selectOne();
+                // 複数更新
+                User user = RealmManager.getUserDao().selectOne();
                 if (user != null) {
-                    mModel.updateAll(user.getAge(), user.getName(), 102);
+                    RealmManager.getUserDao().updateAll(user.getAge(), user.getName(), 102);
                 }
+                selectAll();
             }
                 break;
             case Delete: {
-                User user = mModel.selectOne();
+                User user = RealmManager.getUserDao().selectOne();
                 if (user != null) {
-                    mModel.deleteOne(user.getId());
+                    RealmManager.getUserDao().deleteOne(user.getId());
                 }
+                selectAll();
             }
                 break;
             case DeleteAll: {
-                mModel.deleteAll();
+                RealmManager.getUserDao().deleteAll();
+                selectAll();
             }
                 break;
+        }
+    }
+
+
+    private void selectAll() {
+        textView.setText("");
+        List<User> results = RealmManager.getUserDao().selectAll();
+        if (results != null) {
+            for (User user : results) {
+                textView.append("name:" + user.getName() + " age:" + user.getAge() + "\n");
+            }
+        }
+    }
+
+    private void showUsers( List<User> users) {
+        textView.setText("");
+        if (users == null) return;
+
+        for (User user : users) {
+            textView.append("name:" + user.getName() + " age:" + user.getAge() + "\n");
         }
     }
 

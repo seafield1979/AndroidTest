@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
@@ -18,64 +19,72 @@ public class UserDAO {
 
     private Realm mRealm;
 
-    public UserDAO(Context context) {
-        // Realm.getDefaultInstance() の前に Realm.setDefaultConfiguration をコールしておかないとエラーになる
-        RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
-                .schemaVersion(1)
-                .migration(new UserMigration())
-                .build();
-        Realm.setDefaultConfiguration(realmConfig);
-        mRealm = Realm.getDefaultInstance();
-
-        Log.d("---------", "path: " + mRealm.getPath());
+    public UserDAO(Realm realm) {
+        mRealm = realm;
     }
 
     /**
      * Select
      * @return
      */
-    public String[] select1(int age) {
-        //Realm realm = Realm.getDefaultInstance();
-
-        LinkedList<String> strs = new LinkedList();
-        RealmResults<User> results =
+    public User selectOne(int age) {
+        User result =
                 mRealm.where(User.class)
                         .greaterThan("age", age)
-                        .findAll();
-        for (User user : results) {
-            Log.d("select", "name:" + user.getName() + " age:" + user.getAge());
-            strs.add(user.getName());
-        }
-
-        return null;
+                        .isEmpty("name")
+                        .contains("name", "hoge")
+                        .findFirst();
+        return result;
     }
 
     /**
      * 全要素取得
      * @return nameのString[]
      */
-    public User[] selectAll() {
+    public List<User> selectAll() {
         RealmResults<User> results = mRealm.where(User.class).findAll();
         for (User user : results) {
             Log.d("select", "id:" + user.getId() + " name:" + user.getName() + " age:" + user
                     .getAge());
         }
 
-        return results.toArray(new User[0]);
+        return results;
+    }
+
+
+    /**
+     * 条件を直接指定するテスト用 Select
+     * @return
+     */
+    public List<User> selectTest() {
+        RealmQuery<User> query = mRealm.where(User.class);
+
+        // 条件1
+        query.equalTo("age" , 81);
+        query.equalTo("name", "hoge49");
+
+        query.or();
+
+        // 条件2
+        query.equalTo("age", 97);
+        query.equalTo("name", "hoge97");
+
+        RealmResults<User> results = query.findAll();
+        return results;
     }
 
     /**
      * ソートして全要素追加
      * @return
      */
-    public User[] selectSorted() {
+    public List<User> selectSorted() {
         RealmResults<User> results = mRealm.where(User.class).findAll();
         results = results.sort("age");
         for (User user : results) {
             Log.d("select", "id:" + user.getId() + " name:" + user.getName() + " age:" + user.getAge());
         }
 
-        return results.toArray(new User[0]);
+        return results;
     }
 
     /**
@@ -96,7 +105,7 @@ public class UserDAO {
      * @param name
      * @param age
      */
-    public void add1(String name, int age) {
+    public void addOne(String name, int age) {
         int newId = getNextUserId(mRealm);
 
         User user = new User();
@@ -112,14 +121,14 @@ public class UserDAO {
     /**
      * 一度にたくさん追加
      */
-    public void add2(List<User> list) {
+    public void addList(List<User> list) {
         mRealm.beginTransaction();
         for (User user : list) {
             int newId = getNextUserId(mRealm);
             user.setId(newId);
             Log.d("userdao", user.getMessage());
 
-            mRealm.copyToRealm(user);
+            mRealm.insert(user);
         }
         mRealm.commitTransaction();
     }
@@ -146,15 +155,15 @@ public class UserDAO {
     /**
      * 1件更新
      * @param id  更新対象のデータのid
-     * @param name  更新するname
-     * @param age  更新するage
+     * @param newName  更新するname
+     * @param newAge  更新するage
      */
-    public void updateOne(int id, String name, int age) {
-        mRealm.beginTransaction();
+    public void updateOne(int id, String newName, int newAge) {
         User user = mRealm.where(User.class).equalTo("id", id).findFirst();
 
-        user.setName(name);
-        user.setAge(age);
+        mRealm.beginTransaction();
+        user.setName(newName);
+        user.setAge(newAge);
         mRealm.commitTransaction();
     }
 
@@ -165,9 +174,9 @@ public class UserDAO {
      * @param age
      */
     public void updateAll(int targetAge, String name, int age) {
-        mRealm.beginTransaction();
         RealmResults<User> results = mRealm.where(User.class).equalTo("age", targetAge).findAll();
 
+        mRealm.beginTransaction();
         for (int i=0; i<results.size(); i++){
             User user = results.get(i);
             user.setName(name);
@@ -181,8 +190,9 @@ public class UserDAO {
      * @param id
      */
     public void deleteOne(int id) {
-        mRealm.beginTransaction();
         RealmResults<User> results = mRealm.where(User.class).equalTo("id", id).findAll();
+
+        mRealm.beginTransaction();
         results.deleteFirstFromRealm();
         mRealm.commitTransaction();
     }
@@ -191,12 +201,12 @@ public class UserDAO {
      * 全件削除する
      */
     public void deleteAll() {
-        mRealm.beginTransaction();
         RealmResults<User> results = mRealm.where(User.class).findAll();
+
+        mRealm.beginTransaction();
         results.deleteAllFromRealm();
         mRealm.commitTransaction();
     }
-
 
     /**
      * かぶらないプライマリIDを取得する

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -21,6 +22,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener{
             R.id.button5,
             R.id.button6 };
 
+    private TextView textView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +35,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener{
             buttons[i].setOnClickListener(this);
             buttons[i].setText("test" + String.valueOf(i+1));
         }
+        textView = (TextView)findViewById(R.id.textView);
     }
 
     public void onClick(View v) {
@@ -127,10 +132,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener{
 
     public void onReturnValue(String value) {
         Log.v("myLog", value);
+        textView.setText("");
+        textView.append(value);
     }
     public void onReturnValue(ArrayList<Integer> list) {
+        textView.setText("");
         for (Integer value : list) {
             Log.v("myLog", "checked " + String.valueOf(value));
+            textView.append(String.valueOf(value) + "\n");
         }
     }
 }

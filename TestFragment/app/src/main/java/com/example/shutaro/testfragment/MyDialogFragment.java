@@ -21,6 +21,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+
+interface OnOkClickListener {
+    void onOkClicked(Bundle args);
+}
+
 /**
  * ダイアログ用のFragmentサンプル
  * DialogFragmentのサブクラス
@@ -50,9 +55,6 @@ public class MyDialogFragment extends DialogFragment {
         return f;
     }
 
-    public interface OnOkClickListener {
-        void onOkClicked(Bundle args);
-    }
 
     @Override
     public void onAttach(Context context) {

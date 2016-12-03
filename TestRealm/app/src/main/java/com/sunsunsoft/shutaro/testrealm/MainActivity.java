@@ -20,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setViews();
+
+        // Realm初期化
+        RealmManager.initRealm(getApplicationContext());
     }
 
     private void setViews() {
@@ -39,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
         // drawer
         setDrawer();
-
     }
 
     /**
@@ -81,4 +83,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     };
+
+//    @Override
+//    protected void onDestroy() {
+//        RealmManager.closeRealm();
+//
+//        super.onDestroy();
+//    }
 }
