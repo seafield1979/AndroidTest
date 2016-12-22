@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         startActivity(i);
     }
     private void test3() {
+        Intent i = new Intent(getApplicationContext(),FrameLayout.class);
+        startActivity(i);
     }
     private void test4() {
     }

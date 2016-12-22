@@ -27,6 +27,8 @@
         </activity>
         <activity android:name=".ScrollViewActivity">
         </activity>
+        <activity android:name=".LinearLayoutActivity2">
+        </activity>
     </application>
 
 </manifest>

@@ -11,14 +11,38 @@
     android:orientation="vertical"
     tools:context="com.example.shutaro.testedittext.MainActivity">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:text="Fragment1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/button1"/>
+        <Button
+            android:text="Fragment1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/button2"/>
+        <Button
+            android:text="Fragment3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/button3"/>
+
+    </LinearLayout>
     <!-- フラグメントコンテナ -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true" >
 
-
-
+    </FrameLayout>
 
 </LinearLayout>

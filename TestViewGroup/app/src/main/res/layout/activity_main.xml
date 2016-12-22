@@ -18,37 +18,43 @@
         android:text="Hello World!"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Linear Layout"
-        android:id="@+id/button1"/>
+        android:id="@+id/button_linear1"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Linear2 Layout"
+        android:id="@+id/button_linear2"/>
+
+    <Button
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Table Layout"
-        android:id="@+id/button2"/>
+        android:id="@+id/button_table"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Relative1"
-        android:id="@+id/button3"/>
+        android:id="@+id/button_relative"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Relative2"
-        android:id="@+id/button4"/>
+        android:id="@+id/button_relative2"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Relative3"
-        android:id="@+id/button5"/>
+        android:id="@+id/button_relative3"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Scroll"
         android:id="@+id/button_scroll"/>
