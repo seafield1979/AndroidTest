@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -21,14 +22,52 @@ import java.net.MalformedURLException;
 
 public class Test1Activity extends AppCompatActivity implements OnClickListener {
 
-    private Button[] buttons = new Button[3];
-    private int[] button_ids = new int[]{
-            R.id.button,
-            R.id.button2,
-            R.id.button3 };
+    /**
+     * enum
+     */
+    // ファイルの保存先の種類
+    enum DirType{
+        AppStorage,     // アプリの永続化ストレージ
+        AppCache,       // アプリのキャッシュ（一時的に使用する）領域
+        AppExternal,    // アプリの外部
+//        Data,           // Androidのデータ保存領域
+        ExternalStorage,        // 外部ストレージ
+        ExternalDocument,       // 外部ストレージ(共有ドキュメント)
+        ExternalDownload,       // 外部ストレージ(共有ダウンロード)
+    }
 
-    private TextView textView;
+    /**
+     * Consts
+     */
+    private static final String tempDirName = "temp";
+    private static final String tempFileName = "test1.txt";
+
+    /**
+     * Member variables
+     */
+    private int[] button_ids = new int[]{
+            R.id.button_get_external_dirs,
+            R.id.button_app,
+            R.id.button_app_cache,
+            R.id.button_app_ext,
+            R.id.button_ext_storage,
+            R.id.button_ext_doc,
+            R.id.button_ext_download,
+            R.id.button_write,
+            R.id.button_read,
+            R.id.button_delete };
+
+    // 書き込み先、読み込み元のパスを表示するTextView
+    private TextView textViewDirPath;
+
+    // ログ、読み込んだテキスト等を表示するTextView
+    private TextView textViewLog;
+
+    // ファイルに書き込むテキスト
+    private EditText editWrite;
+
     private String readText;
+    private DirType dirType = DirType.AppStorage;
     private static final int CODE_PICKFILE_RESULT = 12345;
 
     @Override
@@ -36,74 +75,123 @@ public class Test1Activity extends AppCompatActivity implements OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test1);
 
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i] = (Button) findViewById(button_ids[i]);
-            buttons[i].setOnClickListener(this);
-            buttons[i].setText("test" + String.valueOf(i + 1));
+        for (int id : button_ids) {
+            findViewById(id).setOnClickListener(this);
         }
 
-        textView = (TextView)findViewById(R.id.textView);
+        textViewDirPath = (TextView)findViewById(R.id.text_path);
+        textViewLog = (TextView)findViewById(R.id.text_log);
+        editWrite = (EditText)findViewById(R.id.edit_write);
     }
 
     public void onClick(View v) {
         switch(v.getId()) {
-            case R.id.button:
-                test1();
-                break;
-            case R.id.button2:
-                test2();
-                break;
-            case R.id.button3:
-                test3();
-                break;
-        }
-    }
-
-    private void test1() {
-        String str = writeContents("hoge");
-        Log.d("myLog", str);
-        textView.setText(str);
-
-    }
-    private void test2() {
-        // ファイルパスを取得するアクティビティを起動
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("file/*");
-//        startActivityForResult(intent, CODE_PICKFILE_RESULT);
-        readFile("/storage/emulated/0/temp/test.txt");
-    }
-    private void test3() {
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == CODE_PICKFILE_RESULT) {
-                Uri uri = data.getData();
-                readFile(uri.getPath());
+            case R.id.button_get_external_dirs:
+            {
+                File[] dirs = getExternalFilesDirs(null);
+                StringBuffer buf = new StringBuffer();
+                if (dirs != null) {
+                    for (File dir : dirs) {
+                        buf.append(dir.toString() + "\n");
+                    }
+                }
+                textViewLog.setText(buf.toString());
             }
+                break;
+            case R.id.button_app:
+                dirType = DirType.AppStorage;
+                textViewDirPath.setText(getPath().toString());
+                break;
+            case R.id.button_app_cache:
+                dirType = DirType.AppCache;
+                textViewDirPath.setText(getPath().toString());
+                break;
+            case R.id.button_app_ext:
+                dirType = DirType.AppExternal;
+                textViewDirPath.setText(getPath().toString());
+                break;
+            case R.id.button_ext_storage:
+                dirType = DirType.ExternalStorage;
+                textViewDirPath.setText(getPath().toString());
+                break;
+            case R.id.button_ext_doc:
+                dirType = DirType.ExternalDocument;
+                textViewDirPath.setText(getPath().toString());
+                break;
+            case R.id.button_ext_download:
+                dirType = DirType.ExternalDownload;
+                textViewDirPath.setText(getPath().toString());
+                break;
+            case R.id.button_write:
+                writeToFile();
+                break;
+            case R.id.button_read:
+                readFile();
+                break;
+            case R.id.button_delete:
+                deleteFile();
+                break;
         }
     }
+
+    private void writeToFile() {
+        String writeText = editWrite.getText().toString();
+        String filePath = writeToFile(writeText);
+        textViewLog.setText(filePath + "\n" + writeText);
+    }
+
+
+    private void deleteFile() {
+
+    }
+
+    private File getPath() {
+        switch (dirType) {
+            case AppStorage:
+                return getFilesDir();
+            case AppCache:
+                return getCacheDir();
+//            case Data:
+//                return Environment.getDataDirectory();
+            case AppExternal:
+            {
+                File[] dirs = getExternalFilesDirs(null);
+                StringBuffer buf = new StringBuffer();
+                if (dirs != null && dirs.length > 0) {
+                    return dirs[0];
+                }
+            }
+            case ExternalStorage:
+                return Environment.getExternalStorageDirectory();
+            case ExternalDocument:
+                return Environment.getExternalStoragePublicDirectory
+                (Environment.DIRECTORY_DOCUMENTS);
+            case ExternalDownload:
+                return Environment.getExternalStoragePublicDirectory
+            (Environment.DIRECTORY_DOWNLOADS);
+        }
+        return null;
+    }
+
 
     /**
      * ファイルに保存する
+     * 保存先のフォルダパスは getPath()で取得する
      * @param contents
      * @return
      */
-    private String writeContents(String contents) {
-        File temppath = new File(Environment.getExternalStorageDirectory(),"temp");
-//        File temppath = new File(Environment.getDownloadCacheDirectory(),"temp");
-//        File temppath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),"temp");
-//        File temppath = new File(Environment.getRootDirectory(),"temp");
-
+    private String writeToFile(String contents) {
+        File temppath = new File(getPath(), tempDirName);
         if (temppath.exists() != true) {
-            temppath.mkdirs();
+            if (false == temppath.mkdirs()) {
+                return "failed to create directory.\n" + tempDirName;
+            }
         }
 
-        File tempfile = new File(temppath, "test.txt");
+        File tempfile = new File(temppath, tempFileName);
         FileWriter output = null;
         try {
-            output = new FileWriter(tempfile, true);
+            output = new FileWriter(tempfile, false);
             output.write(contents);
             output.write("\n");
         } catch (FileNotFoundException e) {
@@ -127,9 +215,10 @@ public class Test1Activity extends AppCompatActivity implements OnClickListener 
 
     /**
      * 指定したURL(ファイルパス)のデータを読み込む
-     * @param textUrl
      */
-    private void readFile(String path) {
+    private void readFile() {
+        String path = getPath().toString() + "/" + tempDirName + "/" + tempFileName;
+
         try {
             File file = new File(path);
             readText = file.getName() + "\n";
@@ -149,6 +238,6 @@ public class Test1Activity extends AppCompatActivity implements OnClickListener 
             e.printStackTrace();
             readText += e.toString();
         }
-        textView.setText(readText);
+        textViewLog.setText(readText);
     }
 }

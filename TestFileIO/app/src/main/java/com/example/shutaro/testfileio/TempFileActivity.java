@@ -18,6 +18,9 @@ import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import android.view.View.OnClickListener;
 
+/**
+ * キャッシュファイルの読み書きテスト
+ */
 public class TempFileActivity extends AppCompatActivity implements OnClickListener {
 
     private TextView mTextView;
