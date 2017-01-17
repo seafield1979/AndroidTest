@@ -36,6 +36,7 @@ implements OnClickListener{
     public static final String XmlFileName1 = "test1.xml";
     public static final String XmlFileName2 = "test2.xml";
     public static final String XmlFileName3 = "test3.xml";
+    public static final String XmlFileName4 = "test4.xml";
 
     private int[] button_ids = new int[]{
             R.id.button,
@@ -44,7 +45,10 @@ implements OnClickListener{
             R.id.button4,
             R.id.button5,
             R.id.button6,
-            R.id.button7};
+            R.id.button7,
+            R.id.button8,
+            R.id.button9
+    };
     private Button[] buttons = new Button[button_ids.length];
     private TextView textView;
 
@@ -84,6 +88,13 @@ implements OnClickListener{
             case R.id.button7:
                 readTest1Xml();
                 break;
+            case R.id.button8:
+                writeTest2Xml();
+                break;
+            case R.id.button9:
+                readTest2Xml();
+                break;
+
         }
     }
 
@@ -199,7 +210,6 @@ implements OnClickListener{
 
         XmlTest1 data = new XmlTest1();
         data.setName("apple");
-        data.setComment("");
 
         try {
             Serializer serializer = new Persister();
@@ -233,7 +243,59 @@ implements OnClickListener{
         }
     }
 
+    /**
+     * ファイルにTest1のxmlを書き込む
+     */
+    private void writeTest2Xml() {
 
+        XmlTest12 data = new XmlTest12();
+        data.setName("apple");
+
+        LinkedList<Test1> list = new LinkedList<>();
+
+        Test1 test = new Test1();
+        test.setName("hoge");
+        list.add(test);
+
+        test = new Test1();
+        test.setName("hoge2");
+        list.add(test);
+
+        data.setList(list);
+
+        File path = getPath(DirType.ExternalDocument);
+        File result = new File(path, XmlFileName4);
+        try {
+            Serializer serializer = new Persister();
+            serializer.write(data, result);
+        } catch (Exception e) {
+            Log.e("tag", e.toString());
+            textView.setText("failed");
+            return;
+        }
+        textView.setText("write to " + result.toString());
+    }
+
+    /**
+     * xmlファイルからTest12を読み込む
+     */
+    private void readTest2Xml() {
+        File path = getPath(DirType.ExternalDocument);
+        File source = new File(path, XmlFileName4);
+
+        try {
+            Serializer serializer = new Persister();
+            XmlTest12 data = serializer.read(XmlTest12.class, source);
+
+            textView.setText(data.toString());
+
+        } catch (Exception e) {
+            Log.e("tag", e.toString());
+            textView.setText("failed");
+            return;
+        }
+        textView.append("\n" + source.toString());
+    }
 
     private File getPath(DirType dirType) {
         switch (dirType) {

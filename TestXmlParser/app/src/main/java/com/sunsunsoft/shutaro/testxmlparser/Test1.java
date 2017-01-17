@@ -7,7 +7,11 @@ package com.sunsunsoft.shutaro.testxmlparser;
 public class Test1 {
     public String name;
 
-    public Test1(String name) {
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public String toString() {
+        return "Test1 name:" + name;
     }
 }
