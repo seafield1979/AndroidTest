@@ -22,19 +22,7 @@ import java.net.MalformedURLException;
 
 public class Test1Activity extends AppCompatActivity implements OnClickListener {
 
-    /**
-     * enum
-     */
-    // ファイルの保存先の種類
-    enum DirType{
-        AppStorage,     // アプリの永続化ストレージ
-        AppCache,       // アプリのキャッシュ（一時的に使用する）領域
-        AppExternal,    // アプリの外部
-//        Data,           // Androidのデータ保存領域
-        ExternalStorage,        // 外部ストレージ
-        ExternalDocument,       // 外部ストレージ(共有ドキュメント)
-        ExternalDownload,       // 外部ストレージ(共有ダウンロード)
-    }
+
 
     /**
      * Consts
@@ -100,27 +88,27 @@ public class Test1Activity extends AppCompatActivity implements OnClickListener 
                 break;
             case R.id.button_app:
                 dirType = DirType.AppStorage;
-                textViewDirPath.setText(getPath().toString());
+                textViewDirPath.setText(UFileUtil.getPath(this, dirType).toString());
                 break;
             case R.id.button_app_cache:
                 dirType = DirType.AppCache;
-                textViewDirPath.setText(getPath().toString());
+                textViewDirPath.setText(UFileUtil.getPath(this, dirType).toString());
                 break;
             case R.id.button_app_ext:
                 dirType = DirType.AppExternal;
-                textViewDirPath.setText(getPath().toString());
+                textViewDirPath.setText(UFileUtil.getPath(this, dirType).toString());
                 break;
             case R.id.button_ext_storage:
                 dirType = DirType.ExternalStorage;
-                textViewDirPath.setText(getPath().toString());
+                textViewDirPath.setText(UFileUtil.getPath(this, dirType).toString());
                 break;
             case R.id.button_ext_doc:
                 dirType = DirType.ExternalDocument;
-                textViewDirPath.setText(getPath().toString());
+                textViewDirPath.setText(UFileUtil.getPath(this, dirType).toString());
                 break;
             case R.id.button_ext_download:
                 dirType = DirType.ExternalDownload;
-                textViewDirPath.setText(getPath().toString());
+                textViewDirPath.setText(UFileUtil.getPath(this, dirType).toString());
                 break;
             case R.id.button_write:
                 writeToFile();
@@ -145,33 +133,6 @@ public class Test1Activity extends AppCompatActivity implements OnClickListener 
 
     }
 
-    private File getPath() {
-        switch (dirType) {
-            case AppStorage:
-                return getFilesDir();
-            case AppCache:
-                return getCacheDir();
-//            case Data:
-//                return Environment.getDataDirectory();
-            case AppExternal:
-            {
-                File[] dirs = getExternalFilesDirs(null);
-                StringBuffer buf = new StringBuffer();
-                if (dirs != null && dirs.length > 0) {
-                    return dirs[0];
-                }
-            }
-            case ExternalStorage:
-                return Environment.getExternalStorageDirectory();
-            case ExternalDocument:
-                return Environment.getExternalStoragePublicDirectory
-                (Environment.DIRECTORY_DOCUMENTS);
-            case ExternalDownload:
-                return Environment.getExternalStoragePublicDirectory
-            (Environment.DIRECTORY_DOWNLOADS);
-        }
-        return null;
-    }
 
 
     /**
@@ -181,7 +142,7 @@ public class Test1Activity extends AppCompatActivity implements OnClickListener 
      * @return
      */
     private String writeToFile(String contents) {
-        File temppath = new File(getPath(), tempDirName);
+        File temppath = new File(UFileUtil.getPath(this, dirType), tempDirName);
         if (temppath.exists() != true) {
             if (false == temppath.mkdirs()) {
                 return "failed to create directory.\n" + tempDirName;
@@ -217,7 +178,7 @@ public class Test1Activity extends AppCompatActivity implements OnClickListener 
      * 指定したURL(ファイルパス)のデータを読み込む
      */
     private void readFile() {
-        String path = getPath().toString() + "/" + tempDirName + "/" + tempFileName;
+        String path = UFileUtil.getPath(this, dirType).toString() + "/" + tempDirName + "/" + tempFileName;
 
         try {
             File file = new File(path);

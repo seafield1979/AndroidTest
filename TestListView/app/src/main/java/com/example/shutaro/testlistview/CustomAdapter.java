@@ -31,28 +31,33 @@ public class CustomAdapter extends ArrayAdapter<CustomData> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        CustomData item = (CustomData) getItem(position);
+        CustomData item = getItem(position);
 
-        if (null == convertView) {
+        if (position % 10 == 0) {
+            convertView = mLayoutInflater.inflate(
+                    R.layout.custom_list_item_header, null);
+
+            TextView textView = (TextView) convertView.findViewById(R.id.text);
+            textView.setText("hogehogehgoehoge");
+            convertView.setBackgroundColor(Color.rgb(200, 200, 0));
+        } else {
             convertView = mLayoutInflater.inflate(
                     R.layout.custom_list_item, null);
             Log.v("myData", String.valueOf(position));
+
+            ImageView imageView;
+            imageView = (ImageView) convertView.findViewById(R.id.image);
+            imageView.setImageBitmap(item.getImageData());
+
+            TextView textView = (TextView) convertView.findViewById(R.id.text);
+            textView.setText(item.getTextData());
+
+            if (position % 2 == 1) {
+                convertView.setBackgroundColor(Color.rgb(200, 100, 0));
+            } else {
+                convertView.setBackgroundColor(Color.rgb(255, 255, 255));
+            }
         }
-
-        ImageView imageView;
-        imageView = (ImageView) convertView.findViewById(R.id.image);
-        imageView.setImageBitmap(item.getImageData());
-
-        TextView textView;
-        textView = (TextView) convertView.findViewById(R.id.text);
-        textView.setText(item.getTextData());
-
-        if (position % 2 == 1) {
-            convertView.setBackgroundColor(Color.rgb(200, 100, 0));
-        } else {
-            convertView.setBackgroundColor(Color.rgb(255,255,255));
-        }
-
         return convertView;
     }
 }

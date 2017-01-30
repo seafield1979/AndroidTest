@@ -60,10 +60,12 @@ public class MenuActivity extends AppCompatActivity implements OnClickListener {
         startActivity(i);
     }
     private void test3() {
-        Intent i = new Intent(getApplicationContext(),TempFileActivity.class);
+        Intent i = new Intent(getApplicationContext(),Test3Activity.class);
         startActivity(i);
     }
     private void test4() {
+        Intent i = new Intent(getApplicationContext(),TempFileActivity.class);
+        startActivity(i);
     }
     private void test5() {
     }

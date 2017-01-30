@@ -22,15 +22,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
-interface OnOkClickListener {
-    void onOkClicked(Bundle args);
-}
 
 /**
  * ダイアログ用のFragmentサンプル
  * DialogFragmentのサブクラス
  */
 public class MyDialogFragment extends DialogFragment {
+    interface OnOkClickListener {
+        void onOkClicked(Bundle args);
+    }
+
     private final static String KEY_NAME = "key_name";
     public static final String KEY_RET = "key_ret";
 

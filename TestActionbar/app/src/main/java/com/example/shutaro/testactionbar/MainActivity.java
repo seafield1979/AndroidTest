@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             R.id.button5,
             R.id.button6};
 
+    private boolean mShowMenu = true;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,8 +91,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         ab.setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * メニューの表示切り替え
+     */
     private void test4() {
-
+        mShowMenu = !mShowMenu;
+        // オプションメニューを書き換える
+        invalidateOptionsMenu();
     }
 
     private void test5() {
@@ -106,6 +114,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         // main.xml から生成
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * メニューの表示切り替え
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return mShowMenu;
     }
 
     // メニューの項目が選択されると呼ばれる

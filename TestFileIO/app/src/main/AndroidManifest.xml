@@ -24,6 +24,8 @@
         </activity>
         <activity android:name=".TempFileActivity">
         </activity>
+        <activity android:name=".Test3Activity">
+        </activity>
     </application>
 
 </manifest>
